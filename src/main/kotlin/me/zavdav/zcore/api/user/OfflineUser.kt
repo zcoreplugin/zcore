@@ -14,6 +14,9 @@ interface OfflineUser {
     /** The user's username. */
     val name: String
 
+    /** The user's nickname. Can be null if the user has no nickname. */
+    var nickname: String?
+
     /** The epoch millisecond of the user's first join. */
     val firstJoin: Long
 
@@ -39,13 +42,13 @@ interface OfflineUser {
     val mail: List<Pair<OfflineUser, String>>
 
     /** A list of users that the user has ignored. */
-    val ignoredUsers: Set<OfflineUser>
-
-    /** The user's nickname. Can be null if the user has no nickname. */
-    var nickname: String?
+    val ignoredUsers: List<OfflineUser>
 
     /** A map of the user's boolean states. */
     val states: Map<UserState, Boolean>
+
+    /** Gets the location of a home by its [name]. */
+    fun getHome(name: String): Location
 
     /** Sets a [location] as a new home with a [name]. */
     fun setHome(name: String, location: Location)

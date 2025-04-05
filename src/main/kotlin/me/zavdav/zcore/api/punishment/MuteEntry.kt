@@ -1,4 +1,4 @@
-package me.zavdav.zcore.api.punishments
+package me.zavdav.zcore.api.punishment
 
 import me.zavdav.zcore.api.user.OfflineUser
 

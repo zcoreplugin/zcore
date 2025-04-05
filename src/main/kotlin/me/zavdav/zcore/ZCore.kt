@@ -2,11 +2,13 @@ package me.zavdav.zcore
 
 import me.zavdav.zcore.api.ZCoreApi
 import me.zavdav.zcore.api.economy.BankAccount
-import me.zavdav.zcore.api.punishments.BanList
-import me.zavdav.zcore.api.punishments.IpBanList
-import me.zavdav.zcore.api.punishments.MuteList
+import me.zavdav.zcore.api.punishment.BanList
+import me.zavdav.zcore.api.punishment.IpBanList
+import me.zavdav.zcore.api.punishment.MuteList
 import me.zavdav.zcore.api.user.OfflineUser
 import me.zavdav.zcore.api.user.User
+import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.UUID
 
@@ -49,6 +51,14 @@ class ZCore : JavaPlugin() {
             get() = TODO("Not yet implemented")
 
         @JvmStatic
+        override val worldSpawns: Map<World, Location>
+            get() = TODO("Not yet implemented")
+
+        @JvmStatic
+        override val warps: Map<String, Location>
+            get() = TODO("Not yet implemented")
+
+        @JvmStatic
         override fun getUser(uuid: UUID): User {
             TODO("Not yet implemented")
         }
@@ -75,6 +85,31 @@ class ZCore : JavaPlugin() {
 
         @JvmStatic
         override fun getBankAccount(name: String): BankAccount {
+            TODO("Not yet implemented")
+        }
+
+        @JvmStatic
+        override fun getWorldSpawn(world: World): Location {
+            TODO("Not yet implemented")
+        }
+
+        @JvmStatic
+        override fun setWorldSpawn(world: World, location: Location) {
+            TODO("Not yet implemented")
+        }
+
+        @JvmStatic
+        override fun getWarp(name: String): Location {
+            TODO("Not yet implemented")
+        }
+
+        @JvmStatic
+        override fun setWarp(name: String, location: Location) {
+            TODO("Not yet implemented")
+        }
+
+        @JvmStatic
+        override fun deleteWarp(name: String) {
             TODO("Not yet implemented")
         }
 
