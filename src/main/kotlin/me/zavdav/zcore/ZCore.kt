@@ -2,6 +2,7 @@ package me.zavdav.zcore
 
 import me.zavdav.zcore.api.ZCoreApi
 import me.zavdav.zcore.api.economy.BankAccount
+import me.zavdav.zcore.api.kit.Kit
 import me.zavdav.zcore.api.punishment.BanList
 import me.zavdav.zcore.api.punishment.IpBanList
 import me.zavdav.zcore.api.punishment.MuteList
@@ -9,7 +10,9 @@ import me.zavdav.zcore.api.user.OfflineUser
 import me.zavdav.zcore.api.user.User
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
+import java.math.BigDecimal
 import java.util.UUID
 
 /** The main class of the ZCore plugin. */
@@ -56,6 +59,10 @@ class ZCore : JavaPlugin() {
 
         @JvmStatic
         override val warps: Map<String, Location>
+            get() = TODO("Not yet implemented")
+
+        @JvmStatic
+        override val kits: Map<String, Kit>
             get() = TODO("Not yet implemented")
 
         @JvmStatic
@@ -110,6 +117,21 @@ class ZCore : JavaPlugin() {
 
         @JvmStatic
         override fun deleteWarp(name: String) {
+            TODO("Not yet implemented")
+        }
+
+        @JvmStatic
+        override fun getKit(name: String): Kit {
+            TODO("Not yet implemented")
+        }
+
+        @JvmStatic
+        override fun setKit(name: String, items: Map<Int, ItemStack>, cost: BigDecimal, cooldown: Long) {
+            TODO("Not yet implemented")
+        }
+
+        @JvmStatic
+        override fun deleteKit(name: String) {
             TODO("Not yet implemented")
         }
 

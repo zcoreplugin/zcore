@@ -2,6 +2,7 @@ package me.zavdav.zcore.api
 
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.api.economy.BankAccount
+import me.zavdav.zcore.api.kit.Kit
 import me.zavdav.zcore.api.punishment.BanList
 import me.zavdav.zcore.api.punishment.IpBanList
 import me.zavdav.zcore.api.punishment.MuteList
@@ -9,6 +10,8 @@ import me.zavdav.zcore.api.user.OfflineUser
 import me.zavdav.zcore.api.user.User
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.inventory.ItemStack
+import java.math.BigDecimal
 import java.util.UUID
 
 /** Represents the ZCore API. */
@@ -41,6 +44,9 @@ interface ZCoreApi {
     /** A map of all warp locations. */
     val warps: Map<String, Location>
 
+    /** A map of all kits. */
+    val kits: Map<String, Kit>
+
     /** Gets an online user by their [uuid]. */
     fun getUser(uuid: UUID): User
 
@@ -68,10 +74,19 @@ interface ZCoreApi {
     /** Gets the location of a warp by its [name]. */
     fun getWarp(name: String): Location
 
-    /** Sets a [location] as a new warp with a [name]. */
+    /** Sets a new warp with a [name] and a [location]. */
     fun setWarp(name: String, location: Location)
 
     /** Deletes the warp with the specified [name]. */
     fun deleteWarp(name: String)
+
+    /** Gets a kit by its [name]. */
+    fun getKit(name: String): Kit
+
+    /** Sets a new kit with a [name], [items], [cost] and [cooldown]. */
+    fun setKit(name: String, items: Map<Int, ItemStack>, cost: BigDecimal, cooldown: Long)
+
+    /** Deletes the kit with the specified [name]. */
+    fun deleteKit(name: String)
 
 }
