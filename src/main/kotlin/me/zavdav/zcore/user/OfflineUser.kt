@@ -2,6 +2,7 @@ package me.zavdav.zcore.user
 
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.UserAccount
+import me.zavdav.zcore.statistic.UserStatistics
 import me.zavdav.zcore.util.NamedLocation
 import org.bukkit.Location
 import java.util.UUID
@@ -38,9 +39,8 @@ sealed class OfflineUser(uuid: UUID) {
     var lastOnline: Long = 0
         internal set
 
-    /** The user's current playtime in milliseconds. */
-    var playtime: Long = 0
-        internal set
+    /** The user's statistics. */
+    val statistics: UserStatistics = UserStatistics(this)
 
     /** The user's economy account where their balance is stored. */
     val account: UserAccount = UserAccount(this)
