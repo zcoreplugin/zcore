@@ -1,139 +1,175 @@
 package me.zavdav.zcore
 
-import me.zavdav.zcore.api.ZCoreApi
-import me.zavdav.zcore.api.economy.BankAccount
-import me.zavdav.zcore.api.kit.Kit
-import me.zavdav.zcore.api.punishment.BanList
-import me.zavdav.zcore.api.punishment.IpBanList
-import me.zavdav.zcore.api.punishment.MuteList
-import me.zavdav.zcore.api.user.OfflineUser
-import me.zavdav.zcore.api.user.User
+import me.zavdav.zcore.economy.BankAccount
+import me.zavdav.zcore.kit.Kit
+import me.zavdav.zcore.util.NamedLocation
+import me.zavdav.zcore.punishment.BanList
+import me.zavdav.zcore.punishment.IpBanList
+import me.zavdav.zcore.punishment.MuteList
+import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.user.User
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
-import java.math.BigDecimal
 import java.util.UUID
 
 /** The main class of the ZCore plugin. */
 class ZCore : JavaPlugin() {
 
+    override fun onEnable() {
+        INSTANCE = this
+    }
+
     override fun onDisable() { }
 
-    override fun onEnable() { }
-
     /** Represents the ZCore API. */
-    companion object Api : ZCoreApi {
+    companion object Api {
 
+        // Backing fields
+        private val _worldSpawns: MutableMap<String, NamedLocation> = mutableMapOf()
+        private val _warps: MutableMap<String, NamedLocation> = mutableMapOf()
+        private val _kits: MutableMap<String, Kit> = mutableMapOf()
+        private val _bankAccounts: MutableMap<UUID, BankAccount> = mutableMapOf()
+
+        /** The current instance of ZCore. */
         @JvmStatic
-        override val INSTANCE: ZCore
+        lateinit var INSTANCE: ZCore
+            private set
+
+        /** An intermediary user for actions that aren't directly performed by a user. */
+        @JvmStatic
+        val SYSTEM_USER: OfflineUser
             get() = TODO("Not yet implemented")
 
+        /** The current version of ZCore. */
         @JvmStatic
-        override val version: String
+        val version: String
+            get() = INSTANCE.description.version
+
+        /** A [Set] of all currently online users. */
+        @JvmStatic
+        val onlineUsers: Set<User>
             get() = TODO("Not yet implemented")
 
+        /** A [Set] of all users that have played on the server. */
         @JvmStatic
-        override val onlineUsers: Set<User>
+        val users: Set<OfflineUser>
             get() = TODO("Not yet implemented")
 
+        /** A list of all muted users. */
         @JvmStatic
-        override val users: Set<OfflineUser>
-            get() = TODO("Not yet implemented")
+        val muteList: MuteList = MuteList()
 
+        /** A list of all banned UUIDs. */
         @JvmStatic
-        override val muteList: MuteList
-            get() = TODO("Not yet implemented")
+        val banList: BanList = BanList()
 
+        /** A list of all banned IPv4 addresses. */
         @JvmStatic
-        override val banList: BanList
-            get() = TODO("Not yet implemented")
+        val ipBanList: IpBanList = IpBanList()
 
+        /** A map of all world spawn locations. */
         @JvmStatic
-        override val ipBanList: IpBanList
-            get() = TODO("Not yet implemented")
+        val worldSpawns: Map<String, NamedLocation> get() = _worldSpawns
 
+        /** A map of all warp locations. */
         @JvmStatic
-        override val worldSpawns: Map<World, Location>
-            get() = TODO("Not yet implemented")
+        val warps: Map<String, NamedLocation> get() = _warps
 
+        /** A map of all kits. */
         @JvmStatic
-        override val warps: Map<String, Location>
-            get() = TODO("Not yet implemented")
+        val kits: Map<String, Kit> get() = _kits
 
+        /** A map of all bank accounts. */
         @JvmStatic
-        override val kits: Map<String, Kit>
-            get() = TODO("Not yet implemented")
+        val bankAccounts: Map<UUID, BankAccount> get() = _bankAccounts
 
+        /** Gets an online user by their [uuid], or `null` if no such user exists. */
         @JvmStatic
-        override fun getUser(uuid: UUID): User {
-            TODO("Not yet implemented")
+        fun getUser(uuid: UUID): User? =
+            onlineUsers.find { it.uuid == uuid }
+
+        /** Gets an online user by their [name], or `null` if no such user exists. */
+        @JvmStatic
+        fun getUser(name: String): User? =
+            onlineUsers.find { it.name.equals(name, true) }
+
+        /** Gets an offline user by their [uuid], or `null` if no such user exists. */
+        @JvmStatic
+        fun getOfflineUser(uuid: UUID): OfflineUser? =
+            users.find { it.uuid == uuid }
+
+        /** Gets an offline user by their [name], or `null` if no such user exists. (case-sensitive) */
+        @JvmStatic
+        fun getOfflineUser(name: String): OfflineUser? =
+            users.find { it.name == name }
+
+        /** Gets a bank account by its [uuid], or `null` if no such bank account exists. */
+        @JvmStatic
+        fun getBankAccount(uuid: UUID): BankAccount? = _bankAccounts[uuid]
+
+        /** Gets a bank account by its [name], or `null` if no such bank account exists. */
+        @JvmStatic
+        fun getBankAccount(name: String): BankAccount? =
+            _bankAccounts.values.find { it.name.equals(name, true) }
+
+        /** Gets the spawn location of a [world], or `null` if this world does not exist. */
+        @JvmStatic
+        fun getWorldSpawn(world: World): NamedLocation? =
+            _worldSpawns[world.name.lowercase()]
+
+        /** Sets the spawn [location] of a [world]. */
+        @JvmStatic
+        fun setWorldSpawn(world: World, location: Location) {
+            world.setSpawnLocation(location.x.toInt(), location.y.toInt(), location.z.toInt())
+            _worldSpawns[world.name.lowercase()] = NamedLocation(world.name, location)
         }
 
+        /** Gets the location of a warp by its [name], or `null` if no such warp exists. */
         @JvmStatic
-        override fun getUser(name: String): User {
-            TODO("Not yet implemented")
+        fun getWarp(name: String): NamedLocation? = _warps[name.lowercase()]
+
+        /**
+         * Sets a new warp with a [name] and a [location].
+         * Returns `false` if a warp with this name already exists.
+         */
+        @JvmStatic
+        fun setWarp(name: String, location: Location): Boolean {
+            if (_warps.containsKey(name.lowercase())) return false
+            _warps[name.lowercase()] = NamedLocation(name, location)
+            return true
         }
 
+        /**
+         * Deletes the warp with the specified [name].
+         * Returns `false` if no warp with this name exists.
+         */
         @JvmStatic
-        override fun getOfflineUser(uuid: UUID): OfflineUser {
-            TODO("Not yet implemented")
+        fun deleteWarp(name: String): Boolean =
+            _warps.remove(name.lowercase()) != null
+
+        /** Gets a kit by its [name], or `null` if no such kit exists. */
+        @JvmStatic
+        fun getKit(name: String): Kit? = _kits[name.lowercase()]
+
+        /**
+         * Sets a new [kit] that users can equip.
+         * Returns `false` if a kit with this name already exists.
+         */
+        @JvmStatic
+        fun setKit(kit: Kit): Boolean {
+            if (_kits.containsKey(kit.name.lowercase())) return false
+            _kits[kit.name.lowercase()] = kit
+            return true
         }
 
+        /**
+         * Deletes the kit with the specified [name].
+         * Returns `false` if no kit with this name exists.
+         */
         @JvmStatic
-        override fun getOfflineUser(name: String): OfflineUser {
-            TODO("Not yet implemented")
-        }
-
-        @JvmStatic
-        override fun getBankAccount(uuid: UUID): BankAccount {
-            TODO("Not yet implemented")
-        }
-
-        @JvmStatic
-        override fun getBankAccount(name: String): BankAccount {
-            TODO("Not yet implemented")
-        }
-
-        @JvmStatic
-        override fun getWorldSpawn(world: World): Location {
-            TODO("Not yet implemented")
-        }
-
-        @JvmStatic
-        override fun setWorldSpawn(world: World, location: Location) {
-            TODO("Not yet implemented")
-        }
-
-        @JvmStatic
-        override fun getWarp(name: String): Location {
-            TODO("Not yet implemented")
-        }
-
-        @JvmStatic
-        override fun setWarp(name: String, location: Location) {
-            TODO("Not yet implemented")
-        }
-
-        @JvmStatic
-        override fun deleteWarp(name: String) {
-            TODO("Not yet implemented")
-        }
-
-        @JvmStatic
-        override fun getKit(name: String): Kit {
-            TODO("Not yet implemented")
-        }
-
-        @JvmStatic
-        override fun setKit(name: String, items: Map<Int, ItemStack>, cost: BigDecimal, cooldown: Long) {
-            TODO("Not yet implemented")
-        }
-
-        @JvmStatic
-        override fun deleteKit(name: String) {
-            TODO("Not yet implemented")
-        }
+        fun deleteKit(name: String): Boolean =
+            _kits.remove(name.lowercase()) != null
 
     }
 

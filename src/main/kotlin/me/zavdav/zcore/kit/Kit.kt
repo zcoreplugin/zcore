@@ -1,21 +1,21 @@
-package me.zavdav.zcore.api.kit
+package me.zavdav.zcore.kit
 
 import org.bukkit.inventory.ItemStack
 import java.math.BigDecimal
 
 /** Represents a kit that users can equip. */
-interface Kit {
+data class Kit (
 
     /** The name of the kit. */
-    val name: String
+    val name: String,
 
     /** A map of inventory indexes together with the respective item stacks. */
-    val items: Map<Int, ItemStack>
+    val items: Map<Int, ItemStack>,
 
     /** The cost to equip the kit. */
-    val cost: BigDecimal
+    val cost: BigDecimal,
 
     /** The cooldown in milliseconds between equipping the kit. */
     val cooldown: Long
 
-}
+)

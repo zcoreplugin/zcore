@@ -1,6 +1,6 @@
-package me.zavdav.zcore.api.event
+package me.zavdav.zcore.event
 
-import me.zavdav.zcore.api.economy.EconomyAccount
+import me.zavdav.zcore.economy.EconomyAccount
 import org.bukkit.event.Event
 import java.math.BigDecimal
 
