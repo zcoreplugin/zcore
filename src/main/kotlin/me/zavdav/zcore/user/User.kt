@@ -24,9 +24,9 @@ class User(uuid: UUID) : OfflineUser(uuid) {
         get() = Bukkit.getServer().getPlayer(uuid)
 
     /** Determines if the user is AFK. */
-    var isAfk: Boolean = false
+    var isAfk = false
 
     /** Determines if the user is viewing a player's inventory. */
-    var isInvSeeEnabled: Boolean = false
+    var isInvSeeEnabled = false
 
 }

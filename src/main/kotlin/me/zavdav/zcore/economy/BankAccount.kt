@@ -2,6 +2,8 @@ package me.zavdav.zcore.economy
 
 import me.zavdav.zcore.exception.BankTransactionException
 import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.util.checkAndPut
+import me.zavdav.zcore.util.checkAndRemove
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -14,14 +16,15 @@ class BankAccount(
     overdrawLimit: BigDecimal = BigDecimal.ZERO
 ) : EconomyAccount(owner, balance, overdrawLimit) {
 
-    private val _users: MutableMap<OfflineUser, Role> = mutableMapOf()
+    private val _users = mutableMapOf<OfflineUser, Role>()
 
     override var owner: OfflineUser = owner
         set(value) {
-            // Set the previous owner's role to MANAGER
-            addUser(field)
-            setUserRole(field, Role.MANAGER)
+            val prevOwner = field
             field = value
+            addUser(prevOwner)
+            // Set the previous owner's role to MANAGER
+            setUserRole(prevOwner, Role.MANAGER)
         }
 
     /** The bank account's UUID. */
@@ -37,11 +40,8 @@ class BankAccount(
      * Adds a [user] to the bank account.
      * Returns `false` if the user is already a member of the bank.
      */
-    fun addUser(user: OfflineUser): Boolean {
-        if (user == owner || _users.containsKey(user)) return false
-        _users[user] = Role.DEFAULT
-        return true
-    }
+    fun addUser(user: OfflineUser): Boolean =
+        if (user == owner) false else _users.checkAndPut(user, Role.DEFAULT)
 
     /**
      * Removes a [user] from the bank account.
@@ -51,7 +51,7 @@ class BankAccount(
         if (user == owner) {
             throw IllegalArgumentException("Cannot remove owner of the bank account")
         }
-        return _users.remove(user) != null
+        return _users.checkAndRemove(user)
     }
 
     /** Gets the role of the specified [user], or `null` if the user is not a member of the bank. */

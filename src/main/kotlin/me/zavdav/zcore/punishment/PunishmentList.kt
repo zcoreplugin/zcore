@@ -3,7 +3,7 @@ package me.zavdav.zcore.punishment
 /** Represents a list of punishment entries with targets of type [T]. */
 sealed class PunishmentList<E : PunishmentEntry<T>, T> {
 
-    protected val _entries: MutableList<E> = mutableListOf()
+    protected val _entries = mutableListOf<E>()
 
     /** All entries in the list. */
     val entries: List<E> get() = _entries

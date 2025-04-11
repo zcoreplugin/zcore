@@ -12,7 +12,7 @@ class IpBanEntry(
     override var reason: String
 ) : PunishmentEntry<Inet4Address>() {
 
-    internal val _capturedUuids: MutableList<UUID> = mutableListOf()
+    internal val _capturedUuids = mutableListOf<UUID>()
 
     /** A list of UUIDs of users that tried to join with the IP address. */
     val capturedUuids: List<UUID> get() = _capturedUuids

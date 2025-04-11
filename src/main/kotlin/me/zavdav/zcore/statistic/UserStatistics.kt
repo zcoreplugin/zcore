@@ -1,20 +1,20 @@
 package me.zavdav.zcore.statistic
 
 import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.util.enumMap
 import org.bukkit.Material
 import org.bukkit.entity.CreatureType
 import java.math.BigDecimal
-import java.util.EnumMap
 
 /** Represents the statistics of a user. */
 class UserStatistics(val user: OfflineUser) {
 
     // Backing fields
-    internal val _blocksPlaced: MutableMap<Material, Long> = EnumMap(Material::class.java)
-    internal val _blocksBroken: MutableMap<Material, Long> = EnumMap(Material::class.java)
-    internal val _itemsDropped: MutableMap<Material, Long> = EnumMap(Material::class.java)
-    internal val _userKills: MutableMap<OfflineUser, Long> = mutableMapOf()
-    internal val _mobKills: MutableMap<CreatureType, Long> = EnumMap(CreatureType::class.java)
+    internal val _blocksPlaced = enumMap<Material, Long>()
+    internal val _blocksBroken = enumMap<Material, Long>()
+    internal val _itemsDropped = enumMap<Material, Long>()
+    internal val _userKills = mutableMapOf<OfflineUser, Long>()
+    internal val _mobKills = enumMap<CreatureType, Long>()
 
     /** The user's playtime in milliseconds. */
     var playtime: Long = 0

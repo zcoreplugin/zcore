@@ -14,10 +14,10 @@ sealed class PunishmentEntry<T> {
     /** The epoch millisecond of when the punishment was issued. */
     val timeIssued: Long = System.currentTimeMillis()
 
-    /** The duration of the punishment in milliseconds, or null if the punishment is permanent. */
+    /** The duration of the punishment in milliseconds, or `null` if the punishment is permanent. */
     abstract var duration: Long?
 
-    /** The epoch millisecond of when the punishment expires, or null if the punishment is permanent. */
+    /** The epoch millisecond of when the punishment expires, or `null` if the punishment is permanent. */
     var expiration: Long?
         get() = duration?.let { timeIssued + it }
         set(value) {
@@ -28,6 +28,6 @@ sealed class PunishmentEntry<T> {
     abstract var reason: String
 
     /** Determines if the punishment is active. */
-    var active: Boolean = true
+    var active = true
 
 }

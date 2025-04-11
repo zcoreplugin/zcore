@@ -8,6 +8,8 @@ import me.zavdav.zcore.punishment.IpBanList
 import me.zavdav.zcore.punishment.MuteList
 import me.zavdav.zcore.user.OfflineUser
 import me.zavdav.zcore.user.User
+import me.zavdav.zcore.util.checkAndPut
+import me.zavdav.zcore.util.checkAndRemove
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.plugin.java.JavaPlugin
@@ -26,10 +28,10 @@ class ZCore : JavaPlugin() {
     companion object Api {
 
         // Backing fields
-        private val _worldSpawns: MutableMap<String, NamedLocation> = mutableMapOf()
-        private val _warps: MutableMap<String, NamedLocation> = mutableMapOf()
-        private val _kits: MutableMap<String, Kit> = mutableMapOf()
-        private val _bankAccounts: MutableMap<UUID, BankAccount> = mutableMapOf()
+        private val _worldSpawns = mutableMapOf<String, NamedLocation>()
+        private val _warps = mutableMapOf<String, NamedLocation>()
+        private val _kits = mutableMapOf<String, Kit>()
+        private val _bankAccounts = mutableMapOf<UUID, BankAccount>()
 
         /** The current instance of ZCore. */
         @JvmStatic
@@ -58,15 +60,15 @@ class ZCore : JavaPlugin() {
 
         /** A list of all muted users. */
         @JvmStatic
-        val muteList: MuteList = MuteList()
+        val muteList = MuteList()
 
         /** A list of all banned UUIDs. */
         @JvmStatic
-        val banList: BanList = BanList()
+        val banList = BanList()
 
         /** A list of all banned IPv4 addresses. */
         @JvmStatic
-        val ipBanList: IpBanList = IpBanList()
+        val ipBanList = IpBanList()
 
         /** A map of all world spawn locations. */
         @JvmStatic
@@ -134,11 +136,8 @@ class ZCore : JavaPlugin() {
          * Returns `false` if a warp with this name already exists.
          */
         @JvmStatic
-        fun setWarp(name: String, location: Location): Boolean {
-            if (_warps.containsKey(name.lowercase())) return false
-            _warps[name.lowercase()] = NamedLocation(name, location)
-            return true
-        }
+        fun setWarp(name: String, location: Location): Boolean =
+            _warps.checkAndPut(name.lowercase(), NamedLocation(name, location))
 
         /**
          * Deletes the warp with the specified [name].
@@ -146,7 +145,7 @@ class ZCore : JavaPlugin() {
          */
         @JvmStatic
         fun deleteWarp(name: String): Boolean =
-            _warps.remove(name.lowercase()) != null
+            _warps.checkAndRemove(name.lowercase())
 
         /** Gets a kit by its [name], or `null` if no such kit exists. */
         @JvmStatic
@@ -157,11 +156,8 @@ class ZCore : JavaPlugin() {
          * Returns `false` if a kit with this name already exists.
          */
         @JvmStatic
-        fun setKit(kit: Kit): Boolean {
-            if (_kits.containsKey(kit.name.lowercase())) return false
-            _kits[kit.name.lowercase()] = kit
-            return true
-        }
+        fun setKit(kit: Kit): Boolean =
+            _kits.checkAndPut(kit.name.lowercase(), kit)
 
         /**
          * Deletes the kit with the specified [name].
@@ -169,7 +165,7 @@ class ZCore : JavaPlugin() {
          */
         @JvmStatic
         fun deleteKit(name: String): Boolean =
-            _kits.remove(name.lowercase()) != null
+            _kits.checkAndRemove(name.lowercase())
 
     }
 
