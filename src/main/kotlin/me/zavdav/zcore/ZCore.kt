@@ -1,5 +1,6 @@
 package me.zavdav.zcore
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.kit.Kit
 import me.zavdav.zcore.util.NamedLocation
@@ -10,8 +11,12 @@ import me.zavdav.zcore.user.OfflineUser
 import me.zavdav.zcore.user.User
 import me.zavdav.zcore.util.checkAndPut
 import me.zavdav.zcore.util.checkAndRemove
+import me.zavdav.zcore.util.commandDispatcher
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.UUID
 
@@ -23,6 +28,23 @@ class ZCore : JavaPlugin() {
     }
 
     override fun onDisable() { }
+
+    override fun onCommand(
+        sender: CommandSender, command: Command,
+        label: String, args: Array<String>
+    ): Boolean {
+        if (sender !is Player) return false
+        val user = getUser(sender.uniqueId) ?: return false
+
+        return try {
+            commandDispatcher.execute("${command.name} ${args.joinToString(" ")}", user)
+            return true
+        } catch (_: CommandSyntaxException) {
+            return false
+        } catch (_: Throwable) {
+            return false
+        }
+    }
 
     /** Represents the ZCore API. */
     companion object Api {
