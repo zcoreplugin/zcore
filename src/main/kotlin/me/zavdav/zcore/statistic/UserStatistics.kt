@@ -1,7 +1,7 @@
 package me.zavdav.zcore.statistic
 
+import me.zavdav.zcore.internal.util.enumMap
 import me.zavdav.zcore.user.OfflineUser
-import me.zavdav.zcore.util.enumMap
 import org.bukkit.Material
 import org.bukkit.entity.CreatureType
 import java.math.BigDecimal

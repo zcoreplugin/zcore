@@ -1,6 +1,5 @@
-package me.zavdav.zcore.exception
+package me.zavdav.zcore.economy
 
-import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.user.OfflineUser
 import java.math.BigDecimal
 

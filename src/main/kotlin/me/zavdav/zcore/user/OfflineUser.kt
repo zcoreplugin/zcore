@@ -2,11 +2,11 @@ package me.zavdav.zcore.user
 
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.UserAccount
+import me.zavdav.zcore.internal.util.checkAndAdd
+import me.zavdav.zcore.internal.util.checkAndPut
+import me.zavdav.zcore.internal.util.checkAndRemove
+import me.zavdav.zcore.location.NamedLocation
 import me.zavdav.zcore.statistic.UserStatistics
-import me.zavdav.zcore.util.NamedLocation
-import me.zavdav.zcore.util.checkAndAdd
-import me.zavdav.zcore.util.checkAndPut
-import me.zavdav.zcore.util.checkAndRemove
 import org.bukkit.Location
 import java.util.UUID
 

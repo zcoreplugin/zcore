@@ -1,4 +1,4 @@
-package me.zavdav.zcore.util
+package me.zavdav.zcore.internal.util
 
 import java.util.EnumMap
 

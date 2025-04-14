@@ -1,9 +1,8 @@
 package me.zavdav.zcore.economy
 
-import me.zavdav.zcore.exception.BankTransactionException
+import me.zavdav.zcore.internal.util.checkAndPut
+import me.zavdav.zcore.internal.util.checkAndRemove
 import me.zavdav.zcore.user.OfflineUser
-import me.zavdav.zcore.util.checkAndPut
-import me.zavdav.zcore.util.checkAndRemove
 import java.math.BigDecimal
 import java.util.UUID
 

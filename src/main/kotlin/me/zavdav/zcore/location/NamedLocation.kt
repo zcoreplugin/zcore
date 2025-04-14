@@ -1,4 +1,4 @@
-package me.zavdav.zcore.util
+package me.zavdav.zcore.location
 
 import org.bukkit.Location
 import org.bukkit.World

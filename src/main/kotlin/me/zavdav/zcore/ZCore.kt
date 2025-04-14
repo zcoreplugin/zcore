@@ -2,16 +2,16 @@ package me.zavdav.zcore
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import me.zavdav.zcore.economy.BankAccount
+import me.zavdav.zcore.internal.util.checkAndPut
+import me.zavdav.zcore.internal.util.checkAndRemove
+import me.zavdav.zcore.internal.util.commandDispatcher
 import me.zavdav.zcore.kit.Kit
-import me.zavdav.zcore.util.NamedLocation
+import me.zavdav.zcore.location.NamedLocation
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.IpBanList
 import me.zavdav.zcore.punishment.MuteList
 import me.zavdav.zcore.user.OfflineUser
 import me.zavdav.zcore.user.User
-import me.zavdav.zcore.util.checkAndPut
-import me.zavdav.zcore.util.checkAndRemove
-import me.zavdav.zcore.util.commandDispatcher
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.command.Command

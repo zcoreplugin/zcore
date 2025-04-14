@@ -1,4 +1,4 @@
-package me.zavdav.zcore.util
+package me.zavdav.zcore.internal.util
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.LiteralMessage
@@ -18,7 +18,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.tree.LiteralCommandNode
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.exception.UserNotFoundException
+import me.zavdav.zcore.internal.exception.UserNotFoundException
 import me.zavdav.zcore.user.OfflineUser
 import me.zavdav.zcore.user.User
 import java.math.BigDecimal
