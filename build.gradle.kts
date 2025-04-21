@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "me.zavdav.zcore"
-version = "0.2.1"
+version = "0.3.0"
 
 repositories {
     mavenCentral()
@@ -21,6 +21,8 @@ dependencies {
 
     implementation("com.legacyminecraft.poseidon:poseidon-craftbukkit:1.1.10-250328-1731-f67a8e3")
     implementation("com.mojang:brigadier:1.0.18")
+    implementation("org.jetbrains.exposed:exposed-core:0.61.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
 }
 
 kotlin {
