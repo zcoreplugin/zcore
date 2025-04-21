@@ -2,19 +2,27 @@ package me.zavdav.zcore.user
 
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.UserAccount
+import me.zavdav.zcore.event.UsernameChangeEvent
 import me.zavdav.zcore.internal.util.checkAndAdd
 import me.zavdav.zcore.internal.util.checkAndPut
 import me.zavdav.zcore.internal.util.checkAndRemove
 import me.zavdav.zcore.location.NamedLocation
 import me.zavdav.zcore.statistic.UserStatistics
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.util.UUID
 
 /** Represents an offline user that has played on the server before. */
-sealed class OfflineUser(uuid: UUID) {
+sealed class OfflineUser(uuid: UUID, name: String) {
 
-    // Backing fields
-    internal open var _name: String? = null
+    internal var _name: String = name
+        set(value) {
+            if (this is User && field != value) {
+                Bukkit.getPluginManager().callEvent(UsernameChangeEvent(this, field, value))
+            }
+            field = value
+        }
+
     private val _bankAccounts = mutableListOf<BankAccount>()
     private val _homes = mutableMapOf<String, NamedLocation>()
     private val _mail = mutableListOf<Pair<OfflineUser, String>>()
@@ -24,8 +32,7 @@ sealed class OfflineUser(uuid: UUID) {
     val uuid: UUID = uuid
 
     /** The user's username. */
-    val name: String
-        get() = _name ?: "Unknown User"
+    val name: String get() = _name
 
     /** The user's nickname. Can be `null` if the user has no nickname. */
     var nickname: String? = null
