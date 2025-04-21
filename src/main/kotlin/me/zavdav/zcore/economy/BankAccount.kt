@@ -1,7 +1,6 @@
 package me.zavdav.zcore.economy
 
-import me.zavdav.zcore.internal.util.checkAndPut
-import me.zavdav.zcore.internal.util.checkAndRemove
+import me.zavdav.zcore.internal.util.addIfAbsent
 import me.zavdav.zcore.user.OfflineUser
 import java.math.BigDecimal
 import java.util.UUID
@@ -15,15 +14,13 @@ class BankAccount(
     overdrawLimit: BigDecimal = BigDecimal.ZERO
 ) : EconomyAccount(owner, balance, overdrawLimit) {
 
-    private val _users = mutableMapOf<OfflineUser, Role>()
+    private val _users = mutableListOf<OfflineUser>()
 
     override var owner: OfflineUser = owner
         set(value) {
             val prevOwner = field
             field = value
             addUser(prevOwner)
-            // Set the previous owner's role to MANAGER
-            setUserRole(prevOwner, Role.MANAGER)
         }
 
     /** The bank account's UUID. */
@@ -32,15 +29,15 @@ class BankAccount(
     /** The bank account's name. */
     var name: String = name
 
-    /** A map of users that can access the bank account together with their role. */
-    val users: Map<OfflineUser, Role> get() = _users.plus(owner to Role.OWNER)
+    /** A list of users that can access the bank account. */
+    val users: List<OfflineUser> get() = _users
 
     /**
      * Adds a [user] to the bank account.
      * Returns `false` if the user is already a member of the bank.
      */
     fun addUser(user: OfflineUser): Boolean =
-        if (user == owner) false else _users.checkAndPut(user, Role.DEFAULT)
+        if (user == owner) false else _users.addIfAbsent(user)
 
     /**
      * Removes a [user] from the bank account.
@@ -50,22 +47,7 @@ class BankAccount(
         if (user == owner) {
             throw IllegalArgumentException("Cannot remove owner of the bank account")
         }
-        return _users.checkAndRemove(user)
-    }
-
-    /** Gets the role of the specified [user], or `null` if the user is not a member of the bank. */
-    fun getUserRole(user: OfflineUser): Role? {
-        if (user == owner) return Role.OWNER
-        return _users[user]
-    }
-
-    /** Sets the [role] of the specified [user]. */
-    fun setUserRole(user: OfflineUser, role: Role) {
-        if (user == owner || role == Role.OWNER) {
-            throw IllegalArgumentException("Use the 'owner' property to set the bank's owner")
-        }
-        if (user !in _users) return
-        _users[user] = role
+        return _users.remove(user)
     }
 
     /**
@@ -75,23 +57,10 @@ class BankAccount(
      * and belongs to a user that is not a member of the bank.
      */
     override fun transfer(amount: BigDecimal, account: EconomyAccount): Boolean {
-        if (account is UserAccount && _users.containsKey(account.owner)) {
+        if (account is UserAccount && account.owner !in _users) {
             throw BankTransactionException(this, account.owner, amount)
         }
         return super.transfer(amount, account)
-    }
-
-    /** Represents the roles users of the bank account can have. */
-    enum class Role {
-
-        /** The owner of the bank account. Has every permission. */
-        OWNER,
-
-        /** A manager of the bank account. Can do everything except renaming or deleting the account. */
-        MANAGER,
-
-        /** The default role. Can only deposit money into the account. */
-        DEFAULT
     }
 
 }

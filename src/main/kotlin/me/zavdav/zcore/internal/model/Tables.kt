@@ -1,6 +1,5 @@
 package me.zavdav.zcore.internal.model
 
-import me.zavdav.zcore.economy.BankAccount
 import org.bukkit.Material
 import org.bukkit.entity.CreatureType
 import org.jetbrains.exposed.sql.Table
@@ -64,7 +63,6 @@ internal object BankAccounts : Table("bank_account") {
 internal object BankAccountUsers : Table("bank_account_user") {
     val bankId = uuid("bank_id") references BankAccounts.uniqueId
     val userId = uuid("user_id") references OfflineUsers.uniqueId
-    val role = enumeration<BankAccount.Role>("role")
 
     override val primaryKey = PrimaryKey(bankId, userId)
 }

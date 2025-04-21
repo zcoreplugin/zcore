@@ -3,9 +3,7 @@ package me.zavdav.zcore.user
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.UserAccount
 import me.zavdav.zcore.event.UsernameChangeEvent
-import me.zavdav.zcore.internal.util.checkAndAdd
-import me.zavdav.zcore.internal.util.checkAndPut
-import me.zavdav.zcore.internal.util.checkAndRemove
+import me.zavdav.zcore.internal.util.addIfAbsent
 import me.zavdav.zcore.location.NamedLocation
 import me.zavdav.zcore.statistic.UserStatistics
 import org.bukkit.Bukkit
@@ -84,17 +82,17 @@ sealed class OfflineUser(uuid: UUID, name: String) {
 
     /**
      * Sets a new home with a [name] and a [location].
-     * Returns `false` if a home with this name already exists.
+     * Returns `null`, or the home with this name if it already exists.
      */
-    fun setHome(name: String, location: Location): Boolean =
-        _homes.checkAndPut(name.lowercase(), NamedLocation(name, location))
+    fun setHome(name: String, location: Location): NamedLocation? =
+        _homes.putIfAbsent(name.lowercase(), NamedLocation(name, location))
 
     /**
      * Deletes the home with the specified [name].
-     * Returns `false` if no home with this name exists.
+     * Returns the home that was deleted, or `null` if no home with this name exists.
      */
-    fun deleteHome(name: String): Boolean =
-        _homes.checkAndRemove(name.lowercase())
+    fun deleteHome(name: String): NamedLocation? =
+        _homes.remove(name.lowercase())
 
     /** Adds a [message] from a [source] to the user's mail. */
     fun addMail(source: OfflineUser, message: String) {
@@ -109,13 +107,13 @@ sealed class OfflineUser(uuid: UUID, name: String) {
      * Returns `false` if the user is already ignored.
      */
     fun addIgnoredUser(user: OfflineUser): Boolean =
-        _ignoredUsers.checkAndAdd(user)
+        _ignoredUsers.addIfAbsent(user)
 
     /**
      * Removes the specified [user] from being ignored for the user.
      * Returns `false` if the user is not ignored.
      */
     fun removeIgnoredUser(user: OfflineUser): Boolean =
-        _ignoredUsers.checkAndRemove(user)
+        _ignoredUsers.remove(user)
 
 }

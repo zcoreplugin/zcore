@@ -2,8 +2,6 @@ package me.zavdav.zcore
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import me.zavdav.zcore.economy.BankAccount
-import me.zavdav.zcore.internal.util.checkAndPut
-import me.zavdav.zcore.internal.util.checkAndRemove
 import me.zavdav.zcore.internal.util.commandDispatcher
 import me.zavdav.zcore.kit.Kit
 import me.zavdav.zcore.location.NamedLocation
@@ -155,19 +153,19 @@ class ZCore : JavaPlugin() {
 
         /**
          * Sets a new warp with a [name] and a [location].
-         * Returns `false` if a warp with this name already exists.
+         * Returns `null`, or the warp with this name if it already exists.
          */
         @JvmStatic
-        fun setWarp(name: String, location: Location): Boolean =
-            _warps.checkAndPut(name.lowercase(), NamedLocation(name, location))
+        fun setWarp(name: String, location: Location): NamedLocation? =
+            _warps.putIfAbsent(name.lowercase(), NamedLocation(name, location))
 
         /**
          * Deletes the warp with the specified [name].
-         * Returns `false` if no warp with this name exists.
+         * Returns the warp that was deleted, or `null` if no warp with this name exists.
          */
         @JvmStatic
-        fun deleteWarp(name: String): Boolean =
-            _warps.checkAndRemove(name.lowercase())
+        fun deleteWarp(name: String): NamedLocation? =
+            _warps.remove(name.lowercase())
 
         /** Gets a kit by its [name], or `null` if no such kit exists. */
         @JvmStatic
@@ -175,19 +173,19 @@ class ZCore : JavaPlugin() {
 
         /**
          * Sets a new [kit] that users can equip.
-         * Returns `false` if a kit with this name already exists.
+         * Returns `null`, or the kit with this name if it already exists.
          */
         @JvmStatic
-        fun setKit(kit: Kit): Boolean =
-            _kits.checkAndPut(kit.name.lowercase(), kit)
+        fun setKit(kit: Kit): Kit? =
+            _kits.putIfAbsent(kit.name.lowercase(), kit)
 
         /**
          * Deletes the kit with the specified [name].
-         * Returns `false` if no kit with this name exists.
+         * Returns the kit that was deleted, or `null` if no kit with this name exists.
          */
         @JvmStatic
-        fun deleteKit(name: String): Boolean =
-            _kits.checkAndRemove(name.lowercase())
+        fun deleteKit(name: String): Kit? =
+            _kits.remove(name.lowercase())
 
     }
 
