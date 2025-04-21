@@ -1,5 +1,5 @@
 name: ZCore
-main: me.zavdav.zcore.ZCore
-version: ${version}
 author: zavdav
 website: https://github.com/zcoreplugin/zcore
+version: ${version}
+main: me.zavdav.zcore.ZCore
