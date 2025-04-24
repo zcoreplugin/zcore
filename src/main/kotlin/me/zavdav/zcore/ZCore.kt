@@ -121,10 +121,10 @@ class ZCore : JavaPlugin() {
         fun getOfflineUser(uuid: UUID): OfflineUser? =
             users.find { it.uuid == uuid }
 
-        /** Gets an offline user by their [name], or `null` if no such user exists. (case-sensitive) */
+        /** Gets an offline user by their [name], or `null` if no such user exists. */
         @JvmStatic
         fun getOfflineUser(name: String): OfflineUser? =
-            users.find { it.name == name }
+            users.find { it.name.equals(name, true) }
 
         /** Gets a bank account by its [uuid], or `null` if no such bank account exists. */
         @JvmStatic
