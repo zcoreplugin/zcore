@@ -4,71 +4,70 @@ import org.bukkit.Material
 import org.bukkit.entity.CreatureType
 import org.jetbrains.exposed.sql.Table
 
-internal object OfflineUsers : Table("offline_user") {
-    val uniqueId = uuid("unique_id")
+internal object OfflineUsers : Table("offline_users") {
+    val id = uuid("id")
     val name = varchar("name", 16).uniqueIndex()
     val nickname = varchar("nickname", 255).nullable()
     val firstJoin = long("first_join")
     val lastJoin = long("last_join")
     val lastOnline = long("last_online")
-    val accountId = uuid("account_id") references UserAccounts.uniqueId
-    val isInvincible = bool("is_invincible")
-    val isVanished = bool("is_vanished")
-    val isChatEnabled = bool("is_chat_enabled")
-    val isSocialSpyEnabled = bool("is_socialspy_enabled")
+    val accountId = uuid("account_id") references Accounts.id
+    val invincible = bool("invincible")
+    val vanished = bool("vanished")
+    val socialspy = bool("socialspy")
 
-    override val primaryKey = PrimaryKey(uniqueId)
+    override val primaryKey = PrimaryKey(id)
 }
 
-internal object UserHomes : Table("user_home") {
-    val userId = uuid("user_id") references OfflineUsers.uniqueId
+internal object Homes : Table("homes") {
+    val userId = uuid("user_id") references OfflineUsers.id
     val name = varchar("name", 255)
-    val locationId = uuid("location_id") references Locations.uniqueId
+    val locationId = uuid("location_id") references Locations.id
 
     override val primaryKey = PrimaryKey(userId, name)
 }
 
-internal object UserMails : Table("user_mail") {
-    val uniqueId = uuid("unique_id").autoGenerate()
-    val userId = uuid("user_id") references OfflineUsers.uniqueId
-    val sourceUserId = uuid("source_user_id") references OfflineUsers.uniqueId
+internal object Mail : Table("mail") {
+    val id = uuid("id").autoGenerate()
+    val sourceId = uuid("source_id") references OfflineUsers.id
+    val recipientId = uuid("recipient_id") references OfflineUsers.id
     val message = text("message")
 
-    override val primaryKey = PrimaryKey(uniqueId)
+    override val primaryKey = PrimaryKey(id)
 }
 
-internal object UserIgnoredUsers : Table("user_ignored_user") {
-    val userId = uuid("user_id") references OfflineUsers.uniqueId
-    val ignoredUserId = uuid("ignored_user_id") references OfflineUsers.uniqueId
+internal object Ignores : Table("ignores") {
+    val userId = uuid("user_id") references OfflineUsers.id
+    val targetId = uuid("target_id") references OfflineUsers.id
 
-    override val primaryKey = PrimaryKey(userId, ignoredUserId)
+    override val primaryKey = PrimaryKey(userId, targetId)
 }
 
-internal object UserAccounts : Table("user_account") {
-    val uniqueId = uuid("unique_id").autoGenerate()
-    val ownerId = uuid("owner_id") references OfflineUsers.uniqueId
+internal object Accounts : Table("accounts") {
+    val id = uuid("id").autoGenerate()
+    val ownerId = uuid("owner_id") references OfflineUsers.id
     val balance = decimal("balance", Int.MAX_VALUE, 10)
     val overdrawLimit = decimal("overdraw_limit", Int.MAX_VALUE, 10)
 
-    override val primaryKey = PrimaryKey(uniqueId)
+    override val primaryKey = PrimaryKey(id)
 }
 
-internal object BankAccounts : Table("bank_account") {
-    val uniqueId = uuid("unique_id") references UserAccounts.uniqueId
+internal object BankAccounts : Table("bank_accounts") {
+    val id = uuid("id") references Accounts.id
     val name = varchar("name", 255)
 
-    override val primaryKey = PrimaryKey(uniqueId)
+    override val primaryKey = PrimaryKey(id)
 }
 
-internal object BankAccountUsers : Table("bank_account_user") {
-    val bankId = uuid("bank_id") references BankAccounts.uniqueId
-    val userId = uuid("user_id") references OfflineUsers.uniqueId
+internal object BankAccountUsers : Table("bank_account_users") {
+    val bankId = uuid("bank_id") references BankAccounts.id
+    val userId = uuid("user_id") references OfflineUsers.id
 
     override val primaryKey = PrimaryKey(bankId, userId)
 }
 
-internal object UserStatistics : Table("user_statistics") {
-    val userId = uuid("user_id") references OfflineUsers.uniqueId
+internal object Statistics : Table("statistics") {
+    val userId = uuid("user_id") references OfflineUsers.id
     val playtime = long("playtime")
     val blocksTraveled = decimal("blocks_traveled", Int.MAX_VALUE, 10)
     val damageDealt = long("damage_dealt")
@@ -78,122 +77,122 @@ internal object UserStatistics : Table("user_statistics") {
     override val primaryKey = PrimaryKey(userId)
 }
 
-internal object DetailsBlocksPlaced : Table("detail_blocks_placed") {
-    val userId = uuid("user_id") references UserStatistics.userId
+internal object BlocksPlaced : Table("blocks_placed") {
+    val userId = uuid("user_id") references Statistics.userId
     val material = enumeration<Material>("material")
     val amount = long("amount")
 
     override val primaryKey = PrimaryKey(userId, material)
 }
 
-internal object DetailsBlocksBroken : Table("detail_blocks_broken") {
-    val userId = uuid("user_id") references UserStatistics.userId
+internal object BlocksBroken : Table("blocks_broken") {
+    val userId = uuid("user_id") references Statistics.userId
     val material = enumeration<Material>("material")
     val amount = long("amount")
 
     override val primaryKey = PrimaryKey(userId, material)
 }
 
-internal object DetailsItemsDropped : Table("detail_items_dropped") {
-    val userId = uuid("user_id") references UserStatistics.userId
+internal object ItemsDropped : Table("items_dropped") {
+    val userId = uuid("user_id") references Statistics.userId
     val material = enumeration<Material>("material")
     val amount = long("amount")
 
     override val primaryKey = PrimaryKey(userId, material)
 }
 
-internal object DetailsKilledUsers : Table("detail_killed_users") {
-    val userId = uuid("user_id") references UserStatistics.userId
-    val killedUserId = uuid("killed_user_id") references OfflineUsers.uniqueId
+internal object UsersKilled : Table("users_killed") {
+    val userId = uuid("user_id") references Statistics.userId
+    val targetId = uuid("target_id") references OfflineUsers.id
     val amount = long("amount")
 
-    override val primaryKey = PrimaryKey(userId, killedUserId)
+    override val primaryKey = PrimaryKey(userId, targetId)
 }
 
-internal object DetailsKilledMobs : Table("detail_killed_mobs") {
-    val userId = uuid("user_id") references UserStatistics.userId
+internal object MobsKilled : Table("mobs_killed") {
+    val userId = uuid("user_id") references Statistics.userId
     val creature = enumeration<CreatureType>("creature")
     val amount = long("amount")
 
     override val primaryKey = PrimaryKey(userId, creature)
 }
 
-internal object PunishmentEntries : Table("punishment_entry") {
-    val uniqueId = uuid("unique_id").autoGenerate()
-    val issuerId = uuid("issuer_id") references OfflineUsers.uniqueId
+internal object Punishments : Table("punishments") {
+    val id = uuid("id").autoGenerate()
+    val issuerId = uuid("issuer_id") references OfflineUsers.id
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")
     val active = bool("active")
 
-    override val primaryKey = PrimaryKey(uniqueId)
+    override val primaryKey = PrimaryKey(id)
 }
 
-internal object MuteEntries : Table("mute_entry") {
-    val uniqueId = uuid("unique_id") references PunishmentEntries.uniqueId
-    val userId = uuid("user_id") references OfflineUsers.uniqueId
+internal object Mutes : Table("mutes") {
+    val id = uuid("id") references Punishments.id
+    val userId = uuid("user_id") references OfflineUsers.id
 
-    override val primaryKey = PrimaryKey(uniqueId)
+    override val primaryKey = PrimaryKey(id)
 }
 
-internal object BanEntries : Table("ban_entry") {
-    val uniqueId = uuid("unique_id") references PunishmentEntries.uniqueId
+internal object Bans : Table("bans") {
+    val id = uuid("id") references Punishments.id
     val uuid = uuid("uuid")
 
-    override val primaryKey = PrimaryKey(uniqueId)
+    override val primaryKey = PrimaryKey(id)
 }
 
-internal object IpBanEntries : Table("ip_ban_entry") {
-    val uniqueId = uuid("unique_id") references PunishmentEntries.uniqueId
+internal object IpBans : Table("ip_bans") {
+    val id = uuid("id") references Punishments.id
     val ipAddress = varchar("ip_address", 15)
 
-    override val primaryKey = PrimaryKey(uniqueId)
+    override val primaryKey = PrimaryKey(id)
 }
 
-internal object IpBanCapturedUuids : Table("ip_ban_captured_uuid") {
-    val ipBanId = uuid("ip_ban_id") references IpBanEntries.uniqueId
+internal object IpBanUuids : Table("ip_ban_uuids") {
+    val ipBanId = uuid("ip_ban_id") references IpBans.id
     val uuid = uuid("uuid")
 
     override val primaryKey = PrimaryKey(ipBanId, uuid)
 }
 
-internal object Locations : Table("location") {
-    val uniqueId = uuid("unique_id").autoGenerate()
-    val worldName = varchar("world_name", 255)
+internal object Locations : Table("locations") {
+    val id = uuid("id").autoGenerate()
+    val world = varchar("world", 255)
     val x = double("x")
     val y = double("y")
     val z = double("z")
     val pitch = float("pitch")
     val yaw = float("yaw")
 
-    override val primaryKey = PrimaryKey(uniqueId)
+    override val primaryKey = PrimaryKey(id)
 }
 
-internal object WorldSpawns : Table("world_spawn") {
+internal object WorldSpawns : Table("world_spawns") {
     val name = varchar("name", 255)
-    val locationId = uuid("location_id") references Locations.uniqueId
+    val locationId = uuid("location_id") references Locations.id
 
     override val primaryKey = PrimaryKey(name)
 }
 
-internal object Warps : Table("warp") {
+internal object Warps : Table("warps") {
     val name = varchar("name", 255)
-    val locationId = uuid("location_id") references Locations.uniqueId
+    val locationId = uuid("location_id") references Locations.id
 
     override val primaryKey = PrimaryKey(name)
 }
 
-internal object Kits : Table("kit") {
-    val uniqueId = uuid("unique_id").autoGenerate()
+internal object Kits : Table("kits") {
+    val id = uuid("id").autoGenerate()
     val name = varchar("name", 255).uniqueIndex()
     val cost = decimal("cost", Int.MAX_VALUE, 10)
     val cooldown = long("cooldown")
 
-    override val primaryKey = PrimaryKey(uniqueId)
+    override val primaryKey = PrimaryKey(id)
 }
 
-internal object KitItemStacks : Table("kit_item_stack") {
-    val kitId = uuid("kit_id") references Kits.uniqueId
+internal object KitItems : Table("kit_items") {
+    val kitId = uuid("kit_id") references Kits.id
     val slot = integer("slot")
     val material = enumeration<Material>("material")
     val data = integer("data")
