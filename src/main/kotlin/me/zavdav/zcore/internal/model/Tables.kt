@@ -7,6 +7,7 @@ import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ReferenceOption.CASCADE
 import org.jetbrains.exposed.sql.Table
+import java.math.BigDecimal
 import java.util.UUID
 
 internal open class UUIDTable(name: String) : IdTable<UUID>(name) {
@@ -16,15 +17,15 @@ internal open class UUIDTable(name: String) : IdTable<UUID>(name) {
 
 internal object OfflineUsers : UUIDTable("offline_users") {
     val name = varchar("name", 16).uniqueIndex()
-    val nickname = varchar("nickname", 255).nullable()
+    val nickname = varchar("nickname", 255).nullable().default(null)
     val firstJoin = long("first_join")
     val lastJoin = long("last_join")
     val lastOnline = long("last_online")
     val account = reference("account", Accounts, CASCADE, CASCADE)
-    val invincible = bool("invincible")
-    val vanished = bool("vanished")
-    val chatEnabled = bool("chat_enabled")
-    val socialspy = bool("socialspy")
+    val invincible = bool("invincible").default(false)
+    val vanished = bool("vanished").default(false)
+    val chatEnabled = bool("chat_enabled").default(true)
+    val socialspy = bool("socialspy").default(false)
 }
 
 internal object Mail : UUIDTable("mail") {
@@ -42,8 +43,8 @@ internal object Ignores : Table("ignores") {
 
 internal object Accounts : UUIDTable("accounts") {
     val owner = reference("owner", OfflineUsers, CASCADE, CASCADE)
-    val balance = decimal("balance", Int.MAX_VALUE, 10)
-    val overdrawLimit = decimal("overdraw_limit", Int.MAX_VALUE, 10)
+    val balance = decimal("balance", Int.MAX_VALUE, 10).default(BigDecimal.ZERO)
+    val overdrawLimit = decimal("overdraw_limit", Int.MAX_VALUE, 10).default(BigDecimal.ZERO)
 }
 
 internal object BankAccounts : UUIDTable("bank_accounts") {
@@ -60,18 +61,17 @@ internal object BankAccountUsers : Table("bank_account_users") {
 
 internal object Statistics : UUIDTable("statistics") {
     override val id = reference("id", OfflineUsers, CASCADE, CASCADE)
-    val user = reference("user", OfflineUsers, CASCADE, CASCADE)
-    val playtime = long("playtime")
-    val blocksTraveled = decimal("blocks_traveled", Int.MAX_VALUE, 10)
-    val damageDealt = long("damage_dealt")
-    val damageTaken = long("damage_taken")
-    val deaths = long("deaths")
+    val playtime = long("playtime").default(0)
+    val blocksTraveled = decimal("blocks_traveled", Int.MAX_VALUE, 10).default(BigDecimal.ZERO)
+    val damageDealt = long("damage_dealt").default(0)
+    val damageTaken = long("damage_taken").default(0)
+    val deaths = long("deaths").default(0)
 }
 
 internal object BlocksPlaced : Table("blocks_placed") {
     val user = reference("user", Statistics, CASCADE, CASCADE)
     val material = enumeration<Material>("material")
-    val amount = long("amount")
+    val amount = long("amount").default(0)
 
     override val primaryKey = PrimaryKey(user, material)
 }
@@ -79,7 +79,7 @@ internal object BlocksPlaced : Table("blocks_placed") {
 internal object BlocksBroken : Table("blocks_broken") {
     val user = reference("user", Statistics, CASCADE, CASCADE)
     val material = enumeration<Material>("material")
-    val amount = long("amount")
+    val amount = long("amount").default(0)
 
     override val primaryKey = PrimaryKey(user, material)
 }
@@ -87,7 +87,7 @@ internal object BlocksBroken : Table("blocks_broken") {
 internal object ItemsDropped : Table("items_dropped") {
     val user = reference("user", Statistics, CASCADE, CASCADE)
     val material = enumeration<Material>("material")
-    val amount = long("amount")
+    val amount = long("amount").default(0)
 
     override val primaryKey = PrimaryKey(user, material)
 }
@@ -95,7 +95,7 @@ internal object ItemsDropped : Table("items_dropped") {
 internal object UsersKilled : Table("users_killed") {
     val user = reference("user", Statistics, CASCADE, CASCADE)
     val target = reference("target", OfflineUsers, CASCADE, CASCADE)
-    val amount = long("amount")
+    val amount = long("amount").default(0)
 
     override val primaryKey = PrimaryKey(user, target)
 }
@@ -103,7 +103,7 @@ internal object UsersKilled : Table("users_killed") {
 internal object MobsKilled : Table("mobs_killed") {
     val user = reference("user", Statistics, CASCADE, CASCADE)
     val creature = enumeration<CreatureType>("creature")
-    val amount = long("amount")
+    val amount = long("amount").default(0)
 
     override val primaryKey = PrimaryKey(user, creature)
 }
@@ -113,7 +113,7 @@ internal object Punishments : UUIDTable("punishments") {
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")
-    val active = bool("active")
+    val active = bool("active").default(true)
 }
 
 internal object Mutes : UUIDTable("mutes") {
@@ -155,8 +155,8 @@ internal object NamedLocations : UUIDTable("named_locations") {
 
 internal object Kits : UUIDTable("kits") {
     val name = varchar("name", 255).uniqueIndex()
-    val cost = decimal("cost", Int.MAX_VALUE, 10)
-    val cooldown = long("cooldown")
+    val cost = decimal("cost", Int.MAX_VALUE, 10).default(BigDecimal.ZERO)
+    val cooldown = long("cooldown").default(0)
 }
 
 internal object KitItems : Table("kit_items") {
