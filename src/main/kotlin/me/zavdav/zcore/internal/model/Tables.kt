@@ -2,162 +2,147 @@ package me.zavdav.zcore.internal.model
 
 import org.bukkit.Material
 import org.bukkit.entity.CreatureType
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.IdTable
+import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.ReferenceOption.CASCADE
 import org.jetbrains.exposed.sql.Table
+import java.util.UUID
 
-internal object OfflineUsers : Table("offline_users") {
-    val id = uuid("id")
+internal open class UUIDTable(name: String) : IdTable<UUID>(name) {
+    override val id: Column<EntityID<UUID>> = uuid("id").autoGenerate().entityId()
+    final override val primaryKey = PrimaryKey(id)
+}
+
+internal object OfflineUsers : UUIDTable("offline_users") {
     val name = varchar("name", 16).uniqueIndex()
     val nickname = varchar("nickname", 255).nullable()
     val firstJoin = long("first_join")
     val lastJoin = long("last_join")
     val lastOnline = long("last_online")
-    val accountId = uuid("account_id") references Accounts.id
+    val account = reference("account", Accounts, CASCADE, CASCADE)
     val invincible = bool("invincible")
     val vanished = bool("vanished")
+    val chatEnabled = bool("chat_enabled")
     val socialspy = bool("socialspy")
-
-    override val primaryKey = PrimaryKey(id)
 }
 
-internal object Homes : Table("homes") {
-    val userId = uuid("user_id") references OfflineUsers.id
-    val name = varchar("name", 255)
-    val locationId = uuid("location_id") references Locations.id
-
-    override val primaryKey = PrimaryKey(userId, name)
-}
-
-internal object Mail : Table("mail") {
-    val id = uuid("id").autoGenerate()
-    val sourceId = uuid("source_id") references OfflineUsers.id
-    val recipientId = uuid("recipient_id") references OfflineUsers.id
+internal object Mail : UUIDTable("mail") {
+    val sender = reference("sender", OfflineUsers, CASCADE, CASCADE)
+    val recipient = reference("recipient", OfflineUsers, CASCADE, CASCADE)
     val message = text("message")
-
-    override val primaryKey = PrimaryKey(id)
 }
 
 internal object Ignores : Table("ignores") {
-    val userId = uuid("user_id") references OfflineUsers.id
-    val targetId = uuid("target_id") references OfflineUsers.id
+    val user = reference("user", OfflineUsers, CASCADE, CASCADE)
+    val target = reference("target", OfflineUsers, CASCADE, CASCADE)
 
-    override val primaryKey = PrimaryKey(userId, targetId)
+    override val primaryKey = PrimaryKey(user, target)
 }
 
-internal object Accounts : Table("accounts") {
-    val id = uuid("id").autoGenerate()
-    val ownerId = uuid("owner_id") references OfflineUsers.id
+internal object Accounts : UUIDTable("accounts") {
+    val owner = reference("owner", OfflineUsers, CASCADE, CASCADE)
     val balance = decimal("balance", Int.MAX_VALUE, 10)
     val overdrawLimit = decimal("overdraw_limit", Int.MAX_VALUE, 10)
-
-    override val primaryKey = PrimaryKey(id)
 }
 
-internal object BankAccounts : Table("bank_accounts") {
-    val id = uuid("id") references Accounts.id
+internal object BankAccounts : UUIDTable("bank_accounts") {
+    override val id = reference("id", Accounts, CASCADE, CASCADE)
     val name = varchar("name", 255)
-
-    override val primaryKey = PrimaryKey(id)
 }
 
 internal object BankAccountUsers : Table("bank_account_users") {
-    val bankId = uuid("bank_id") references BankAccounts.id
-    val userId = uuid("user_id") references OfflineUsers.id
+    val bank = reference("bank", BankAccounts, CASCADE, CASCADE)
+    val user = reference("user", OfflineUsers, CASCADE, CASCADE)
 
-    override val primaryKey = PrimaryKey(bankId, userId)
+    override val primaryKey = PrimaryKey(bank, user)
 }
 
-internal object Statistics : Table("statistics") {
-    val userId = uuid("user_id") references OfflineUsers.id
+internal object Statistics : UUIDTable("statistics") {
+    override val id = reference("id", OfflineUsers, CASCADE, CASCADE)
+    val user = reference("user", OfflineUsers, CASCADE, CASCADE)
     val playtime = long("playtime")
     val blocksTraveled = decimal("blocks_traveled", Int.MAX_VALUE, 10)
     val damageDealt = long("damage_dealt")
     val damageTaken = long("damage_taken")
     val deaths = long("deaths")
-
-    override val primaryKey = PrimaryKey(userId)
 }
 
 internal object BlocksPlaced : Table("blocks_placed") {
-    val userId = uuid("user_id") references Statistics.userId
+    val user = reference("user", Statistics, CASCADE, CASCADE)
     val material = enumeration<Material>("material")
     val amount = long("amount")
 
-    override val primaryKey = PrimaryKey(userId, material)
+    override val primaryKey = PrimaryKey(user, material)
 }
 
 internal object BlocksBroken : Table("blocks_broken") {
-    val userId = uuid("user_id") references Statistics.userId
+    val user = reference("user", Statistics, CASCADE, CASCADE)
     val material = enumeration<Material>("material")
     val amount = long("amount")
 
-    override val primaryKey = PrimaryKey(userId, material)
+    override val primaryKey = PrimaryKey(user, material)
 }
 
 internal object ItemsDropped : Table("items_dropped") {
-    val userId = uuid("user_id") references Statistics.userId
+    val user = reference("user", Statistics, CASCADE, CASCADE)
     val material = enumeration<Material>("material")
     val amount = long("amount")
 
-    override val primaryKey = PrimaryKey(userId, material)
+    override val primaryKey = PrimaryKey(user, material)
 }
 
 internal object UsersKilled : Table("users_killed") {
-    val userId = uuid("user_id") references Statistics.userId
-    val targetId = uuid("target_id") references OfflineUsers.id
+    val user = reference("user", Statistics, CASCADE, CASCADE)
+    val target = reference("target", OfflineUsers, CASCADE, CASCADE)
     val amount = long("amount")
 
-    override val primaryKey = PrimaryKey(userId, targetId)
+    override val primaryKey = PrimaryKey(user, target)
 }
 
 internal object MobsKilled : Table("mobs_killed") {
-    val userId = uuid("user_id") references Statistics.userId
+    val user = reference("user", Statistics, CASCADE, CASCADE)
     val creature = enumeration<CreatureType>("creature")
     val amount = long("amount")
 
-    override val primaryKey = PrimaryKey(userId, creature)
+    override val primaryKey = PrimaryKey(user, creature)
 }
 
-internal object Punishments : Table("punishments") {
-    val id = uuid("id").autoGenerate()
-    val issuerId = uuid("issuer_id") references OfflineUsers.id
+internal object Punishments : UUIDTable("punishments") {
+    val issuer = reference("issuer", OfflineUsers, CASCADE, CASCADE)
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")
     val active = bool("active")
-
-    override val primaryKey = PrimaryKey(id)
 }
 
-internal object Mutes : Table("mutes") {
-    val id = uuid("id") references Punishments.id
-    val userId = uuid("user_id") references OfflineUsers.id
-
-    override val primaryKey = PrimaryKey(id)
+internal object Mutes : UUIDTable("mutes") {
+    override val id = reference("id", Punishments, CASCADE, CASCADE)
+    val user = reference("user", OfflineUsers, CASCADE, CASCADE)
 }
 
-internal object Bans : Table("bans") {
-    val id = uuid("id") references Punishments.id
+internal object Bans : UUIDTable("bans") {
+    override val id = reference("id", Punishments, CASCADE, CASCADE)
     val uuid = uuid("uuid")
-
-    override val primaryKey = PrimaryKey(id)
 }
 
-internal object IpBans : Table("ip_bans") {
-    val id = uuid("id") references Punishments.id
+internal object IpBans : UUIDTable("ip_bans") {
+    override val id = reference("id", Punishments, CASCADE, CASCADE)
     val ipAddress = varchar("ip_address", 15)
-
-    override val primaryKey = PrimaryKey(id)
 }
 
 internal object IpBanUuids : Table("ip_ban_uuids") {
-    val ipBanId = uuid("ip_ban_id") references IpBans.id
+    val ipBan = reference("ip_ban", IpBans, CASCADE, CASCADE)
     val uuid = uuid("uuid")
 
-    override val primaryKey = PrimaryKey(ipBanId, uuid)
+    override val primaryKey = PrimaryKey(ipBan, uuid)
 }
 
-internal object Locations : Table("locations") {
-    val id = uuid("id").autoGenerate()
+internal enum class LocationType { SPAWNPOINT, WARP, HOME }
+
+internal object NamedLocations : UUIDTable("named_locations") {
+    val name = varchar("name", 255)
+    val type = enumeration<LocationType>("type")
     val world = varchar("world", 255)
     val x = double("x")
     val y = double("y")
@@ -165,38 +150,21 @@ internal object Locations : Table("locations") {
     val pitch = float("pitch")
     val yaw = float("yaw")
 
-    override val primaryKey = PrimaryKey(id)
+    init { uniqueIndex(name, type) }
 }
 
-internal object WorldSpawns : Table("world_spawns") {
-    val name = varchar("name", 255)
-    val locationId = uuid("location_id") references Locations.id
-
-    override val primaryKey = PrimaryKey(name)
-}
-
-internal object Warps : Table("warps") {
-    val name = varchar("name", 255)
-    val locationId = uuid("location_id") references Locations.id
-
-    override val primaryKey = PrimaryKey(name)
-}
-
-internal object Kits : Table("kits") {
-    val id = uuid("id").autoGenerate()
+internal object Kits : UUIDTable("kits") {
     val name = varchar("name", 255).uniqueIndex()
     val cost = decimal("cost", Int.MAX_VALUE, 10)
     val cooldown = long("cooldown")
-
-    override val primaryKey = PrimaryKey(id)
 }
 
 internal object KitItems : Table("kit_items") {
-    val kitId = uuid("kit_id") references Kits.id
+    val kit = reference("kit", Kits, CASCADE, CASCADE)
     val slot = integer("slot")
     val material = enumeration<Material>("material")
     val data = integer("data")
     val amount = integer("amount")
 
-    override val primaryKey = PrimaryKey(kitId, slot)
+    override val primaryKey = PrimaryKey(kit, slot)
 }
