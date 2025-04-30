@@ -2,11 +2,11 @@ package me.zavdav.zcore.internal.model
 
 import org.bukkit.Material
 import org.bukkit.entity.CreatureType
+import org.jetbrains.exposed.dao.id.CompositeIdTable
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ReferenceOption.CASCADE
-import org.jetbrains.exposed.sql.Table
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -21,6 +21,7 @@ internal object OfflineUsers : UUIDTable("offline_users") {
     val firstJoin = long("first_join")
     val lastJoin = long("last_join")
     val lastOnline = long("last_online")
+    val statistics = reference("statistics", Statistics, CASCADE, CASCADE)
     val account = reference("account", Accounts, CASCADE, CASCADE)
     val invincible = bool("invincible").default(false)
     val vanished = bool("vanished").default(false)
@@ -28,13 +29,13 @@ internal object OfflineUsers : UUIDTable("offline_users") {
     val socialspy = bool("socialspy").default(false)
 }
 
-internal object Mail : UUIDTable("mail") {
+internal object Mails : UUIDTable("mail") {
     val sender = reference("sender", OfflineUsers, CASCADE, CASCADE)
     val recipient = reference("recipient", OfflineUsers, CASCADE, CASCADE)
     val message = text("message")
 }
 
-internal object Ignores : Table("ignores") {
+internal object Ignores : CompositeIdTable("ignores") {
     val user = reference("user", OfflineUsers, CASCADE, CASCADE)
     val target = reference("target", OfflineUsers, CASCADE, CASCADE)
 
@@ -52,7 +53,7 @@ internal object BankAccounts : UUIDTable("bank_accounts") {
     val name = varchar("name", 255)
 }
 
-internal object BankAccountUsers : Table("bank_account_users") {
+internal object BankAccountUsers : CompositeIdTable("bank_account_users") {
     val bank = reference("bank", BankAccounts, CASCADE, CASCADE)
     val user = reference("user", OfflineUsers, CASCADE, CASCADE)
 
@@ -68,7 +69,7 @@ internal object Statistics : UUIDTable("statistics") {
     val deaths = long("deaths").default(0)
 }
 
-internal object BlocksPlaced : Table("blocks_placed") {
+internal object BlocksPlaced : CompositeIdTable("blocks_placed") {
     val user = reference("user", Statistics, CASCADE, CASCADE)
     val material = enumeration<Material>("material")
     val amount = long("amount").default(0)
@@ -76,7 +77,7 @@ internal object BlocksPlaced : Table("blocks_placed") {
     override val primaryKey = PrimaryKey(user, material)
 }
 
-internal object BlocksBroken : Table("blocks_broken") {
+internal object BlocksBroken : CompositeIdTable("blocks_broken") {
     val user = reference("user", Statistics, CASCADE, CASCADE)
     val material = enumeration<Material>("material")
     val amount = long("amount").default(0)
@@ -84,7 +85,7 @@ internal object BlocksBroken : Table("blocks_broken") {
     override val primaryKey = PrimaryKey(user, material)
 }
 
-internal object ItemsDropped : Table("items_dropped") {
+internal object ItemsDropped : CompositeIdTable("items_dropped") {
     val user = reference("user", Statistics, CASCADE, CASCADE)
     val material = enumeration<Material>("material")
     val amount = long("amount").default(0)
@@ -92,7 +93,7 @@ internal object ItemsDropped : Table("items_dropped") {
     override val primaryKey = PrimaryKey(user, material)
 }
 
-internal object UsersKilled : Table("users_killed") {
+internal object UsersKilled : CompositeIdTable("users_killed") {
     val user = reference("user", Statistics, CASCADE, CASCADE)
     val target = reference("target", OfflineUsers, CASCADE, CASCADE)
     val amount = long("amount").default(0)
@@ -100,7 +101,7 @@ internal object UsersKilled : Table("users_killed") {
     override val primaryKey = PrimaryKey(user, target)
 }
 
-internal object MobsKilled : Table("mobs_killed") {
+internal object MobsKilled : CompositeIdTable("mobs_killed") {
     val user = reference("user", Statistics, CASCADE, CASCADE)
     val creature = enumeration<CreatureType>("creature")
     val amount = long("amount").default(0)
@@ -131,26 +132,37 @@ internal object IpBans : UUIDTable("ip_bans") {
     val ipAddress = varchar("ip_address", 15)
 }
 
-internal object IpBanUuids : Table("ip_ban_uuids") {
+internal object IpBanUuids : CompositeIdTable("ip_ban_uuids") {
     val ipBan = reference("ip_ban", IpBans, CASCADE, CASCADE)
     val uuid = uuid("uuid")
 
     override val primaryKey = PrimaryKey(ipBan, uuid)
 }
 
-internal enum class LocationType { SPAWNPOINT, WARP, HOME }
-
-internal object NamedLocations : UUIDTable("named_locations") {
-    val name = varchar("name", 255)
-    val type = enumeration<LocationType>("type")
+internal object Locations : UUIDTable("locations") {
     val world = varchar("world", 255)
     val x = double("x")
     val y = double("y")
     val z = double("z")
     val pitch = float("pitch")
     val yaw = float("yaw")
+}
 
-    init { uniqueIndex(name, type) }
+internal object WorldSpawns : UUIDTable("world_spawns") {
+    override val id = reference("id", Locations, CASCADE, CASCADE)
+}
+
+internal object Warps : UUIDTable("warps") {
+    override val id = reference("id", Locations, CASCADE, CASCADE)
+    val name = varchar("name", 255).uniqueIndex()
+}
+
+internal object Homes : UUIDTable("homes") {
+    override val id = reference("id", Locations, CASCADE, CASCADE)
+    val user = reference("user", OfflineUsers, CASCADE, CASCADE)
+    val name = varchar("name", 255)
+
+    init { uniqueIndex(user, name) }
 }
 
 internal object Kits : UUIDTable("kits") {
@@ -159,7 +171,7 @@ internal object Kits : UUIDTable("kits") {
     val cooldown = long("cooldown").default(0)
 }
 
-internal object KitItems : Table("kit_items") {
+internal object KitItems : CompositeIdTable("kit_items") {
     val kit = reference("kit", Kits, CASCADE, CASCADE)
     val slot = integer("slot")
     val material = enumeration<Material>("material")
