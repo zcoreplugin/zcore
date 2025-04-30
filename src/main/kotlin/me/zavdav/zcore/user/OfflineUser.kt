@@ -4,10 +4,13 @@ import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.UserAccount
 import me.zavdav.zcore.event.UsernameChangeEvent
 import me.zavdav.zcore.internal.util.addIfAbsent
+import me.zavdav.zcore.internal.util.enumMap
 import me.zavdav.zcore.location.NamedLocation
-import me.zavdav.zcore.statistic.UserStatistics
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.entity.CreatureType
+import java.math.BigDecimal
 import java.util.UUID
 
 /** Represents an offline user that has played on the server before. */
@@ -25,6 +28,11 @@ sealed class OfflineUser(uuid: UUID, name: String) {
     private val _homes = mutableMapOf<String, NamedLocation>()
     private val _mail = mutableListOf<Pair<OfflineUser, String>>()
     private val _ignoredUsers = mutableListOf<OfflineUser>()
+    internal val _blocksPlaced = enumMap<Material, Long>()
+    internal val _blocksBroken = enumMap<Material, Long>()
+    internal val _itemsDropped = enumMap<Material, Long>()
+    internal val _userKills = mutableMapOf<OfflineUser, Long>()
+    internal val _mobKills = enumMap<CreatureType, Long>()
 
     /** The user's UUID. */
     val uuid: UUID = uuid
@@ -47,9 +55,6 @@ sealed class OfflineUser(uuid: UUID, name: String) {
     var lastOnline: Long = 0
         internal set
 
-    /** The user's statistics. */
-    val statistics = UserStatistics(this)
-
     /** The user's economy account where their balance is stored. */
     val account = UserAccount(this)
 
@@ -66,16 +71,71 @@ sealed class OfflineUser(uuid: UUID, name: String) {
     val ignoredUsers: List<OfflineUser> get() = _ignoredUsers
 
     /** Determines if the user is invincible. */
-    var isInvincible = false
+    var invincible = false
 
     /** Determines if the user is vanished. */
-    var isVanished = false
+    var vanished = false
 
     /** Determines if the user can see chat messages. */
-    var isChatEnabled = true
+    var chatEnabled = true
 
     /** Determines if the user can see social interactions by others. */
-    var isSocialSpyEnabled = false
+    var socialspy = false
+
+    /** The user's playtime in milliseconds. */
+    var playtime: Long = 0
+        internal set
+
+    /** A map of how many times the user has placed a type of block. */
+    val blocksPlaced: Map<Material, Long> get() = _blocksPlaced
+
+    /** The total amount of blocks the user has placed. */
+    val totalBlocksPlaced: Long
+        get() = _blocksPlaced.values.sum()
+
+    /** A map of how many times the user has broken a type of block. */
+    val blocksBroken: Map<Material, Long> get() = _blocksBroken
+
+    /** The total amount of blocks the user has broken. */
+    val totalBlocksBroken: Long
+        get() = _blocksBroken.values.sum()
+
+    /** A map of how many times the user has dropped a type of item. */
+    val itemsDropped: Map<Material, Long> get() = _itemsDropped
+
+    /** The total amount of items the user has dropped. */
+    val totalItemsDropped: Long
+        get() = _itemsDropped.values.sum()
+
+    /** The total amount of blocks the user has traveled. */
+    var blocksTraveled: BigDecimal = BigDecimal.ZERO
+        internal set
+
+    /** The total amount of damage the user has dealt to entities. */
+    var damageDealt: Long = 0
+        internal set
+
+    /** The total amount of damage the user has taken. */
+    var damageTaken: Long = 0
+        internal set
+
+    /** A map of how many times the user has killed another user. */
+    val userKills: Map<OfflineUser, Long> get() = _userKills
+
+    /** The total amount of times the user has killed other users. */
+    val totalUserKills: Long
+        get() = _userKills.values.sum()
+
+    /** A map of how many times the user has killed a type of mob. */
+    val mobKills: Map<CreatureType, Long> get() = _mobKills
+
+    /** The total amount of mobs the user has killed. */
+    val totalMobKills: Long
+        get() = _mobKills.values.sum()
+
+    /** The total amount of times the user has perished. */
+    var deaths: Long = 0
+        internal set
 
     /** Gets the location of a home by its [name], or `null` if no home with this name exists. */
     fun getHome(name: String): NamedLocation? = _homes[name.lowercase()]
