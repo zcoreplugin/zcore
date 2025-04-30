@@ -1,4 +1,4 @@
-package me.zavdav.zcore.internal.util
+package me.zavdav.zcore.util
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.ArgumentType
@@ -7,7 +7,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
-import me.zavdav.zcore.user.User
+import me.zavdav.zcore.data.user.User
 
 internal val commandDispatcher = CommandDispatcher<User>()
 

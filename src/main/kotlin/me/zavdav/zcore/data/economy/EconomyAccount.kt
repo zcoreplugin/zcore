@@ -1,8 +1,8 @@
-package me.zavdav.zcore.economy
+package me.zavdav.zcore.data.economy
 
 import me.zavdav.zcore.ZCore.Api.SYSTEM_USER
 import me.zavdav.zcore.event.EconomyTransactionEvent
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.data.user.OfflineUser
 import org.bukkit.Bukkit
 import java.math.BigDecimal
 import java.math.RoundingMode

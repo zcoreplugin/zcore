@@ -1,6 +1,6 @@
-package me.zavdav.zcore.economy
+package me.zavdav.zcore.data.economy
 
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.data.user.OfflineUser
 import java.math.BigDecimal
 
 /** Represents a user's personal economy account. */

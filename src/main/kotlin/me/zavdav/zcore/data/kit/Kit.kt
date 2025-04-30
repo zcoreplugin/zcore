@@ -1,4 +1,4 @@
-package me.zavdav.zcore.kit
+package me.zavdav.zcore.data.kit
 
 import org.bukkit.inventory.ItemStack
 import java.math.BigDecimal

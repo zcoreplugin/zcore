@@ -1,6 +1,6 @@
 package me.zavdav.zcore.event
 
-import me.zavdav.zcore.user.User
+import me.zavdav.zcore.data.user.User
 import org.bukkit.event.Event
 
 /** Called when a user joins the server with a new username. */

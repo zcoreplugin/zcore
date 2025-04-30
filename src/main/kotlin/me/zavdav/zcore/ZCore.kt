@@ -1,15 +1,15 @@
 package me.zavdav.zcore
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
-import me.zavdav.zcore.economy.BankAccount
-import me.zavdav.zcore.internal.util.commandDispatcher
-import me.zavdav.zcore.kit.Kit
-import me.zavdav.zcore.location.NamedLocation
-import me.zavdav.zcore.punishment.BanList
-import me.zavdav.zcore.punishment.IpBanList
-import me.zavdav.zcore.punishment.MuteList
-import me.zavdav.zcore.user.OfflineUser
-import me.zavdav.zcore.user.User
+import me.zavdav.zcore.data.economy.BankAccount
+import me.zavdav.zcore.util.commandDispatcher
+import me.zavdav.zcore.data.kit.Kit
+import me.zavdav.zcore.data.location.NamedLocation
+import me.zavdav.zcore.data.punishment.BanList
+import me.zavdav.zcore.data.punishment.IpBanList
+import me.zavdav.zcore.data.punishment.MuteList
+import me.zavdav.zcore.data.user.OfflineUser
+import me.zavdav.zcore.data.user.User
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.command.Command

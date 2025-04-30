@@ -1,11 +1,11 @@
-package me.zavdav.zcore.user
+package me.zavdav.zcore.data.user
 
-import me.zavdav.zcore.economy.BankAccount
-import me.zavdav.zcore.economy.UserAccount
+import me.zavdav.zcore.data.economy.BankAccount
+import me.zavdav.zcore.data.economy.UserAccount
 import me.zavdav.zcore.event.UsernameChangeEvent
-import me.zavdav.zcore.internal.util.addIfAbsent
-import me.zavdav.zcore.internal.util.enumMap
-import me.zavdav.zcore.location.NamedLocation
+import me.zavdav.zcore.util.addIfAbsent
+import me.zavdav.zcore.util.enumMap
+import me.zavdav.zcore.data.location.NamedLocation
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material

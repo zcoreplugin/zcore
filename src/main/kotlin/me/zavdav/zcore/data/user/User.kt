@@ -1,4 +1,4 @@
-package me.zavdav.zcore.user
+package me.zavdav.zcore.data.user
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

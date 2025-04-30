@@ -1,4 +1,4 @@
-package me.zavdav.zcore.punishment
+package me.zavdav.zcore.data.punishment
 
 /** Represents a list of punishment entries with targets of type [T]. */
 sealed class PunishmentList<E : PunishmentEntry<T>, T> {

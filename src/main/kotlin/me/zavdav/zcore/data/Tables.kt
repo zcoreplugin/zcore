@@ -1,4 +1,4 @@
-package me.zavdav.zcore.internal.model
+package me.zavdav.zcore.data
 
 import org.bukkit.Material
 import org.bukkit.entity.CreatureType

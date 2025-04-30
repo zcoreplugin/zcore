@@ -1,10 +1,10 @@
-package me.zavdav.zcore.internal.util
+package me.zavdav.zcore.util
 
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.user.OfflineUser
-import me.zavdav.zcore.user.User
+import me.zavdav.zcore.data.user.OfflineUser
+import me.zavdav.zcore.data.user.User
 import java.math.BigDecimal
 import java.util.regex.Pattern
 

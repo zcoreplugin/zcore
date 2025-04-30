@@ -1,6 +1,6 @@
-package me.zavdav.zcore.punishment
+package me.zavdav.zcore.data.punishment
 
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.data.user.OfflineUser
 import java.net.Inet4Address
 import java.util.UUID
 
