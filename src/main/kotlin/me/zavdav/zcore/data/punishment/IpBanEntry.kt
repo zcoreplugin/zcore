@@ -1,20 +1,29 @@
 package me.zavdav.zcore.data.punishment
 
-import me.zavdav.zcore.data.user.OfflineUser
-import java.net.Inet4Address
+import me.zavdav.zcore.data.IpBanUuids
+import me.zavdav.zcore.data.IpBans
+import org.jetbrains.exposed.dao.CompositeEntity
+import org.jetbrains.exposed.dao.CompositeEntityClass
+import org.jetbrains.exposed.dao.UUIDEntityClass
+import org.jetbrains.exposed.dao.id.CompositeID
+import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID
 
-/** Represents an IP ban entry with an IPv4 address as the target. */
-class IpBanEntry(
-    override val target: Inet4Address,
-    override var issuer: OfflineUser,
-    override var duration: Long?,
-    override var reason: String
-) : PunishmentEntry<Inet4Address>() {
+/** Represents a ban targeting an IP address. */
+class IpBanEntry(id: EntityID<UUID>) : PunishmentEntry<String>(id) {
+    companion object : UUIDEntityClass<IpBanEntry>(IpBans)
 
-    internal val _capturedUuids = mutableListOf<UUID>()
+    override var target: String by IpBans.target
+        internal set
 
-    /** A list of UUIDs of users that tried to join with the IP address. */
-    val capturedUuids: List<UUID> get() = _capturedUuids
+    /** The UUIDs of users that tried to join with this IP address. */
+    val capturedUuids by CapturedUuid via IpBanUuids
+
+    class CapturedUuid(id: EntityID<CompositeID>) : CompositeEntity(id) {
+        companion object : CompositeEntityClass<CapturedUuid>(IpBanUuids)
+
+        val value: UUID by IpBanUuids.uuid
+
+    }
 
 }

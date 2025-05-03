@@ -1,32 +1,36 @@
 package me.zavdav.zcore.data.economy
 
 import me.zavdav.zcore.ZCore.Api.SYSTEM_USER
+import me.zavdav.zcore.data.Accounts
 import me.zavdav.zcore.event.EconomyTransactionEvent
 import me.zavdav.zcore.data.user.OfflineUser
 import org.bukkit.Bukkit
+import org.jetbrains.exposed.dao.UUIDEntity
+import org.jetbrains.exposed.dao.UUIDEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.UUID
 
-/** Represents an economy account that is owned by a user. */
-sealed class EconomyAccount(
-    owner: OfflineUser,
-    balance: BigDecimal = BigDecimal.ZERO,
-    overdrawLimit: BigDecimal = BigDecimal.ZERO
-) {
+/** Represents an account that is owned by a user. */
+sealed class EconomyAccount(id: EntityID<UUID>) : UUIDEntity(id) {
+    companion object : UUIDEntityClass<EconomyAccount>(Accounts)
 
-    /** The account's owner. */
-    open var owner: OfflineUser = owner
+    /** The owner of this account. */
+    open var owner by OfflineUser referencedOn Accounts.owner
 
-    /** The account's current balance. */
-    var balance: BigDecimal = balance
+    private var _balance: BigDecimal by Accounts.balance
+
+    /** This account's current balance. */
+    var balance: BigDecimal get() = _balance
         set(value) {
             if (value < -overdrawLimit) return
             // Set to 10 decimal places
-            field = value.setScale(10, RoundingMode.FLOOR)
+            _balance = value.setScale(10, RoundingMode.FLOOR)
         }
 
-    /** Determines how far the account can be overdrawn. */
-    var overdrawLimit: BigDecimal = overdrawLimit
+    /** Determines how far this account can be overdrawn. */
+    var overdrawLimit: BigDecimal by Accounts.overdrawLimit
 
     /** Adds an [amount] to the current balance. */
     fun add(amount: BigDecimal) {
@@ -38,7 +42,8 @@ sealed class EconomyAccount(
 
     /**
      * Tries to subtract an [amount] from the current balance.
-     * Returns `false` if the [overdrawLimit] would be exceeded by doing so.
+     * Returns `true` on success, `false` if the [overdrawLimit]
+     * would be exceeded by doing so.
      */
     fun subtract(amount: BigDecimal): Boolean {
         if (amount < BigDecimal.ZERO) {
@@ -76,8 +81,9 @@ sealed class EconomyAccount(
     }
 
     /**
-     * Tries to transfer an [amount] from the account to another [account].
-     * Returns `false` if the [overdrawLimit] would be exceeded by doing so.
+     * Tries to transfer an [amount] from this account to another [account].
+     * Returns `true` on success, `false` if the [overdrawLimit] would be
+     * exceeded by doing so.
      */
     open fun transfer(amount: BigDecimal, account: EconomyAccount): Boolean {
         if (amount < BigDecimal.ZERO) {
@@ -92,7 +98,7 @@ sealed class EconomyAccount(
     }
 
     /**
-     * Returns `true` if the [amount] could be subtracted from
+     * Returns `true` if an [amount] could be subtracted from
      * the current balance without exceeding the [overdrawLimit].
      */
     fun hasEnough(amount: BigDecimal): Boolean {
@@ -102,10 +108,10 @@ sealed class EconomyAccount(
         return balance - amount < -overdrawLimit
     }
 
-    /** Returns `true` if the current balance is above the [amount]. */
+    /** Returns `true` if the current balance is above an [amount]. */
     fun hasOver(amount: BigDecimal) = balance > amount
 
-    /** Returns `true` if the current balance is below the [amount]. */
+    /** Returns `true` if the current balance is below an [amount]. */
     fun hasUnder(amount: BigDecimal) = balance < amount
 
 }

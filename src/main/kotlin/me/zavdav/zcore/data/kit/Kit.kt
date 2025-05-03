@@ -1,21 +1,30 @@
 package me.zavdav.zcore.data.kit
 
-import org.bukkit.inventory.ItemStack
+import me.zavdav.zcore.data.KitItems
+import me.zavdav.zcore.data.Kits
+import org.jetbrains.exposed.dao.UUIDEntity
+import org.jetbrains.exposed.dao.UUIDEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 import java.math.BigDecimal
+import java.util.UUID
 
 /** Represents a kit that users can equip. */
-data class Kit (
+class Kit(id: EntityID<UUID>) : UUIDEntity(id) {
+    companion object : UUIDEntityClass<Kit>(Kits)
 
-    /** The name of the kit. */
-    val name: String,
+    /** The name of this kit. */
+    var name: String by Kits.name
+        internal set
 
-    /** A map of inventory indexes together with the respective item stacks. */
-    val items: Map<Int, ItemStack>,
+    /** The items of this kit. */
+    val items by KitItem referrersOn KitItems.kit
 
-    /** The cost to equip the kit. */
-    val cost: BigDecimal,
+    /** The cost to equip this kit. */
+    var cost: BigDecimal by Kits.cost
+        internal set
 
-    /** The cooldown in milliseconds between equipping the kit. */
-    val cooldown: Long
+    /** The cooldown in milliseconds between equipping this kit. */
+    var cooldown: Long by Kits.cooldown
+        internal set
 
-)
+}

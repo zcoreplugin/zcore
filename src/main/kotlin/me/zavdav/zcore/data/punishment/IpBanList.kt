@@ -1,35 +1,49 @@
 package me.zavdav.zcore.data.punishment
 
+import me.zavdav.zcore.data.IpBans
+import me.zavdav.zcore.data.Punishments
 import me.zavdav.zcore.data.user.OfflineUser
+import org.jetbrains.exposed.sql.and
 import java.net.Inet4Address
 
-/** Represents a list of banned IPv4 addresses. */
-class IpBanList : PunishmentList<IpBanEntry, Inet4Address>() {
+/** Represents a record of all issued IP bans. */
+object IpBanList : PunishmentList<IpBanEntry, String>() {
 
-    /**
-     * Adds a new entry with a [target] IP address to the list.
-     * Returns the [IpBanEntry] that was created from the arguments.
-     */
+    override val entries: Iterable<IpBanEntry> get() = IpBanEntry.all()
+
+    /** Bans a [target] IP address and returns the [IpBanEntry] that was created from the arguments. */
+    @JvmStatic
     fun addIpBan(target: Inet4Address, issuer: OfflineUser, duration: Long?, reason: String): IpBanEntry {
         getActiveIpBan(target)?.active = false
-        val entry = IpBanEntry(target, issuer, duration, reason)
-        _entries.add(entry)
-        return entry
+        return IpBanEntry.new {
+            this.target = target.hostAddress
+            this.issuer = issuer
+            this.timeIssued = System.currentTimeMillis()
+            this.duration = duration
+            this.reason = reason
+        }
     }
 
-    /** Removes the [target] IP address's most recent ban from the list. */
-    fun removeIpBan(target: Inet4Address) = remove(target)
-
     /**
-     * Pardons the [target] IP address's most recent ban.
-     * Returns `false` if the IP is not banned.
+     * Pardons a [target] IP address's most recent ban.
+     * Returns `true` on success, `false` if this IP address is not banned.
      */
-    fun pardonIpBan(target: Inet4Address): Boolean = pardon(target)
+    @JvmStatic
+    fun pardonIpBan(target: Inet4Address): Boolean {
+        val entry = getLastIpBan(target) ?: return false
+        if (!entry.active) return false
+        entry.active = false
+        return true
+    }
 
-    /** Gets the [target] IP address's active ban, or `null` if the IP is not banned. */
-    fun getActiveIpBan(target: Inet4Address): IpBanEntry? = getActive(target)
+    /** Gets a [target] IP address's active ban, or `null` if this IP address is not banned. */
+    @JvmStatic
+    fun getActiveIpBan(target: Inet4Address): IpBanEntry? =
+        IpBanEntry.find { Punishments.active and (IpBans.target eq target.hostAddress) }.lastOrNull()
 
-    /** Gets the [target] IP address's most recent ban, or `null` if the IP has never been banned. */
-    fun getLastIpBan(target: Inet4Address): IpBanEntry? = getLast(target)
+    /** Gets a [target] IP address's most recent ban, or `null` if this IP address has never been banned. */
+    @JvmStatic
+    fun getLastIpBan(target: Inet4Address): IpBanEntry? =
+        IpBanEntry.find { IpBans.target eq target.hostAddress }.lastOrNull()
 
 }

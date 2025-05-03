@@ -1,11 +1,11 @@
 package me.zavdav.zcore.data.economy
 
-import me.zavdav.zcore.data.user.OfflineUser
-import java.math.BigDecimal
+import me.zavdav.zcore.data.Accounts
+import org.jetbrains.exposed.dao.UUIDEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
+import java.util.UUID
 
-/** Represents a user's personal economy account. */
-class UserAccount(
-    owner: OfflineUser,
-    balance: BigDecimal = BigDecimal.ZERO,
-    overdrawLimit: BigDecimal = BigDecimal.ZERO
-) : EconomyAccount(owner, balance, overdrawLimit)
+/** Represents a user's personal account. */
+class UserAccount(id: EntityID<UUID>) : EconomyAccount(id) {
+    companion object : UUIDEntityClass<UserAccount>(Accounts)
+}

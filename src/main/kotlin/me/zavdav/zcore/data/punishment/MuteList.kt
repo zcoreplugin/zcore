@@ -1,34 +1,48 @@
 package me.zavdav.zcore.data.punishment
 
+import me.zavdav.zcore.data.Mutes
+import me.zavdav.zcore.data.Punishments
 import me.zavdav.zcore.data.user.OfflineUser
+import org.jetbrains.exposed.sql.and
 
-/** Represents a list of muted users. */
-class MuteList : PunishmentList<MuteEntry, OfflineUser>() {
+/** Represents a record of all issued mutes. */
+object MuteList : PunishmentList<MuteEntry, OfflineUser>() {
 
-    /**
-     * Adds a new entry with a [target] user to the list.
-     * Returns the [MuteEntry] that was created from the arguments.
-     */
+    override val entries: Iterable<MuteEntry> get() = MuteEntry.all()
+
+    /** Mutes a [target] user and returns the [MuteEntry] that was created from the arguments. */
+    @JvmStatic
     fun addMute(target: OfflineUser, issuer: OfflineUser, duration: Long?, reason: String): MuteEntry {
         getActiveMute(target)?.active = false
-        val entry = MuteEntry(target, issuer, duration, reason)
-        _entries.add(entry)
-        return entry
+        return MuteEntry.new {
+            this.target = target
+            this.issuer = issuer
+            this.timeIssued = System.currentTimeMillis()
+            this.duration = duration
+            this.reason = reason
+        }
     }
 
-    /** Removes the [target] user's most recent mute from the list. */
-    fun removeMute(target: OfflineUser) = remove(target)
-
     /**
-     * Pardons the [target] user's most recent mute.
-     * Returns `false` if the user is not muted.
+     * Pardons a [target] user's most recent mute.
+     * Returns `true` on success, `false` if this user is not muted.
      */
-    fun pardonMute(target: OfflineUser): Boolean = pardon(target)
+    @JvmStatic
+    fun pardonMute(target: OfflineUser): Boolean {
+        val entry = getLastMute(target) ?: return false
+        if (!entry.active) return false
+        entry.active = false
+        return true
+    }
 
-    /** Gets the [target] user's active mute, or `null` if the user is not muted. */
-    fun getActiveMute(target: OfflineUser): MuteEntry? = getActive(target)
+    /** Gets a [target] user's active mute, or `null` if this user is not muted. */
+    @JvmStatic
+    fun getActiveMute(target: OfflineUser): MuteEntry? =
+        MuteEntry.find { Punishments.active and (Mutes.target eq target.uuid) }.lastOrNull()
 
-    /** Gets the [target] user's most recent mute, or `null` if the user has never been muted. */
-    fun getLastMute(target: OfflineUser): MuteEntry? = getLast(target)
+    /** Gets a [target] user's most recent mute, or `null` if this user has never been muted. */
+    @JvmStatic
+    fun getLastMute(target: OfflineUser): MuteEntry? =
+        MuteEntry.find { Mutes.target eq target.uuid }.lastOrNull()
 
 }

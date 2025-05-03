@@ -1,11 +1,16 @@
 package me.zavdav.zcore.data.punishment
 
+import me.zavdav.zcore.data.Mutes
 import me.zavdav.zcore.data.user.OfflineUser
+import org.jetbrains.exposed.dao.UUIDEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
+import java.util.UUID
 
-/** Represents a mute entry with a user as the target. */
-class MuteEntry(
-    override val target: OfflineUser,
-    override var issuer: OfflineUser,
-    override var duration: Long?,
-    override var reason: String
-) : PunishmentEntry<OfflineUser>()
+/** Represents a mute targeting a user. */
+class MuteEntry(id: EntityID<UUID>) : PunishmentEntry<OfflineUser>(id) {
+    companion object : UUIDEntityClass<MuteEntry>(Mutes)
+
+    override var target by OfflineUser referencedOn Mutes.target
+        internal set
+
+}

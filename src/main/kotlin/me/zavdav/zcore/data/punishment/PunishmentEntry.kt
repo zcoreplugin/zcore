@@ -1,33 +1,40 @@
 package me.zavdav.zcore.data.punishment
 
+import me.zavdav.zcore.data.Punishments
 import me.zavdav.zcore.data.user.OfflineUser
+import org.jetbrains.exposed.dao.UUIDEntity
+import org.jetbrains.exposed.dao.UUIDEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
+import java.util.UUID
 
-/** Represents an entry of a punishment list with a target [T]. */
-sealed class PunishmentEntry<T> {
+/** Represents a punishment with a target [T]. */
+sealed class PunishmentEntry<T>(id: EntityID<UUID>) : UUIDEntity(id) {
+    companion object : UUIDEntityClass<PunishmentEntry<*>>(Punishments)
 
-    /** The target of the punishment. */
+    /** The target of this punishment. */
     abstract val target: T
 
-    /** The user that issued the punishment. */
-    abstract var issuer: OfflineUser
+    /** The user that issued this punishment. */
+    var issuer by OfflineUser referencedOn Punishments.issuer
 
-    /** The epoch millisecond of when the punishment was issued. */
-    val timeIssued: Long = System.currentTimeMillis()
+    /** The timestamp of when this punishment was issued. */
+    var timeIssued: Long by Punishments.timeIssued
+        internal set
 
-    /** The duration of the punishment in milliseconds, or `null` if the punishment is permanent. */
-    abstract var duration: Long?
+    /** The duration of this punishment in milliseconds, or `null` if this punishment is permanent. */
+    var duration: Long? by Punishments.duration
 
-    /** The epoch millisecond of when the punishment expires, or `null` if the punishment is permanent. */
+    /** The timestamp of when this punishment expires, or `null` if this punishment is permanent. */
     var expiration: Long?
         get() = duration?.let { timeIssued + it }
         set(value) {
             duration = if (value != null) value - timeIssued else null
         }
 
-    /** The reason for the punishment. */
-    abstract var reason: String
+    /** The reason for this punishment. */
+    var reason: String by Punishments.reason
 
-    /** Determines if the punishment is active. */
-    var active = true
+    /** Determines if this punishment is active. */
+    var active: Boolean by Punishments.active
 
 }

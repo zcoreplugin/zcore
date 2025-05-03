@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "me.zavdav.zcore"
-version = "0.4.2"
+version = "0.5.0"
 
 repositories {
     mavenCentral()
@@ -23,6 +23,7 @@ dependencies {
     implementation("com.mojang:brigadier:1.0.18")
     implementation("org.jetbrains.exposed:exposed-core:0.61.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
 }
 
 kotlin {

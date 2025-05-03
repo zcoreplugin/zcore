@@ -1,21 +1,24 @@
 package me.zavdav.zcore
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
+import me.zavdav.zcore.data.BankAccounts
+import me.zavdav.zcore.data.Kits
+import me.zavdav.zcore.data.Locations
+import me.zavdav.zcore.data.OfflineUsers
+import me.zavdav.zcore.data.Warps
 import me.zavdav.zcore.data.economy.BankAccount
-import me.zavdav.zcore.util.commandDispatcher
 import me.zavdav.zcore.data.kit.Kit
-import me.zavdav.zcore.data.location.NamedLocation
-import me.zavdav.zcore.data.punishment.BanList
-import me.zavdav.zcore.data.punishment.IpBanList
-import me.zavdav.zcore.data.punishment.MuteList
+import me.zavdav.zcore.data.location.Warp
+import me.zavdav.zcore.data.location.WorldSpawn
 import me.zavdav.zcore.data.user.OfflineUser
 import me.zavdav.zcore.data.user.User
-import org.bukkit.Location
+import me.zavdav.zcore.util.commandDispatcher
 import org.bukkit.World
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.sql.lowerCase
 import java.util.UUID
 
 /** The main class of the ZCore plugin. */
@@ -47,12 +50,6 @@ class ZCore : JavaPlugin() {
     /** Represents the ZCore API. */
     companion object Api {
 
-        // Backing fields
-        private val _worldSpawns = mutableMapOf<String, NamedLocation>()
-        private val _warps = mutableMapOf<String, NamedLocation>()
-        private val _kits = mutableMapOf<String, Kit>()
-        private val _bankAccounts = mutableMapOf<UUID, BankAccount>()
-
         /** The current instance of ZCore. */
         @JvmStatic
         lateinit var INSTANCE: ZCore
@@ -68,43 +65,30 @@ class ZCore : JavaPlugin() {
         val version: String
             get() = INSTANCE.description.version
 
-        /** A [Set] of all currently online users. */
+        /** All currently online users. */
         @JvmStatic
-        val onlineUsers: Set<User>
+        val onlineUsers: Iterable<User>
             get() = TODO("Not yet implemented")
 
-        /** A [Set] of all users that have played on the server. */
+        /** All users that have played on the server. */
         @JvmStatic
-        val users: Set<OfflineUser>
-            get() = TODO("Not yet implemented")
+        val users: Iterable<OfflineUser> get() = OfflineUser.all()
 
-        /** A list of all muted users. */
+        /** The spawn points of all worlds. */
         @JvmStatic
-        val muteList = MuteList()
+        val worldSpawns: Iterable<WorldSpawn> get() = WorldSpawn.all()
 
-        /** A list of all banned UUIDs. */
+        /** All existing warps. */
         @JvmStatic
-        val banList = BanList()
+        val warps: Iterable<Warp> get() = Warp.all()
 
-        /** A list of all banned IPv4 addresses. */
+        /** All existing kits. */
         @JvmStatic
-        val ipBanList = IpBanList()
+        val kits: Iterable<Kit> get() = Kit.all()
 
-        /** A map of all world spawn locations. */
+        /** All existing bank accounts. */
         @JvmStatic
-        val worldSpawns: Map<String, NamedLocation> get() = _worldSpawns
-
-        /** A map of all warp locations. */
-        @JvmStatic
-        val warps: Map<String, NamedLocation> get() = _warps
-
-        /** A map of all kits. */
-        @JvmStatic
-        val kits: Map<String, Kit> get() = _kits
-
-        /** A map of all bank accounts. */
-        @JvmStatic
-        val bankAccounts: Map<UUID, BankAccount> get() = _bankAccounts
+        val bankAccounts: Iterable<BankAccount> get() = BankAccount.all()
 
         /** Gets an online user by their [uuid], or `null` if no such user exists. */
         @JvmStatic
@@ -119,73 +103,120 @@ class ZCore : JavaPlugin() {
         /** Gets an offline user by their [uuid], or `null` if no such user exists. */
         @JvmStatic
         fun getOfflineUser(uuid: UUID): OfflineUser? =
-            users.find { it.uuid == uuid }
+            OfflineUser.findById(uuid)
 
         /** Gets an offline user by their [name], or `null` if no such user exists. */
         @JvmStatic
         fun getOfflineUser(name: String): OfflineUser? =
-            users.find { it.name.equals(name, true) }
+            OfflineUser.find { OfflineUsers.name.lowerCase() eq name.lowercase() }.firstOrNull()
 
         /** Gets a bank account by its [uuid], or `null` if no such bank account exists. */
         @JvmStatic
-        fun getBankAccount(uuid: UUID): BankAccount? = _bankAccounts[uuid]
+        fun getBankAccount(uuid: UUID): BankAccount? =
+            BankAccount.findById(uuid)
 
         /** Gets a bank account by its [name], or `null` if no such bank account exists. */
         @JvmStatic
         fun getBankAccount(name: String): BankAccount? =
-            _bankAccounts.values.find { it.name.equals(name, true) }
+            BankAccount.find { BankAccounts.name.lowerCase() eq name.lowercase() }.firstOrNull()
 
-        /** Gets the spawn location of a [world], or `null` if this world does not exist. */
+        /** Gets the spawn point of a [world], or `null` if this world does not exist. */
         @JvmStatic
-        fun getWorldSpawn(world: World): NamedLocation? =
-            _worldSpawns[world.name.lowercase()]
+        fun getWorldSpawn(world: World): WorldSpawn? =
+            WorldSpawn.find { Locations.world.lowerCase() eq world.name.lowercase() }.firstOrNull()
 
-        /** Sets the spawn [location] of a [world]. */
+        /** Sets the spawn point of a [world] to a [location]. */
         @JvmStatic
-        fun setWorldSpawn(world: World, location: Location) {
+        fun setWorldSpawn(world: World, location: org.bukkit.Location) {
             world.setSpawnLocation(location.x.toInt(), location.y.toInt(), location.z.toInt())
-            _worldSpawns[world.name.lowercase()] = NamedLocation(world.name, location)
+
+            val worldSpawn = WorldSpawn.find {
+                Locations.world.lowerCase() eq world.name.lowercase()
+            }.firstOrNull()
+
+            if (worldSpawn != null) {
+                worldSpawn.x = location.x
+                worldSpawn.y = location.y
+                worldSpawn.z = location.z
+                worldSpawn.pitch = location.pitch
+                worldSpawn.yaw = location.yaw
+            } else {
+                WorldSpawn.new {
+                    this.world = world.name
+                    x = location.x
+                    y = location.y
+                    z = location.z
+                    pitch = location.pitch
+                    yaw = location.yaw
+                }
+            }
         }
 
-        /** Gets the location of a warp by its [name], or `null` if no such warp exists. */
+        /** Gets a warp by its [name], or `null` if no such warp exists. */
         @JvmStatic
-        fun getWarp(name: String): NamedLocation? = _warps[name.lowercase()]
+        fun getWarp(name: String): Warp? =
+            Warp.find { Warps.name.lowerCase() eq name.lowercase() }.firstOrNull()
 
         /**
          * Sets a new warp with a [name] and a [location].
-         * Returns `null`, or the warp with this name if it already exists.
+         * Returns `null` on success, or the warp with this name if it already exists.
          */
         @JvmStatic
-        fun setWarp(name: String, location: Location): NamedLocation? =
-            _warps.putIfAbsent(name.lowercase(), NamedLocation(name, location))
+        fun setWarp(name: String, location: org.bukkit.Location): Warp? {
+            val warp = getWarp(name)
+            if (warp == null) {
+                Warp.new {
+                    this.name = name
+                    world = location.world.name
+                    x = location.x
+                    y = location.y
+                    z = location.z
+                    pitch = location.pitch
+                    yaw = location.yaw
+                }
+            }
+            return warp
+        }
 
         /**
          * Deletes the warp with the specified [name].
          * Returns the warp that was deleted, or `null` if no warp with this name exists.
          */
         @JvmStatic
-        fun deleteWarp(name: String): NamedLocation? =
-            _warps.remove(name.lowercase())
+        fun deleteWarp(name: String): Warp? {
+            val warp = getWarp(name)
+            warp?.delete()
+            return warp
+        }
 
         /** Gets a kit by its [name], or `null` if no such kit exists. */
         @JvmStatic
-        fun getKit(name: String): Kit? = _kits[name.lowercase()]
+        fun getKit(name: String): Kit? =
+            Kit.find { Kits.name.lowerCase() eq name.lowercase() }.firstOrNull()
 
         /**
-         * Sets a new [kit] that users can equip.
-         * Returns `null`, or the kit with this name if it already exists.
+         * Sets a new kit with a [name] that users can equip.
+         * Returns `null` on success, or the kit with this name if it already exists.
          */
         @JvmStatic
-        fun setKit(kit: Kit): Kit? =
-            _kits.putIfAbsent(kit.name.lowercase(), kit)
+        fun setKit(name: String): Kit? {
+            val kit = getKit(name)
+            if (kit == null) {
+                Kit.new { this.name = name }
+            }
+            return kit
+        }
 
         /**
          * Deletes the kit with the specified [name].
          * Returns the kit that was deleted, or `null` if no kit with this name exists.
          */
         @JvmStatic
-        fun deleteKit(name: String): Kit? =
-            _kits.remove(name.lowercase())
+        fun deleteKit(name: String): Kit? {
+            val kit = getKit(name)
+            kit?.delete()
+            return kit
+        }
 
     }
 
