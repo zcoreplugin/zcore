@@ -8,9 +8,17 @@ import java.util.UUID
 
 /** Represents a mute targeting a user. */
 class MuteEntry(id: EntityID<UUID>) : PunishmentEntry<OfflineUser>(id) {
-    companion object : UUIDEntityClass<MuteEntry>(Mutes)
+
+    internal companion object : UUIDEntityClass<MuteEntry>(Mutes) {
+        fun new(target: OfflineUser, issuer: OfflineUser, duration: Long?, reason: String): MuteEntry {
+            val base = new(issuer, duration, reason)
+            return new(base.id.value) {
+                this.target = target
+            }
+        }
+    }
 
     override var target by OfflineUser referencedOn Mutes.target
-        internal set
+        private set
 
 }

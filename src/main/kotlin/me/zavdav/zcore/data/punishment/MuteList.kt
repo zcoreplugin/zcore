@@ -14,13 +14,7 @@ object MuteList : PunishmentList<MuteEntry, OfflineUser>() {
     @JvmStatic
     fun addMute(target: OfflineUser, issuer: OfflineUser, duration: Long?, reason: String): MuteEntry {
         getActiveMute(target)?.active = false
-        return MuteEntry.new {
-            this.target = target
-            this.issuer = issuer
-            this.timeIssued = System.currentTimeMillis()
-            this.duration = duration
-            this.reason = reason
-        }
+        return MuteEntry.new(target, issuer, duration, reason)
     }
 
     /**

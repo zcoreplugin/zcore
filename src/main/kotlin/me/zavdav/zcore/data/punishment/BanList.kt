@@ -20,13 +20,7 @@ object BanList : PunishmentList<BanEntry, UUID>() {
     @JvmStatic
     fun addBan(target: UUID, issuer: OfflineUser, duration: Long?, reason: String): BanEntry {
         getActiveBan(target)?.active = false
-        return BanEntry.new {
-            this.target = target
-            this.issuer = issuer
-            this.timeIssued = System.currentTimeMillis()
-            this.duration = duration
-            this.reason = reason
-        }
+        return BanEntry.new(target, issuer, duration, reason)
     }
 
     /**

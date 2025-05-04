@@ -9,11 +9,25 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import java.math.BigDecimal
 import java.util.UUID
 
 /** Represents a bank account that is owned by a user. */
 class BankAccount(id: EntityID<UUID>) : EconomyAccount(id) {
-    companion object : UUIDEntityClass<BankAccount>(BankAccounts)
+
+    internal companion object : UUIDEntityClass<BankAccount>(BankAccounts) {
+        fun new(
+            name: String,
+            owner: OfflineUser,
+            balance: BigDecimal = BigDecimal.ZERO,
+            overdrawLimit: BigDecimal = BigDecimal.ZERO
+        ): BankAccount {
+            val base = new(owner, balance, overdrawLimit)
+            return new(base.id.value) {
+                this.name = name
+            }
+        }
+    }
 
     /** This bank account's UUID. */
     val uuid: UUID get() = id.value

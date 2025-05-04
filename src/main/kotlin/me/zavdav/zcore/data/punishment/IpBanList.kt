@@ -15,13 +15,7 @@ object IpBanList : PunishmentList<IpBanEntry, String>() {
     @JvmStatic
     fun addIpBan(target: Inet4Address, issuer: OfflineUser, duration: Long?, reason: String): IpBanEntry {
         getActiveIpBan(target)?.active = false
-        return IpBanEntry.new {
-            this.target = target.hostAddress
-            this.issuer = issuer
-            this.timeIssued = System.currentTimeMillis()
-            this.duration = duration
-            this.reason = reason
-        }
+        return IpBanEntry.new(target, issuer, duration, reason)
     }
 
     /**

@@ -9,18 +9,40 @@ import org.jetbrains.exposed.dao.id.EntityID
 
 /** Represents an item stack of a kit. */
 class KitItem(id: EntityID<CompositeID>) : CompositeEntity(id) {
-    companion object : CompositeEntityClass<KitItem>(KitItems)
+
+    internal companion object : CompositeEntityClass<KitItem>(KitItems) {
+        fun new(
+            kit: Kit,
+            slot: Int,
+            material: Material,
+            data: Int,
+            amount: Int
+        ): KitItem =
+            new(CompositeID {
+                it[KitItems.kit] = kit.id
+                it[KitItems.slot] = slot
+            }) {
+                this.material = material
+                this.data = data
+                this.amount = amount
+            }
+    }
+
+    private var _slot by KitItems.slot
 
     /** The inventory slot the stack is in. */
-    val slot: Int by KitItems.slot
+    val slot: Int get() = _slot.value
 
     /** The item material. */
-    val material: Material by KitItems.material
+    var material: Material by KitItems.material
+        private set
 
     /** The item data. */
-    val data: Int by KitItems.data
+    var data: Int by KitItems.data
+        private set
 
     /** The amount of items in this stack. */
-    val amount: Int by KitItems.amount
+    var amount: Int by KitItems.amount
+        private set
 
 }

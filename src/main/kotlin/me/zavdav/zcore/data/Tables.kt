@@ -2,17 +2,9 @@ package me.zavdav.zcore.data
 
 import org.bukkit.Material
 import org.jetbrains.exposed.dao.id.CompositeIdTable
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ReferenceOption.CASCADE
 import java.math.BigDecimal
-import java.util.UUID
-
-internal open class UUIDTable(name: String) : IdTable<UUID>(name) {
-    override val id: Column<EntityID<UUID>> = uuid("id").autoGenerate().entityId()
-    final override val primaryKey = PrimaryKey(id)
-}
 
 internal object OfflineUsers : UUIDTable("offline_users") {
     val name = varchar("name", 16).uniqueIndex()
@@ -28,7 +20,7 @@ internal object OfflineUsers : UUIDTable("offline_users") {
     val playtime = long("playtime").default(0)
     val blocksPlaced = long("blocks_placed").default(0)
     val blocksBroken = long("blocks_broken").default(0)
-    val blocksTraveled = decimal("blocks_traveled", Int.MAX_VALUE, 10).default(BigDecimal.ZERO)
+    val blocksTraveled = decimal("blocks_traveled", 100000, 10).default(BigDecimal.ZERO)
     val damageDealt = long("damage_dealt").default(0)
     val damageTaken = long("damage_taken").default(0)
     val usersKilled = long("users_killed").default(0)
@@ -38,13 +30,14 @@ internal object OfflineUsers : UUIDTable("offline_users") {
 
 internal object Accounts : UUIDTable("accounts") {
     val owner = reference("owner", OfflineUsers, CASCADE, CASCADE)
-    val balance = decimal("balance", Int.MAX_VALUE, 10).default(BigDecimal.ZERO)
-    val overdrawLimit = decimal("overdraw_limit", Int.MAX_VALUE, 10).default(BigDecimal.ZERO)
+    val balance = decimal("balance", 100000, 10).default(BigDecimal.ZERO)
+    val overdrawLimit = decimal("overdraw_limit", 100000, 10).default(BigDecimal.ZERO)
 }
 
+internal object UserAccounts: UUIDTable("user_accounts")
+
 internal object BankAccounts : UUIDTable("bank_accounts") {
-    override val id = reference("id", Accounts, CASCADE, CASCADE)
-    val name = varchar("name", 255)
+    val name = varchar("name", 255).uniqueIndex()
 }
 
 internal object BankAccountUsers : CompositeIdTable("bank_account_users") {
@@ -63,17 +56,14 @@ internal object Punishments : UUIDTable("punishments") {
 }
 
 internal object Mutes : UUIDTable("mutes") {
-    override val id = reference("id", Punishments, CASCADE, CASCADE)
     val target = reference("user", OfflineUsers, CASCADE, CASCADE)
 }
 
 internal object Bans : UUIDTable("bans") {
-    override val id = reference("id", Punishments, CASCADE, CASCADE)
     val target = uuid("uuid")
 }
 
 internal object IpBans : UUIDTable("ip_bans") {
-    override val id = reference("id", Punishments, CASCADE, CASCADE)
     val target = varchar("ip_address", 15)
 }
 
@@ -93,17 +83,13 @@ internal object Locations : UUIDTable("locations") {
     val yaw = float("yaw")
 }
 
-internal object WorldSpawns : UUIDTable("world_spawns") {
-    override val id = reference("id", Locations, CASCADE, CASCADE)
-}
+internal object WorldSpawns : UUIDTable("world_spawns")
 
 internal object Warps : UUIDTable("warps") {
-    override val id = reference("id", Locations, CASCADE, CASCADE)
     val name = varchar("name", 255).uniqueIndex()
 }
 
 internal object Homes : UUIDTable("homes") {
-    override val id = reference("id", Locations, CASCADE, CASCADE)
     val user = reference("user", OfflineUsers, CASCADE, CASCADE)
     val name = varchar("name", 255)
 
@@ -112,13 +98,13 @@ internal object Homes : UUIDTable("homes") {
 
 internal object Kits : UUIDTable("kits") {
     val name = varchar("name", 255).uniqueIndex()
-    val cost = decimal("cost", Int.MAX_VALUE, 10).default(BigDecimal.ZERO)
+    val cost = decimal("cost", 100000, 10).default(BigDecimal.ZERO)
     val cooldown = long("cooldown").default(0)
 }
 
 internal object KitItems : CompositeIdTable("kit_items") {
     val kit = reference("kit", Kits, CASCADE, CASCADE)
-    val slot = integer("slot")
+    val slot = integer("slot").entityId()
     val material = enumeration<Material>("material")
     val data = integer("data")
     val amount = integer("amount")

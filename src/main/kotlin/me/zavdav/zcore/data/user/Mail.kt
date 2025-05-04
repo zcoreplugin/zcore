@@ -8,18 +8,26 @@ import java.util.UUID
 
 /** Represents mail that a user sent to another user. */
 class Mail(id: EntityID<UUID>) : UUIDEntity(id) {
-    companion object : UUIDEntityClass<Mail>(Mails)
+
+    internal companion object : UUIDEntityClass<Mail>(Mails) {
+        fun new(sender: OfflineUser, recipient: OfflineUser, message: String): Mail =
+            new {
+                this.sender = sender
+                this.recipient = recipient
+                this.message = message
+            }
+    }
 
     /** The user that sent this mail. */
     var sender by OfflineUser referencedOn Mails.sender
-        internal set
+        private set
 
     /** The user that received this mail. */
     var recipient by OfflineUser referencedOn Mails.recipient
-        internal set
+        private set
 
     /** The content of this mail. */
     var message: String by Mails.message
-        internal set
+        private set
 
 }

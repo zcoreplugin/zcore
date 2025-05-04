@@ -3,10 +3,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     java
     kotlin("jvm") version "2.1.20"
+    id("com.gradleup.shadow") version "8.3.6"
 }
 
 group = "me.zavdav.zcore"
-version = "0.5.0"
+version = "0.5.1"
 
 repositories {
     mavenCentral()
@@ -24,6 +25,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:0.61.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
+    implementation("com.h2database:h2:2.2.224")
 }
 
 kotlin {
@@ -34,4 +36,11 @@ kotlin {
 
 tasks.processResources {
     expand(project.properties)
+}
+
+tasks.shadowJar {
+    dependencies {
+        exclude(dependency("com.legacyminecraft.poseidon:poseidon-craftbukkit:1.1.10-250328-1731-f67a8e3"))
+    }
+    archiveClassifier = ""
 }

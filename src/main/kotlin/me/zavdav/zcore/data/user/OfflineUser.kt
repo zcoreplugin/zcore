@@ -23,7 +23,19 @@ import java.util.UUID
 
 /** Represents an offline user that has played on the server before. */
 sealed class OfflineUser(id: EntityID<UUID>) : UUIDEntity(id) {
-    companion object : UUIDEntityClass<OfflineUser>(OfflineUsers)
+
+    internal companion object : UUIDEntityClass<OfflineUser>(OfflineUsers) {
+        fun new(uuid: UUID, name: String): OfflineUser {
+            val now = System.currentTimeMillis()
+            return new(uuid) {
+                this._name = name
+                this.firstJoin = now
+                this.lastJoin = now
+                this.lastOnline = now
+                this.account = UserAccount.new(this)
+            }
+        }
+    }
 
     /** This user's UUID. */
     val uuid: UUID get() = id.value
@@ -55,7 +67,8 @@ sealed class OfflineUser(id: EntityID<UUID>) : UUIDEntity(id) {
         internal set
 
     /** This user's account where their balance is stored. */
-    val account by UserAccount referencedOn OfflineUsers.account
+    var account by UserAccount referencedOn OfflineUsers.account
+        private set
 
     /** The bank accounts that this user owns. */
     val bankAccounts by BankAccount referrersOn Accounts.owner
@@ -130,16 +143,16 @@ sealed class OfflineUser(id: EntityID<UUID>) : UUIDEntity(id) {
     fun setHome(name: String, location: org.bukkit.Location): Home? {
         val home = getHome(name)
         if (home == null) {
-            Home.new {
-                user = this@OfflineUser
-                this.name = name
-                world = location.world.name
-                x = location.x
-                y = location.y
-                z = location.z
-                pitch = location.pitch
-                yaw = location.yaw
-            }
+            Home.new(
+                this,
+                name,
+                location.world.name,
+                location.x,
+                location.y,
+                location.z,
+                location.pitch,
+                location.yaw
+            )
         }
         return home
     }
@@ -156,11 +169,7 @@ sealed class OfflineUser(id: EntityID<UUID>) : UUIDEntity(id) {
 
     /** Adds a [message] from a [sender] to this user's mail. */
     fun addMail(sender: OfflineUser, message: String) {
-        Mail.new {
-            this.sender = sender
-            this.recipient = this@OfflineUser
-            this.message = message
-        }
+        Mail.new(sender, this, message)
     }
 
     /** Clears this user's mail. */

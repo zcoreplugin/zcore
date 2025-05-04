@@ -1,11 +1,23 @@
 package me.zavdav.zcore
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
+import me.zavdav.zcore.data.Accounts
+import me.zavdav.zcore.data.BankAccountUsers
 import me.zavdav.zcore.data.BankAccounts
+import me.zavdav.zcore.data.Bans
+import me.zavdav.zcore.data.Homes
+import me.zavdav.zcore.data.Ignores
+import me.zavdav.zcore.data.IpBanUuids
+import me.zavdav.zcore.data.IpBans
+import me.zavdav.zcore.data.KitItems
 import me.zavdav.zcore.data.Kits
 import me.zavdav.zcore.data.Locations
+import me.zavdav.zcore.data.Mails
+import me.zavdav.zcore.data.Mutes
 import me.zavdav.zcore.data.OfflineUsers
+import me.zavdav.zcore.data.Punishments
 import me.zavdav.zcore.data.Warps
+import me.zavdav.zcore.data.WorldSpawns
 import me.zavdav.zcore.data.economy.BankAccount
 import me.zavdav.zcore.data.kit.Kit
 import me.zavdav.zcore.data.location.Warp
@@ -17,8 +29,15 @@ import org.bukkit.World
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.lowerCase
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.math.BigDecimal
 import java.util.UUID
 
 /** The main class of the ZCore plugin. */
@@ -26,6 +45,29 @@ class ZCore : JavaPlugin() {
 
     override fun onEnable() {
         INSTANCE = this
+        Database.connect("jdbc:h2:${dataFolder.absolutePath}/db/zcore", "org.h2.Driver")
+
+        transaction {
+            SchemaUtils.create(
+                OfflineUsers,
+                Accounts,
+                BankAccounts,
+                BankAccountUsers,
+                Punishments,
+                Mutes,
+                Bans,
+                IpBans,
+                IpBanUuids,
+                Locations,
+                WorldSpawns,
+                Warps,
+                Homes,
+                Kits,
+                KitItems,
+                Mails,
+                Ignores
+            )
+        }
     }
 
     override fun onDisable() { }
@@ -129,27 +171,15 @@ class ZCore : JavaPlugin() {
         @JvmStatic
         fun setWorldSpawn(world: World, location: org.bukkit.Location) {
             world.setSpawnLocation(location.x.toInt(), location.y.toInt(), location.z.toInt())
-
-            val worldSpawn = WorldSpawn.find {
-                Locations.world.lowerCase() eq world.name.lowercase()
-            }.firstOrNull()
-
-            if (worldSpawn != null) {
-                worldSpawn.x = location.x
-                worldSpawn.y = location.y
-                worldSpawn.z = location.z
-                worldSpawn.pitch = location.pitch
-                worldSpawn.yaw = location.yaw
-            } else {
-                WorldSpawn.new {
-                    this.world = world.name
-                    x = location.x
-                    y = location.y
-                    z = location.z
-                    pitch = location.pitch
-                    yaw = location.yaw
-                }
-            }
+            WorldSpawns.deleteWhere { Locations.world.lowerCase() eq world.name.lowercase() }
+            WorldSpawn.new(
+                world.name,
+                location.x,
+                location.y,
+                location.z,
+                location.pitch,
+                location.yaw
+            )
         }
 
         /** Gets a warp by its [name], or `null` if no such warp exists. */
@@ -165,15 +195,15 @@ class ZCore : JavaPlugin() {
         fun setWarp(name: String, location: org.bukkit.Location): Warp? {
             val warp = getWarp(name)
             if (warp == null) {
-                Warp.new {
-                    this.name = name
-                    world = location.world.name
-                    x = location.x
-                    y = location.y
-                    z = location.z
-                    pitch = location.pitch
-                    yaw = location.yaw
-                }
+                Warp.new(
+                    name,
+                    location.world.name,
+                    location.x,
+                    location.y,
+                    location.z,
+                    location.pitch,
+                    location.yaw
+                )
             }
             return warp
         }
@@ -199,10 +229,15 @@ class ZCore : JavaPlugin() {
          * Returns `null` on success, or the kit with this name if it already exists.
          */
         @JvmStatic
-        fun setKit(name: String): Kit? {
+        fun setKit(
+            name: String,
+            items: Map<Int, ItemStack>,
+            cost: BigDecimal = BigDecimal.ZERO,
+            cooldown: Long = 0
+        ): Kit? {
             val kit = getKit(name)
             if (kit == null) {
-                Kit.new { this.name = name }
+                Kit.new(name, items, cost, cooldown)
             }
             return kit
         }

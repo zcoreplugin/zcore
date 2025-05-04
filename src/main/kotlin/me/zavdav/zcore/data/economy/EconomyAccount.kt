@@ -14,7 +14,19 @@ import java.util.UUID
 
 /** Represents an account that is owned by a user. */
 sealed class EconomyAccount(id: EntityID<UUID>) : UUIDEntity(id) {
-    companion object : UUIDEntityClass<EconomyAccount>(Accounts)
+
+    internal companion object : UUIDEntityClass<EconomyAccount>(Accounts) {
+        fun new(
+            owner: OfflineUser,
+            balance: BigDecimal = BigDecimal.ZERO,
+            overdrawLimit: BigDecimal = BigDecimal.ZERO
+        ): EconomyAccount =
+            new {
+                this.owner = owner
+                this._balance = balance
+                this.overdrawLimit = overdrawLimit
+            }
+    }
 
     /** The owner of this account. */
     open var owner by OfflineUser referencedOn Accounts.owner

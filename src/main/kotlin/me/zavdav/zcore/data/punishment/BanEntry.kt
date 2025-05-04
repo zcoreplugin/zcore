@@ -9,10 +9,18 @@ import java.util.UUID
 
 /** Represents a ban targeting a UUID. */
 class BanEntry(id: EntityID<UUID>) : PunishmentEntry<UUID>(id) {
-    companion object : UUIDEntityClass<BanEntry>(Bans)
+
+    internal companion object : UUIDEntityClass<BanEntry>(Bans) {
+        fun new(target: UUID, issuer: OfflineUser, duration: Long?, reason: String): BanEntry {
+            val base = new(issuer, duration, reason)
+            return new(base.id.value) {
+                this.target = target
+            }
+        }
+    }
 
     override var target: UUID by Bans.target
-        internal set
+        private set
 
     /** The user with this UUID. Can be `null` if no such user exists. */
     val targetUser: OfflineUser?
