@@ -1,33 +1,40 @@
-package me.zavdav.zcore.util
+package me.zavdav.zcore.command
 
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
+import com.mojang.brigadier.builder.ArgumentBuilder
+import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.data.user.OfflineUser
-import me.zavdav.zcore.data.user.User
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import java.math.BigDecimal
 import java.util.regex.Pattern
 
-internal class WordArgument(val maxLength: Int = Int.MAX_VALUE) : ArgumentType<String> {
+internal class StringArgument(
+    val type: StringType,
+    val maxLength: Int = Int.MAX_VALUE
+) : ArgumentType<String> {
     override fun parse(reader: StringReader): String {
-        val arg = reader.readArgument()
-        return if (arg.length <= maxLength)
-            arg
+        val string = when (type) {
+            StringType.SINGLE_WORD -> reader.readArgument()
+            StringType.GREEDY_STRING -> reader.readRemaining()
+        }
+        return if (string.length <= maxLength)
+            string
         else
-            throw IllegalArgumentException("Expected max length $maxLength, got length $arg.length")
+            throw IllegalArgumentException("Expected max length $maxLength, got length $string.length")
     }
 }
 
-internal class GreedyStringArgument(val maxLength: Int = Int.MAX_VALUE) : ArgumentType<String> {
-    override fun parse(reader: StringReader): String {
-        val arg = reader.remaining
-        reader.cursor = reader.totalLength
-        return if (arg.length <= maxLength)
-            arg
-        else
-            throw IllegalArgumentException("Expected max length $maxLength, got length ${arg.length}")
-    }
-}
+internal enum class StringType { SINGLE_WORD, GREEDY_STRING }
+
+internal inline fun <S> ArgumentBuilder<S, *>.stringArgument(
+    name: String,
+    type: StringType,
+    maxLength: Int = Int.MAX_VALUE,
+    action: RequiredArgumentBuilder<S, String>.() -> Unit
+) = argument(name, StringArgument(type, maxLength), action)
 
 internal class IntArgument(
     val min: Int = Int.MIN_VALUE,
@@ -49,6 +56,13 @@ internal class IntArgument(
     }
 }
 
+internal inline fun <S> ArgumentBuilder<S, *>.intArgument(
+    name: String,
+    min: Int = Int.MIN_VALUE,
+    max: Int = Int.MAX_VALUE,
+    action: RequiredArgumentBuilder<S, Int>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, IntArgument(min, max), action)
+
 internal class LongArgument(
     val min: Long = Long.MIN_VALUE,
     val max: Long = Long.MAX_VALUE
@@ -68,6 +82,13 @@ internal class LongArgument(
         }
     }
 }
+
+internal inline fun <S> ArgumentBuilder<S, *>.longArgument(
+    name: String,
+    min: Long = Long.MIN_VALUE,
+    max: Long = Long.MAX_VALUE,
+    action: RequiredArgumentBuilder<S, Long>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, LongArgument(min, max), action)
 
 internal class FloatArgument(
     val min: Float = -Float.MAX_VALUE,
@@ -89,6 +110,13 @@ internal class FloatArgument(
     }
 }
 
+internal inline fun <S> ArgumentBuilder<S, *>.floatArgument(
+    name: String,
+    min: Float = -Float.MIN_VALUE,
+    max: Float = Float.MAX_VALUE,
+    action: RequiredArgumentBuilder<S, Float>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, FloatArgument(min, max), action)
+
 internal class DoubleArgument(
     val min: Double = -Double.MAX_VALUE,
     val max: Double = Double.MAX_VALUE
@@ -108,6 +136,13 @@ internal class DoubleArgument(
         }
     }
 }
+
+internal inline fun <S> ArgumentBuilder<S, *>.doubleArgument(
+    name: String,
+    min: Double = -Double.MAX_VALUE,
+    max: Double = Double.MAX_VALUE,
+    action: RequiredArgumentBuilder<S, Double>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, DoubleArgument(min, max), action)
 
 internal class BigDecimalArgument(
     val min: BigDecimal? = null,
@@ -129,6 +164,13 @@ internal class BigDecimalArgument(
     }
 }
 
+internal inline fun <S> ArgumentBuilder<S, *>.bigDecimalArgument(
+    name: String,
+    min: BigDecimal? = null,
+    max: BigDecimal? = null,
+    action: RequiredArgumentBuilder<S, BigDecimal>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, BigDecimalArgument(min, max), action)
+
 internal object DurationArgument : ArgumentType<Long> {
     private val timePattern = Pattern.compile(
         "(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" +
@@ -138,7 +180,8 @@ internal object DurationArgument : ArgumentType<Long> {
         "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" +
         "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" +
         "(?:([0-9]+)\\s*(?:s[a-z]*)?)?",
-        Pattern.CASE_INSENSITIVE)
+        Pattern.CASE_INSENSITIVE
+    )
 
     override fun parse(reader: StringReader): Long {
         val sb = StringBuilder()
@@ -166,6 +209,23 @@ internal object DurationArgument : ArgumentType<Long> {
     }
 }
 
+internal inline fun <S> ArgumentBuilder<S, *>.durationArgument(
+    name: String,
+    action: RequiredArgumentBuilder<S, Long>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, DurationArgument, action)
+
+internal object PlayerArgument : ArgumentType<Player> {
+    override fun parse(reader: StringReader): Player {
+        val arg = reader.readArgument()
+        return Bukkit.getPlayer(arg) ?: throw IllegalArgumentException("Could not find user \"$arg\"")
+    }
+}
+
+internal inline fun <S> ArgumentBuilder<S, *>.playerArgument(
+    name: String,
+    action: RequiredArgumentBuilder<S, Player>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, PlayerArgument, action)
+
 internal object OfflineUserArgument : ArgumentType<OfflineUser> {
     override fun parse(reader: StringReader): OfflineUser {
         val arg = reader.readArgument()
@@ -173,12 +233,10 @@ internal object OfflineUserArgument : ArgumentType<OfflineUser> {
     }
 }
 
-internal object UserArgument : ArgumentType<User> {
-    override fun parse(reader: StringReader): User {
-        val arg = reader.readArgument()
-        return ZCore.getUser(arg) ?: throw IllegalArgumentException("Could not find user \"$arg\"")
-    }
-}
+internal inline fun <S> ArgumentBuilder<S, *>.offlineUserArgument(
+    name: String,
+    action: RequiredArgumentBuilder<S, OfflineUser>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, OfflineUserArgument, action)
 
 internal fun StringReader.readArgument(): String {
     val start = cursor
@@ -190,5 +248,11 @@ internal fun StringReader.peekArgument(): String {
     val start = cursor
     val arg = readArgument()
     cursor = start
+    return arg
+}
+
+internal fun StringReader.readRemaining(): String {
+    val arg = remaining
+    cursor = totalLength
     return arg
 }
