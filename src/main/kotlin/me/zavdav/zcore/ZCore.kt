@@ -37,6 +37,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.io.File
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -106,6 +107,11 @@ class ZCore : JavaPlugin() {
         @JvmStatic
         val version: String
             get() = INSTANCE.description.version
+
+        /** The data folder of ZCore. */
+        @JvmStatic
+        val dataFolder: File
+            get() = INSTANCE.dataFolder
 
         /** All currently online users. */
         @JvmStatic

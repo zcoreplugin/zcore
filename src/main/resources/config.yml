@@ -1,0 +1,71 @@
+#   _________________________
+#  /                         \
+#  \_________________________/
+#                    ______
+#                   /     /
+#                  /     /
+#                /     /
+#               /     /
+#             /     /
+#            /     /
+#          /     /
+#         /     /
+#       /     /
+#      /_____/
+#   _________________________
+#  /      c   o   r   e      \
+#  \_________________________/
+
+
+config-version: 20250508
+
+prefix:
+  success: "&5» "
+  error: "&4[!] "
+
+motd:
+  - "+=========================+"
+  - "|  Welcome back, zavdav!  |"
+  - "|  Online players: 10     |"
+  - "+=========================+"
+
+rules:
+  - "=============== Server Rules ==============="
+  - "1."
+  - "2."
+  - "3."
+
+commands:
+  disabled:
+  override:
+  cost:
+  show-other-in-help: true
+
+format:
+  first-join: "&eWelcome to the server, {NAME}!"
+  join: "&e{NAME} joined the game."
+  leave: "&e{NAME} left the game."
+  kick: "&e{NAME} was kicked from the game."
+  ban: "&e{NAME} was banned from the server."
+  display-name: "{PREFIX} &f{NICKNAME}&f {SUFFIX}"
+  operator-color: "c"
+  nick-prefix: "~"
+  currency: "$"
+  chat: "{DISPLAYNAME}&f: {MESSAGE}"
+  broadcast: "&d[Broadcast] {MESSAGE}"
+  send-msg: "&7[me -> &f{DISPLAYNAME}&7] &f{MESSAGE}"
+  receive-msg: "&7[&f{DISPLAYNAME}&7 -> me] &f{MESSAGE}"
+  mail: "{DISPLAYNAME}&f: {MESSAGE}"
+  socialspy: "&5[SocialSpy] &f{DISPLAYNAME}&f: {COMMAND}"
+
+afk:
+  enabled: true
+  time: 300
+  kick:
+    enabled: true
+    time: 1800
+  protect: false
+
+teleport-delay: 3
+chat-radius: 0
+default-give-amount: 64
