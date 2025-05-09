@@ -1,14 +1,14 @@
-package me.zavdav.zcore.data.user
+package me.zavdav.zcore.user
 
 import me.zavdav.zcore.data.Accounts
 import me.zavdav.zcore.data.Homes
 import me.zavdav.zcore.data.Ignores
 import me.zavdav.zcore.data.Mails
 import me.zavdav.zcore.data.OfflineUsers
-import me.zavdav.zcore.data.economy.BankAccount
-import me.zavdav.zcore.data.economy.UserAccount
-import me.zavdav.zcore.data.location.Home
+import me.zavdav.zcore.economy.BankAccount
+import me.zavdav.zcore.economy.UserAccount
 import me.zavdav.zcore.event.UsernameChangeEvent
+import me.zavdav.zcore.location.Home
 import org.bukkit.Bukkit
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass

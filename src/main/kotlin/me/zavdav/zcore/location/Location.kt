@@ -1,4 +1,4 @@
-package me.zavdav.zcore.data.location
+package me.zavdav.zcore.location
 
 import me.zavdav.zcore.data.Locations
 import org.jetbrains.exposed.dao.UUIDEntity

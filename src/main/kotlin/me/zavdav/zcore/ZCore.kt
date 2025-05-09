@@ -1,6 +1,5 @@
 package me.zavdav.zcore
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException
 import me.zavdav.zcore.data.Accounts
 import me.zavdav.zcore.data.BankAccountUsers
 import me.zavdav.zcore.data.BankAccounts
@@ -18,13 +17,12 @@ import me.zavdav.zcore.data.OfflineUsers
 import me.zavdav.zcore.data.Punishments
 import me.zavdav.zcore.data.Warps
 import me.zavdav.zcore.data.WorldSpawns
-import me.zavdav.zcore.data.economy.BankAccount
-import me.zavdav.zcore.data.kit.Kit
-import me.zavdav.zcore.data.location.Warp
-import me.zavdav.zcore.data.location.WorldSpawn
-import me.zavdav.zcore.data.user.OfflineUser
-import me.zavdav.zcore.data.user.User
-import me.zavdav.zcore.util.commandDispatcher
+import me.zavdav.zcore.economy.BankAccount
+import me.zavdav.zcore.kit.Kit
+import me.zavdav.zcore.location.Warp
+import me.zavdav.zcore.location.WorldSpawn
+import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.user.User
 import org.bukkit.World
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -80,14 +78,14 @@ class ZCore : JavaPlugin() {
         if (sender !is Player) return false
         val user = getUser(sender.uniqueId) ?: return false
 
-        return try {
-            commandDispatcher.execute("${command.name} ${args.joinToString(" ")}", user)
+        //return try {
+        //    commandDispatcher.execute("${command.name} ${args.joinToString(" ")}", user)
             return true
-        } catch (_: CommandSyntaxException) {
-            return false
-        } catch (_: Throwable) {
-            return false
-        }
+        //} catch (_: CommandSyntaxException) {
+        //    return false
+        //} catch (_: Throwable) {
+        //    return false
+        //}
     }
 
     /** Represents the ZCore API. */

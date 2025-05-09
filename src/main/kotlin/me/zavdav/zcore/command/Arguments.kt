@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.data.user.OfflineUser
+import me.zavdav.zcore.user.OfflineUser
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.math.BigDecimal

@@ -1,8 +1,8 @@
-package me.zavdav.zcore.data.punishment
+package me.zavdav.zcore.punishment
 
 import me.zavdav.zcore.data.IpBanUuids
 import me.zavdav.zcore.data.IpBans
-import me.zavdav.zcore.data.user.OfflineUser
+import me.zavdav.zcore.user.OfflineUser
 import org.jetbrains.exposed.dao.CompositeEntity
 import org.jetbrains.exposed.dao.CompositeEntityClass
 import org.jetbrains.exposed.dao.UUIDEntityClass

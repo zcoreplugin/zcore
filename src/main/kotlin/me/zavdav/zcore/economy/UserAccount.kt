@@ -1,7 +1,7 @@
-package me.zavdav.zcore.data.economy
+package me.zavdav.zcore.economy
 
 import me.zavdav.zcore.data.UserAccounts
-import me.zavdav.zcore.data.user.OfflineUser
+import me.zavdav.zcore.user.OfflineUser
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import java.math.BigDecimal

@@ -1,4 +1,4 @@
-package me.zavdav.zcore.data.user
+package me.zavdav.zcore.user
 
 import me.zavdav.zcore.data.Mails
 import org.jetbrains.exposed.dao.UUIDEntity

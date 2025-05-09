@@ -1,8 +1,8 @@
-package me.zavdav.zcore.data.economy
+package me.zavdav.zcore.economy
 
 import me.zavdav.zcore.data.BankAccountUsers
 import me.zavdav.zcore.data.BankAccounts
-import me.zavdav.zcore.data.user.OfflineUser
+import me.zavdav.zcore.user.OfflineUser
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

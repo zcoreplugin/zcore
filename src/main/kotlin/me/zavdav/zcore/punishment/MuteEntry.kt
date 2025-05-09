@@ -1,7 +1,7 @@
-package me.zavdav.zcore.data.punishment
+package me.zavdav.zcore.punishment
 
 import me.zavdav.zcore.data.Mutes
-import me.zavdav.zcore.data.user.OfflineUser
+import me.zavdav.zcore.user.OfflineUser
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID

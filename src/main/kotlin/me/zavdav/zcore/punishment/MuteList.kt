@@ -1,8 +1,8 @@
-package me.zavdav.zcore.data.punishment
+package me.zavdav.zcore.punishment
 
 import me.zavdav.zcore.data.Mutes
 import me.zavdav.zcore.data.Punishments
-import me.zavdav.zcore.data.user.OfflineUser
+import me.zavdav.zcore.user.OfflineUser
 import org.jetbrains.exposed.sql.and
 
 /** Represents a record of all issued mutes. */

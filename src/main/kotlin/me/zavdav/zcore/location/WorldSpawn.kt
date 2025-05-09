@@ -1,4 +1,4 @@
-package me.zavdav.zcore.data.location
+package me.zavdav.zcore.location
 
 import me.zavdav.zcore.data.WorldSpawns
 import org.jetbrains.exposed.dao.UUIDEntityClass

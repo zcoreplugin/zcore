@@ -1,9 +1,9 @@
-package me.zavdav.zcore.data.economy
+package me.zavdav.zcore.economy
 
 import me.zavdav.zcore.ZCore.Api.SYSTEM_USER
 import me.zavdav.zcore.data.Accounts
 import me.zavdav.zcore.event.EconomyTransactionEvent
-import me.zavdav.zcore.data.user.OfflineUser
+import me.zavdav.zcore.user.OfflineUser
 import org.bukkit.Bukkit
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass

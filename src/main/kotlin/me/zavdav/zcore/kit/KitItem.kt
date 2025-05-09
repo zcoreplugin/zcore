@@ -1,4 +1,4 @@
-package me.zavdav.zcore.data.kit
+package me.zavdav.zcore.kit
 
 import me.zavdav.zcore.data.KitItems
 import org.bukkit.Material

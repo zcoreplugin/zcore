@@ -1,8 +1,8 @@
-package me.zavdav.zcore.data.punishment
+package me.zavdav.zcore.punishment
 
 import me.zavdav.zcore.data.Bans
 import me.zavdav.zcore.data.Punishments
-import me.zavdav.zcore.data.user.OfflineUser
+import me.zavdav.zcore.user.OfflineUser
 import org.jetbrains.exposed.sql.and
 import java.util.UUID
 
