@@ -1,5 +1,8 @@
 package me.zavdav.zcore
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException
+import me.zavdav.zcore.command.CommandPermissionException
+import me.zavdav.zcore.command.commandDispatcher
 import me.zavdav.zcore.data.Accounts
 import me.zavdav.zcore.data.BankAccountUsers
 import me.zavdav.zcore.data.BankAccounts
@@ -23,10 +26,10 @@ import me.zavdav.zcore.location.Warp
 import me.zavdav.zcore.location.WorldSpawn
 import me.zavdav.zcore.user.OfflineUser
 import me.zavdav.zcore.user.User
+import me.zavdav.zcore.util.tl
 import org.bukkit.World
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Database
@@ -75,17 +78,17 @@ class ZCore : JavaPlugin() {
         sender: CommandSender, command: Command,
         label: String, args: Array<String>
     ): Boolean {
-        if (sender !is Player) return false
-        val user = getUser(sender.uniqueId) ?: return false
+        try {
+            commandDispatcher.execute("${command.name} ${args.joinToString(" ")}", sender)
+        } catch (_: CommandSyntaxException) {
+            sender.sendMessage(tl("syntaxError"))
+        } catch (_: CommandPermissionException) {
+            sender.sendMessage(tl("noPermission"))
+        } catch (_: Throwable) {
+            sender.sendMessage(tl("genericError"))
+        }
 
-        //return try {
-        //    commandDispatcher.execute("${command.name} ${args.joinToString(" ")}", user)
-            return true
-        //} catch (_: CommandSyntaxException) {
-        //    return false
-        //} catch (_: Throwable) {
-        //    return false
-        //}
+        return true
     }
 
     /** Represents the ZCore API. */

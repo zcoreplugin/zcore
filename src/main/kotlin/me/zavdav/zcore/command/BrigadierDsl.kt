@@ -1,17 +1,35 @@
 package me.zavdav.zcore.command
 
+import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
+import org.bukkit.command.CommandSender
 import kotlin.reflect.KProperty
 
-internal inline fun <S> command(
-    literal: String,
-    action: LiteralArgumentBuilder<S>.() -> Unit
-): LiteralArgumentBuilder<S> =
-    LiteralArgumentBuilder.literal<S>(literal).apply(action)
+internal val commandDispatcher = CommandDispatcher<CommandSender>()
+
+internal class CommandBuilder(
+    val name: String,
+    val aliases: Array<String> = emptyArray(),
+    val description: String,
+    val usage: String,
+    val permission: String
+) : LiteralArgumentBuilder<CommandSender>(name)
+
+internal inline fun command(
+    name: String,
+    aliases: Array<String> = emptyArray(),
+    description: String,
+    usage: String,
+    permission: String,
+    action: CommandBuilder.() -> Unit
+): Command {
+    val builder = CommandBuilder(name, aliases, description, usage, permission).apply { action() }
+    return Command(name, aliases, description, usage, permission, builder)
+}
 
 internal inline fun <S> ArgumentBuilder<S, *>.literal(
     literal: String,
@@ -30,14 +48,21 @@ internal inline fun <S, T> ArgumentBuilder<S, *>.argument(
     return this
 }
 
-internal fun <S> ArgumentBuilder<S, *>.runs(
+internal fun <S : CommandSender> ArgumentBuilder<S, *>.runs(
+    permission: String,
     action: CommandContext<S>.() -> Unit
 ): ArgumentBuilder<S, *> {
     executes {
+        it.require(permission)
         action(it)
         return@executes 1
     }
     return this
+}
+
+private fun <S : CommandSender> CommandContext<S>.require(permission: String) {
+    if (!source.isOp && !source.hasPermission(permission))
+        throw CommandPermissionException()
 }
 
 internal inline operator fun <reified V> CommandContext<*>.getValue(
