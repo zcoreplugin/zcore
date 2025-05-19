@@ -5,6 +5,9 @@ on:
     paths:
       - 'build.gradle.kts'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
