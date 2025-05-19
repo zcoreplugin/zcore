@@ -1,0 +1,50 @@
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'build.gradle.kts'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+
+      - name: Get version from project properties
+        id: get_version
+        run: |
+          VERSION=$(./gradlew properties | grep -Po '(?<=version: ).*')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get latest GitHub Release
+        id: get_latest_release
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/${{ github.repository }}/releases/latest
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build JAR
+        if: steps.get_version.outputs.version != fromJson(steps.get_latest_release.outputs.data).tag_name
+        run: ./gradlew clean shadowJar
+
+      - name: Create GitHub Release
+        if: steps.get_version.outputs.version != fromJson(steps.get_latest_release.outputs.data).tag_name
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
+          name: ${{ steps.get_version.outputs.version }}
+          draft: false
+          prerelease: false
+          files: build/libs/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
