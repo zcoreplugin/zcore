@@ -6,7 +6,7 @@ import java.io.File
 
 object Config {
 
-    private val file = File(ZCore.dataFolder, "config.yml")
+    private val file = File(ZCore.INSTANCE.dataFolder, "config.yml")
     private lateinit var yaml: Configuration
 
     private fun getString(key: String, def: String): String =

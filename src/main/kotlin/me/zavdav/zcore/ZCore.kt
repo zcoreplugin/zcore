@@ -109,11 +109,6 @@ class ZCore : JavaPlugin() {
         val version: String
             get() = INSTANCE.description.version
 
-        /** The data folder of ZCore. */
-        @JvmStatic
-        val dataFolder: File
-            get() = INSTANCE.dataFolder
-
         /** All currently online users. */
         @JvmStatic
         val onlineUsers: Iterable<User>

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "me.zavdav.zcore"
-version = "0.6.2"
+version = "0.6.3"
 
 repositories {
     mavenCentral()
@@ -35,7 +35,9 @@ kotlin {
 }
 
 tasks.processResources {
-    expand(project.properties)
+    filesMatching("plugin.yml") {
+        expand(project.properties)
+    }
 }
 
 tasks.shadowJar {
