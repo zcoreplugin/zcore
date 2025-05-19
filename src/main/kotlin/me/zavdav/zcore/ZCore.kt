@@ -27,6 +27,7 @@ import me.zavdav.zcore.location.WorldSpawn
 import me.zavdav.zcore.user.OfflineUser
 import me.zavdav.zcore.user.User
 import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.version.ZCoreVersion
 import org.bukkit.World
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -38,7 +39,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.io.File
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -106,8 +106,7 @@ class ZCore : JavaPlugin() {
 
         /** The current version of ZCore. */
         @JvmStatic
-        val version: String
-            get() = INSTANCE.description.version
+        val version = ZCoreVersion.CURRENT
 
         /** All currently online users. */
         @JvmStatic
