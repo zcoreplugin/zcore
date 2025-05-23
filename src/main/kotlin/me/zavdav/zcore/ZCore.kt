@@ -2,6 +2,7 @@ package me.zavdav.zcore
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import me.zavdav.zcore.command.CommandPermissionException
+import me.zavdav.zcore.command.IllegalConsoleActionException
 import me.zavdav.zcore.command.commandDispatcher
 import me.zavdav.zcore.data.Accounts
 import me.zavdav.zcore.data.BankAccountUsers
@@ -80,11 +81,13 @@ class ZCore : JavaPlugin() {
         try {
             commandDispatcher.execute("${command.name} ${args.joinToString(" ")}", sender)
         } catch (_: CommandSyntaxException) {
-            sender.sendMessage(tl("syntaxError"))
+            sender.sendMessage(tl("command.syntaxError"))
         } catch (_: CommandPermissionException) {
-            sender.sendMessage(tl("noPermission"))
+            sender.sendMessage(tl("command.noPermission"))
+        } catch (_: IllegalConsoleActionException) {
+            sender.sendMessage(tl("command.playerRequired"))
         } catch (_: Throwable) {
-            sender.sendMessage(tl("genericError"))
+            sender.sendMessage(tl("command.genericError"))
         }
 
         return true

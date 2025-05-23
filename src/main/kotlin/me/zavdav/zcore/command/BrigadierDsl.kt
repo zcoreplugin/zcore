@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import kotlin.reflect.KProperty
 
 internal val commandDispatcher = CommandDispatcher<CommandSender>()
@@ -21,7 +22,7 @@ internal class CommandBuilder(
 
 internal inline fun command(
     name: String,
-    aliases: Array<String> = emptyArray(),
+    aliases: Array<String>,
     description: String,
     usage: String,
     permission: String,
@@ -30,6 +31,14 @@ internal inline fun command(
     val builder = CommandBuilder(name, aliases, description, usage, permission).apply { action() }
     return Command(name, aliases, description, usage, permission, builder)
 }
+
+internal inline fun command(
+    name: String,
+    description: String,
+    usage: String,
+    permission: String,
+    action: CommandBuilder.() -> Unit
+): Command = command(name, emptyArray(), description, usage, permission, action)
 
 internal inline fun <S> ArgumentBuilder<S, *>.literal(
     literal: String,
@@ -60,9 +69,14 @@ internal fun <S : CommandSender> ArgumentBuilder<S, *>.runs(
     return this
 }
 
-private fun <S : CommandSender> CommandContext<S>.require(permission: String) {
+internal fun <S : CommandSender> CommandContext<S>.require(permission: String) {
     if (!source.isOp && !source.hasPermission(permission))
         throw CommandPermissionException()
+}
+
+internal fun CommandSender.requireIsPlayer(): Player {
+    if (this !is Player) throw IllegalConsoleActionException()
+    return this
 }
 
 internal inline operator fun <reified V> CommandContext<*>.getValue(
