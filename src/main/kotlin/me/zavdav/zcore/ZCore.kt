@@ -108,7 +108,7 @@ class ZCore : JavaPlugin() {
 
         /** The current version of ZCore. */
         @JvmStatic
-        val version = ZCoreVersion.CURRENT
+        val version: ZCoreVersion by lazy { ZCoreVersion.CURRENT }
 
         /** All users that have played on the server. */
         @JvmStatic

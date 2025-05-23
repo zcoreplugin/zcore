@@ -36,7 +36,7 @@ class ZCoreVersion(
         private const val MAX_COMPONENT_VALUE: Int = 255
         private val versionRegex = Regex("""^(\d+)\.(\d+)\.(\d+)""")
 
-        val CURRENT = parse(ZCore.INSTANCE.description.version)
+        val CURRENT by lazy { parse(ZCore.INSTANCE.description.version) }
 
         fun parse(versionString: String): ZCoreVersion {
             val result = versionRegex.find(versionString)
