@@ -23,8 +23,7 @@ object Config {
 
     val configVersion: Int get() = getInt("config-version", def = 0)
 
-    val successPrefix: String get() = getString("prefix.success", "&5» ")
-    val errorPrefix: String get() = getString("prefix.error", "&4[!] ")
+    val prefix: String get() = getString("prefix", "&5[&dZCore&5] &7>> ")
 
     val motd: List<String> get() = getStringList("motd", emptyList())
     val rules: List<String> get() = getStringList("rules", emptyList())

@@ -19,9 +19,7 @@
 
 config-version: 20250508
 
-prefix:
-  success: "&5» "
-  error: "&4[!] "
+prefix: "&5[&dZCore&5] &7>> "
 
 motd:
   - "+=========================+"
