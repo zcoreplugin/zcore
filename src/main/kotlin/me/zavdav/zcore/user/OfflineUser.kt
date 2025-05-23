@@ -7,9 +7,7 @@ import me.zavdav.zcore.data.Mails
 import me.zavdav.zcore.data.OfflineUsers
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.UserAccount
-import me.zavdav.zcore.event.UsernameChangeEvent
 import me.zavdav.zcore.location.Home
-import org.bukkit.Bukkit
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -28,7 +26,7 @@ sealed class OfflineUser(id: EntityID<UUID>) : UUIDEntity(id) {
         fun new(uuid: UUID, name: String): OfflineUser {
             val now = System.currentTimeMillis()
             return new(uuid) {
-                this._name = name
+                this.name = name
                 this.firstJoin = now
                 this.lastJoin = now
                 this.lastOnline = now
@@ -40,23 +38,16 @@ sealed class OfflineUser(id: EntityID<UUID>) : UUIDEntity(id) {
     /** This user's UUID. */
     val uuid: UUID get() = id.value
 
-    private var _name: String by OfflineUsers.name
-
     /** This user's username. */
-    var name: String get() = _name
-        internal set(value) {
-            if (this is User && _name != value) {
-                Bukkit.getPluginManager().callEvent(UsernameChangeEvent(this, _name, value))
-            }
-            _name = value
-        }
+    var name: String by OfflineUsers.name
+        internal set
 
     /** This user's nickname. Can be `null` if this user has no nickname. */
     var nickname: String? by OfflineUsers.nickname
 
     /** The timestamp of this user's first join. */
     var firstJoin: Long by OfflineUsers.firstJoin
-        internal set
+        private set
 
     /** The timestamp of this user's last join. */
     var lastJoin: Long by OfflineUsers.lastJoin

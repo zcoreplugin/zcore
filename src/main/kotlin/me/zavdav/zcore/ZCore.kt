@@ -25,7 +25,6 @@ import me.zavdav.zcore.kit.Kit
 import me.zavdav.zcore.location.Warp
 import me.zavdav.zcore.location.WorldSpawn
 import me.zavdav.zcore.user.OfflineUser
-import me.zavdav.zcore.user.User
 import me.zavdav.zcore.util.tl
 import me.zavdav.zcore.version.ZCoreVersion
 import org.bukkit.World
@@ -108,11 +107,6 @@ class ZCore : JavaPlugin() {
         @JvmStatic
         val version = ZCoreVersion.CURRENT
 
-        /** All currently online users. */
-        @JvmStatic
-        val onlineUsers: Iterable<User>
-            get() = TODO("Not yet implemented")
-
         /** All users that have played on the server. */
         @JvmStatic
         val users: Iterable<OfflineUser> get() = OfflineUser.all()
@@ -132,16 +126,6 @@ class ZCore : JavaPlugin() {
         /** All existing bank accounts. */
         @JvmStatic
         val bankAccounts: Iterable<BankAccount> get() = BankAccount.all()
-
-        /** Gets an online user by their [uuid], or `null` if no such user exists. */
-        @JvmStatic
-        fun getUser(uuid: UUID): User? =
-            onlineUsers.find { it.uuid == uuid }
-
-        /** Gets an online user by their [name], or `null` if no such user exists. */
-        @JvmStatic
-        fun getUser(name: String): User? =
-            onlineUsers.find { it.name.equals(name, true) }
 
         /** Gets an offline user by their [uuid], or `null` if no such user exists. */
         @JvmStatic
