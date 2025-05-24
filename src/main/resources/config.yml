@@ -22,10 +22,9 @@ config-version: 20250508
 prefix: "&5[&dZCore&5] &7>> "
 
 motd:
-  - "+=========================+"
-  - "|  Welcome back, zavdav!  |"
-  - "|  Online players: 10     |"
-  - "+=========================+"
+  - "&6Welcome, {NAME}!"
+  - "&7-------------------------"
+  - "&eOnline players: &b{PLAYERCOUNT}/{MAXPLAYERS}"
 
 rules:
   - "=============== Server Rules ==============="

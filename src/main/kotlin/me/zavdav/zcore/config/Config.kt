@@ -3,11 +3,23 @@ package me.zavdav.zcore.config
 import me.zavdav.zcore.ZCore
 import org.bukkit.util.config.Configuration
 import java.io.File
+import java.nio.file.Files
 
 object Config {
 
     private val file = File(ZCore.INSTANCE.dataFolder, "config.yml")
     private lateinit var yaml: Configuration
+
+    internal fun load() {
+        val stream = this::class.java.getResourceAsStream("/config.yml")!!
+        if (!file.exists()) {
+            file.parentFile.mkdirs()
+            Files.copy(stream, file.toPath())
+        }
+
+        yaml = Configuration(file)
+        yaml.load()
+    }
 
     private fun getString(key: String, def: String): String =
         yaml.getProperty(key) as? String ?: def

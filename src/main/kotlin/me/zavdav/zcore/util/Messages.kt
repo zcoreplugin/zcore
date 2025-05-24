@@ -1,10 +1,12 @@
 package me.zavdav.zcore.util
 
+import me.zavdav.zcore.config.Config
 import java.util.ResourceBundle
 
 private val bundle = ResourceBundle.getBundle("messages")
 
-internal fun getMessage(key: String): String = bundle.getString(key)
+internal fun getMessage(key: String): String =
+    bundle.getString(key).replace("<prefix>", Config.prefix)
 
 internal fun String.colored() = replace("&([0-9a-f])".toRegex(), "§$1")
 

@@ -4,6 +4,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import me.zavdav.zcore.command.CommandPermissionException
 import me.zavdav.zcore.command.IllegalConsoleActionException
 import me.zavdav.zcore.command.commandDispatcher
+import me.zavdav.zcore.command.motdCommand
+import me.zavdav.zcore.config.Config
 import me.zavdav.zcore.data.Accounts
 import me.zavdav.zcore.data.BankAccountUsers
 import me.zavdav.zcore.data.BankAccounts
@@ -47,6 +49,7 @@ class ZCore : JavaPlugin() {
 
     override fun onEnable() {
         INSTANCE = this
+        Config.load()
         Database.connect("jdbc:h2:${dataFolder.absolutePath}/db/zcore", "org.h2.Driver")
 
         transaction {
@@ -70,16 +73,25 @@ class ZCore : JavaPlugin() {
                 Ignores
             )
         }
+
+        val commands = mutableListOf(
+            motdCommand
+        )
+
+        commands.forEach { it.register() }
     }
 
     override fun onDisable() { }
 
     override fun onCommand(
-        sender: CommandSender, command: Command,
-        label: String, args: Array<String>
+        sender: CommandSender,
+        command: Command,
+        label: String,
+        args: Array<String>
     ): Boolean {
         try {
-            commandDispatcher.execute("${command.name} ${args.joinToString(" ")}", sender)
+            val parsedArgs = if (args.isEmpty()) "" else " " + args.joinToString(" ").trim()
+            commandDispatcher.execute(command.name + parsedArgs, sender)
         } catch (_: CommandSyntaxException) {
             sender.sendMessage(tl("command.syntaxError"))
         } catch (_: CommandPermissionException) {

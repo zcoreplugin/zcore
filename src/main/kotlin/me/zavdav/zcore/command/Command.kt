@@ -35,11 +35,7 @@ internal class Command(
     }
 
     fun register() {
-        bukkitCommand.register(commandMap)
-    }
-
-    fun unregister() {
-        bukkitCommand.unregister(commandMap)
+        commandMap.register(ZCore.INSTANCE.description.name, bukkitCommand)
     }
 
     internal companion object {
