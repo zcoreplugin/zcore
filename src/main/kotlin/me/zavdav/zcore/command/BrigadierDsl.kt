@@ -73,12 +73,12 @@ internal fun <S : CommandSender> ArgumentBuilder<S, *>.runs(
 
 internal fun <S : CommandSender> CommandContext<S>.require(permission: String) {
     if (!source.isOp && !source.hasPermission(permission))
-        throw CommandPermissionException()
+        throw TranslatableException("command.noPermission")
 }
 
 internal fun <S : CommandSender> CommandContext<S>.requirePlayer(): CorePlayer {
     val source = this.source
-    if (source !is Player) throw IllegalConsoleActionException()
+    if (source !is Player) throw TranslatableException("command.playerRequired")
     return source.core()
 }
 

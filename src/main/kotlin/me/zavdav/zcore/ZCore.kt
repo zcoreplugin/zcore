@@ -1,9 +1,7 @@
 package me.zavdav.zcore
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException
-import me.zavdav.zcore.command.CommandPermissionException
-import me.zavdav.zcore.command.IllegalConsoleActionException
-import me.zavdav.zcore.command.commandDispatcher
+import me.zavdav.zcore.command.CommandDispatcher
+import me.zavdav.zcore.command.TranslatableException
 import me.zavdav.zcore.command.motdCommand
 import me.zavdav.zcore.config.Config
 import me.zavdav.zcore.data.Accounts
@@ -91,15 +89,9 @@ class ZCore : JavaPlugin() {
     ): Boolean {
         try {
             val parsedArgs = if (args.isEmpty()) "" else " " + args.joinToString(" ").trim()
-            commandDispatcher.execute(command.name + parsedArgs, sender)
-        } catch (_: CommandSyntaxException) {
-            sender.sendMessage(tl("command.syntaxError"))
-        } catch (_: CommandPermissionException) {
-            sender.sendMessage(tl("command.noPermission"))
-        } catch (_: IllegalConsoleActionException) {
-            sender.sendMessage(tl("command.playerRequired"))
-        } catch (_: Throwable) {
-            sender.sendMessage(tl("command.genericError"))
+            CommandDispatcher.execute(command.name + parsedArgs, sender)
+        } catch (e: TranslatableException) {
+            sender.sendMessage(tl(e.key, *e.args))
         }
 
         return true
