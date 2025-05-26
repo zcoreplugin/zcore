@@ -6,6 +6,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.user.CorePlayer
+import me.zavdav.zcore.user.core
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import kotlin.reflect.KProperty
@@ -74,9 +76,10 @@ internal fun <S : CommandSender> CommandContext<S>.require(permission: String) {
         throw CommandPermissionException()
 }
 
-internal fun CommandSender.requireIsPlayer(): Player {
-    if (this !is Player) throw IllegalConsoleActionException()
-    return this
+internal fun <S : CommandSender> CommandContext<S>.requirePlayer(): CorePlayer {
+    val source = this.source
+    if (source !is Player) throw IllegalConsoleActionException()
+    return source.core()
 }
 
 internal inline operator fun <reified V> CommandContext<*>.getValue(

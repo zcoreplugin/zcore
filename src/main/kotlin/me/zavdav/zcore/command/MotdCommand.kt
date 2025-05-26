@@ -12,7 +12,7 @@ internal val motdCommand = command(
     "zcore.motd"
 ) {
     runs(permission) {
-        val source = source.requireIsPlayer()
+        val source = requirePlayer()
         createMotd(source).forEach { source.sendMessage(it) }
     }
 }

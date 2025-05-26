@@ -5,9 +5,10 @@ import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.user.CorePlayer
 import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.user.core
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import java.math.BigDecimal
 import java.util.regex.Pattern
 
@@ -214,16 +215,16 @@ internal inline fun <S> ArgumentBuilder<S, *>.durationArgument(
     action: RequiredArgumentBuilder<S, Long>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, DurationArgument, action)
 
-internal object PlayerArgument : ArgumentType<Player> {
-    override fun parse(reader: StringReader): Player {
+internal object PlayerArgument : ArgumentType<CorePlayer> {
+    override fun parse(reader: StringReader): CorePlayer {
         val arg = reader.readArgument()
-        return Bukkit.getPlayer(arg) ?: throw IllegalArgumentException("Could not find user \"$arg\"")
+        return Bukkit.getPlayer(arg)?.core() ?: throw IllegalArgumentException("Could not find user \"$arg\"")
     }
 }
 
 internal inline fun <S> ArgumentBuilder<S, *>.playerArgument(
     name: String,
-    action: RequiredArgumentBuilder<S, Player>.() -> Unit
+    action: RequiredArgumentBuilder<S, CorePlayer>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, PlayerArgument, action)
 
 internal object OfflineUserArgument : ArgumentType<OfflineUser> {
