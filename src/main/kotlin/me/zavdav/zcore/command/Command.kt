@@ -1,10 +1,8 @@
 package me.zavdav.zcore.command
 
-import com.mojang.brigadier.tree.LiteralCommandNode
 import me.zavdav.zcore.ZCore
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandMap
-import org.bukkit.command.CommandSender
 import org.bukkit.command.PluginCommand
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.SimplePluginManager
@@ -15,10 +13,8 @@ internal class Command(
     val description: String,
     val usage: String,
     val permission: String,
-    builder: CommandBuilder
+    val builder: CommandBuilder
 ) {
-
-    val node: LiteralCommandNode<CommandSender> = commandDispatcher.register(builder)
 
     private val bukkitCommand: PluginCommand by lazy {
         val constructor = PluginCommand::class.java.getDeclaredConstructor(String::class.java, Plugin::class.java)
@@ -36,6 +32,7 @@ internal class Command(
 
     fun register() {
         commandMap.register(ZCore.INSTANCE.description.name, bukkitCommand)
+        CommandDispatcher.register(builder)
     }
 
     internal companion object {

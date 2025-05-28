@@ -1,6 +1,5 @@
 package me.zavdav.zcore.command
 
-import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -11,8 +10,6 @@ import me.zavdav.zcore.player.core
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import kotlin.reflect.KProperty
-
-internal val commandDispatcher = CommandDispatcher<CommandSender>()
 
 internal class CommandBuilder(
     val name: String,
