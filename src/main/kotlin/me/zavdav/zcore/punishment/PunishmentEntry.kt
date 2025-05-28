@@ -1,7 +1,7 @@
 package me.zavdav.zcore.punishment
 
 import me.zavdav.zcore.data.Punishments
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -11,7 +11,7 @@ import java.util.UUID
 sealed class PunishmentEntry<T>(id: EntityID<UUID>) : UUIDEntity(id) {
 
     internal companion object : UUIDEntityClass<PunishmentEntry<*>>(Punishments) {
-        fun new(issuer: OfflineUser, duration: Long?, reason: String): PunishmentEntry<*> =
+        fun new(issuer: OfflinePlayer, duration: Long?, reason: String): PunishmentEntry<*> =
             new {
                 this.issuer = issuer
                 this.timeIssued = System.currentTimeMillis()
@@ -23,8 +23,8 @@ sealed class PunishmentEntry<T>(id: EntityID<UUID>) : UUIDEntity(id) {
     /** The target of this punishment. */
     abstract val target: T
 
-    /** The user that issued this punishment. */
-    var issuer by OfflineUser referencedOn Punishments.issuer
+    /** The player that issued this punishment. */
+    var issuer by OfflinePlayer referencedOn Punishments.issuer
 
     /** The timestamp of when this punishment was issued. */
     var timeIssued: Long by Punishments.timeIssued

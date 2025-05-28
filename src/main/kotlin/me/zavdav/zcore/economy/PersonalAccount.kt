@@ -1,21 +1,21 @@
 package me.zavdav.zcore.economy
 
-import me.zavdav.zcore.data.UserAccounts
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.data.PersonalAccounts
+import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import java.math.BigDecimal
 import java.util.UUID
 
-/** Represents a user's personal account. */
-class UserAccount(id: EntityID<UUID>) : EconomyAccount(id) {
+/** Represents a player's personal account. */
+class PersonalAccount(id: EntityID<UUID>) : EconomyAccount(id) {
 
-    internal companion object : UUIDEntityClass<UserAccount>(UserAccounts) {
+    internal companion object : UUIDEntityClass<PersonalAccount>(PersonalAccounts) {
         fun new(
-            owner: OfflineUser,
+            owner: OfflinePlayer,
             balance: BigDecimal = BigDecimal.ZERO,
             overdrawLimit: BigDecimal = BigDecimal.ZERO
-        ): UserAccount {
+        ): PersonalAccount {
             val base = EconomyAccount.new(owner, balance, overdrawLimit)
             return new(base.id.value) {}
         }

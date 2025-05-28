@@ -5,8 +5,8 @@ import me.zavdav.zcore.command.TranslatableException
 import me.zavdav.zcore.command.motdCommand
 import me.zavdav.zcore.config.Config
 import me.zavdav.zcore.data.Accounts
-import me.zavdav.zcore.data.BankAccountUsers
 import me.zavdav.zcore.data.BankAccounts
+import me.zavdav.zcore.data.BankMembers
 import me.zavdav.zcore.data.Bans
 import me.zavdav.zcore.data.Homes
 import me.zavdav.zcore.data.Ignores
@@ -17,7 +17,7 @@ import me.zavdav.zcore.data.Kits
 import me.zavdav.zcore.data.Locations
 import me.zavdav.zcore.data.Mails
 import me.zavdav.zcore.data.Mutes
-import me.zavdav.zcore.data.OfflineUsers
+import me.zavdav.zcore.data.OfflinePlayers
 import me.zavdav.zcore.data.Punishments
 import me.zavdav.zcore.data.Warps
 import me.zavdav.zcore.data.WorldSpawns
@@ -25,7 +25,7 @@ import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.kit.Kit
 import me.zavdav.zcore.location.Warp
 import me.zavdav.zcore.location.WorldSpawn
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.tl
 import me.zavdav.zcore.version.ZCoreVersion
 import org.bukkit.World
@@ -52,10 +52,10 @@ class ZCore : JavaPlugin() {
 
         transaction {
             SchemaUtils.create(
-                OfflineUsers,
+                OfflinePlayers,
                 Accounts,
                 BankAccounts,
-                BankAccountUsers,
+                BankMembers,
                 Punishments,
                 Mutes,
                 Bans,
@@ -105,18 +105,18 @@ class ZCore : JavaPlugin() {
         lateinit var INSTANCE: ZCore
             private set
 
-        /** An intermediary user for actions that aren't directly performed by a user. */
+        /** An intermediary player for actions that aren't directly performed by a player. */
         @JvmStatic
-        val SYSTEM_USER: OfflineUser
+        val SYSTEM_PLAYER: OfflinePlayer
             get() = TODO("Not yet implemented")
 
         /** The current version of ZCore. */
         @JvmStatic
         val version: ZCoreVersion by lazy { ZCoreVersion.CURRENT }
 
-        /** All users that have played on the server. */
+        /** All players that have played before. */
         @JvmStatic
-        val users: Iterable<OfflineUser> get() = OfflineUser.all()
+        val players: Iterable<OfflinePlayer> get() = OfflinePlayer.all()
 
         /** The spawn points of all worlds. */
         @JvmStatic
@@ -134,15 +134,15 @@ class ZCore : JavaPlugin() {
         @JvmStatic
         val bankAccounts: Iterable<BankAccount> get() = BankAccount.all()
 
-        /** Gets an offline user by their [uuid], or `null` if no such user exists. */
+        /** Gets an offline player by their [uuid], or `null` if no such player exists. */
         @JvmStatic
-        fun getOfflineUser(uuid: UUID): OfflineUser? =
-            OfflineUser.findById(uuid)
+        fun getOfflinePlayer(uuid: UUID): OfflinePlayer? =
+            OfflinePlayer.findById(uuid)
 
-        /** Gets an offline user by their [name], or `null` if no such user exists. */
+        /** Gets an offline player by their [name], or `null` if no such player exists. */
         @JvmStatic
-        fun getOfflineUser(name: String): OfflineUser? =
-            OfflineUser.find { OfflineUsers.name.lowerCase() eq name.lowercase() }.firstOrNull()
+        fun getOfflinePlayer(name: String): OfflinePlayer? =
+            OfflinePlayer.find { OfflinePlayers.name.lowerCase() eq name.lowercase() }.firstOrNull()
 
         /** Gets a bank account by its [uuid], or `null` if no such bank account exists. */
         @JvmStatic
@@ -217,7 +217,7 @@ class ZCore : JavaPlugin() {
             Kit.find { Kits.name.lowerCase() eq name.lowercase() }.firstOrNull()
 
         /**
-         * Sets a new kit with a [name] that users can equip.
+         * Sets a new kit with a [name] that players can equip.
          * Returns `null` on success, or the kit with this name if it already exists.
          */
         @JvmStatic

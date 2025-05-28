@@ -1,9 +1,9 @@
 package me.zavdav.zcore.economy
 
-import me.zavdav.zcore.ZCore.Api.SYSTEM_USER
+import me.zavdav.zcore.ZCore.Api.SYSTEM_PLAYER
 import me.zavdav.zcore.data.Accounts
 import me.zavdav.zcore.event.EconomyTransactionEvent
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.player.OfflinePlayer
 import org.bukkit.Bukkit
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -12,12 +12,12 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.UUID
 
-/** Represents an account that is owned by a user. */
+/** Represents an account that is owned by a player. */
 sealed class EconomyAccount(id: EntityID<UUID>) : UUIDEntity(id) {
 
     internal companion object : UUIDEntityClass<EconomyAccount>(Accounts) {
         fun new(
-            owner: OfflineUser,
+            owner: OfflinePlayer,
             balance: BigDecimal = BigDecimal.ZERO,
             overdrawLimit: BigDecimal = BigDecimal.ZERO
         ): EconomyAccount =
@@ -29,7 +29,7 @@ sealed class EconomyAccount(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     /** The owner of this account. */
-    open var owner by OfflineUser referencedOn Accounts.owner
+    open var owner by OfflinePlayer referencedOn Accounts.owner
 
     private var _balance: BigDecimal by Accounts.balance
 
@@ -49,7 +49,7 @@ sealed class EconomyAccount(id: EntityID<UUID>) : UUIDEntity(id) {
         if (amount < BigDecimal.ZERO) {
             throw IllegalArgumentException("Cannot add negative amount")
         }
-        SYSTEM_USER.account.transfer(amount, this)
+        SYSTEM_PLAYER.account.transfer(amount, this)
     }
 
     /**
@@ -61,7 +61,7 @@ sealed class EconomyAccount(id: EntityID<UUID>) : UUIDEntity(id) {
         if (amount < BigDecimal.ZERO) {
             throw IllegalArgumentException("Cannot subtract negative amount")
         }
-        return transfer(amount, SYSTEM_USER.account)
+        return transfer(amount, SYSTEM_PLAYER.account)
     }
 
     /** Multiplies the current balance with a [factor]. */

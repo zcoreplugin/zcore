@@ -2,7 +2,7 @@ package me.zavdav.zcore.punishment
 
 import me.zavdav.zcore.data.Bans
 import me.zavdav.zcore.data.Punishments
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.sql.and
 import java.util.UUID
 
@@ -11,24 +11,24 @@ object BanList : PunishmentList<BanEntry, UUID>() {
 
     override val entries: Iterable<BanEntry> get() = BanEntry.all()
 
-    /** Bans a [target] user and returns the [BanEntry] that was created from the arguments. */
+    /** Bans a [target] player and returns the [BanEntry] that was created from the arguments. */
     @JvmStatic
-    fun addBan(target: OfflineUser, issuer: OfflineUser, duration: Long?, reason: String): BanEntry =
+    fun addBan(target: OfflinePlayer, issuer: OfflinePlayer, duration: Long?, reason: String): BanEntry =
         addBan(target.uuid, issuer, duration, reason)
 
     /** Bans a [target] UUID and returns the [BanEntry] that was created from the arguments. */
     @JvmStatic
-    fun addBan(target: UUID, issuer: OfflineUser, duration: Long?, reason: String): BanEntry {
+    fun addBan(target: UUID, issuer: OfflinePlayer, duration: Long?, reason: String): BanEntry {
         getActiveBan(target)?.active = false
         return BanEntry.new(target, issuer, duration, reason)
     }
 
     /**
-     * Pardons a [target] user's most recent ban.
-     * Returns `true` on success, `false` if this user is not banned.
+     * Pardons a [target] player's most recent ban.
+     * Returns `true` on success, `false` if this player is not banned.
      */
     @JvmStatic
-    fun pardonBan(target: OfflineUser) = pardonBan(target.uuid)
+    fun pardonBan(target: OfflinePlayer) = pardonBan(target.uuid)
 
     /**
      * Pardons a [target] UUID's most recent ban.
@@ -42,18 +42,18 @@ object BanList : PunishmentList<BanEntry, UUID>() {
         return true
     }
 
-    /** Gets a [target] user's active ban, or `null` if this user is not banned. */
+    /** Gets a [target] player's active ban, or `null` if this player is not banned. */
     @JvmStatic
-    fun getActiveBan(target: OfflineUser): BanEntry? = getActiveBan(target.uuid)
+    fun getActiveBan(target: OfflinePlayer): BanEntry? = getActiveBan(target.uuid)
 
     /** Gets a [target] UUID's active ban, or `null` if this UUID is not banned. */
     @JvmStatic
     fun getActiveBan(target: UUID): BanEntry? =
         BanEntry.find { Punishments.active and (Bans.target eq target) }.lastOrNull()
 
-    /** Gets a [target] user's most recent ban, or `null` if this user has never been banned. */
+    /** Gets a [target] player's most recent ban, or `null` if this player has never been banned. */
     @JvmStatic
-    fun getLastBan(target: OfflineUser): BanEntry? = getLastBan(target.uuid)
+    fun getLastBan(target: OfflinePlayer): BanEntry? = getLastBan(target.uuid)
 
     /** Gets a [target] UUID's most recent ban, or `null` if this UUID has never been banned. */
     @JvmStatic

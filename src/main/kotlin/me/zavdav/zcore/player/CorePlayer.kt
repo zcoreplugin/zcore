@@ -1,4 +1,4 @@
-package me.zavdav.zcore.user
+package me.zavdav.zcore.player
 
 import me.zavdav.zcore.ZCore
 import org.bukkit.Bukkit
@@ -11,8 +11,8 @@ fun Player.core(): CorePlayer = CorePlayer.get(this)
 /** Represents a Bukkit [Player] with additional functionality. */
 class CorePlayer(val base: Player) : Player by base {
 
-    /** The [OfflineUser] associated with this player. */
-    val data: OfflineUser get() = ZCore.getOfflineUser(uniqueId)!!
+    /** The [OfflinePlayer] associated with this player. */
+    val data: OfflinePlayer get() = ZCore.getOfflinePlayer(uniqueId)!!
 
     /** Determines if this player is AFK. */
     var isAfk: Boolean = false

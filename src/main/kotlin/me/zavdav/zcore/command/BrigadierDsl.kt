@@ -6,8 +6,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.user.CorePlayer
-import me.zavdav.zcore.user.core
+import me.zavdav.zcore.player.CorePlayer
+import me.zavdav.zcore.player.core
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import kotlin.reflect.KProperty

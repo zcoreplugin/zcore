@@ -2,7 +2,7 @@ package me.zavdav.zcore.punishment
 
 import me.zavdav.zcore.data.IpBans
 import me.zavdav.zcore.data.Punishments
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.sql.and
 import java.net.Inet4Address
 
@@ -13,7 +13,7 @@ object IpBanList : PunishmentList<IpBanEntry, String>() {
 
     /** Bans a [target] IP address and returns the [IpBanEntry] that was created from the arguments. */
     @JvmStatic
-    fun addIpBan(target: Inet4Address, issuer: OfflineUser, duration: Long?, reason: String): IpBanEntry {
+    fun addIpBan(target: Inet4Address, issuer: OfflinePlayer, duration: Long?, reason: String): IpBanEntry {
         getActiveIpBan(target)?.active = false
         return IpBanEntry.new(target, issuer, duration, reason)
     }

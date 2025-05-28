@@ -5,9 +5,9 @@ import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.user.CorePlayer
-import me.zavdav.zcore.user.OfflineUser
-import me.zavdav.zcore.user.core
+import me.zavdav.zcore.player.CorePlayer
+import me.zavdav.zcore.player.OfflinePlayer
+import me.zavdav.zcore.player.core
 import org.bukkit.Bukkit
 import java.math.BigDecimal
 
@@ -69,17 +69,17 @@ internal inline fun <S> ArgumentBuilder<S, *>.playerArgument(
     action: RequiredArgumentBuilder<S, CorePlayer>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, PlayerArgument, action)
 
-internal object OfflineUserArgument : ArgumentType<OfflineUser> {
-    override fun parse(reader: StringReader): OfflineUser {
+internal object OfflinePlayerArgument : ArgumentType<OfflinePlayer> {
+    override fun parse(reader: StringReader): OfflinePlayer {
         val name = reader.readArgument()
-        return ZCore.getOfflineUser(name) ?: throw TranslatableException("command.playerUnknown")
+        return ZCore.getOfflinePlayer(name) ?: throw TranslatableException("command.playerUnknown")
     }
 }
 
-internal inline fun <S> ArgumentBuilder<S, *>.offlineUserArgument(
+internal inline fun <S> ArgumentBuilder<S, *>.offlinePlayerArgument(
     name: String,
-    action: RequiredArgumentBuilder<S, OfflineUser>.() -> Unit
-): ArgumentBuilder<S, *> = argument(name, OfflineUserArgument, action)
+    action: RequiredArgumentBuilder<S, OfflinePlayer>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, OfflinePlayerArgument, action)
 
 internal fun StringReader.readArgument(): String {
     val start = cursor

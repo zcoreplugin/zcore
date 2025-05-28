@@ -1,17 +1,17 @@
 package me.zavdav.zcore.location
 
 import me.zavdav.zcore.data.Homes
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID
 
-/** Represents a home that belongs to a user. */
+/** Represents a home that belongs to a player. */
 class Home(id: EntityID<UUID>) : Location(id) {
 
     internal companion object : UUIDEntityClass<Home>(Homes) {
         fun new(
-            user: OfflineUser,
+            player: OfflinePlayer,
             name: String,
             world: String,
             x: Double,
@@ -22,14 +22,14 @@ class Home(id: EntityID<UUID>) : Location(id) {
         ): Home {
             val base = new(world, x, y, z, pitch, yaw)
             return new(base.id.value) {
-                this.user = user
+                this.player = player
                 this.name = name
             }
         }
     }
 
-    /** The user this home belongs to. */
-    var user by OfflineUser referencedOn Homes.user
+    /** The player this home belongs to. */
+    var player by OfflinePlayer referencedOn Homes.player
         private set
 
     /** The name of this home. */

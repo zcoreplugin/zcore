@@ -9,7 +9,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import java.math.BigDecimal
 import java.util.UUID
 
-/** Represents a kit that users can equip. */
+/** Represents a kit that players can equip. */
 class Kit(id: EntityID<UUID>) : UUIDEntity(id) {
 
     internal companion object : UUIDEntityClass<Kit>(Kits) {

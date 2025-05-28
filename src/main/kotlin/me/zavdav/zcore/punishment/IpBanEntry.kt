@@ -2,7 +2,7 @@ package me.zavdav.zcore.punishment
 
 import me.zavdav.zcore.data.IpBanUuids
 import me.zavdav.zcore.data.IpBans
-import me.zavdav.zcore.user.OfflineUser
+import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.dao.CompositeEntity
 import org.jetbrains.exposed.dao.CompositeEntityClass
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -15,7 +15,7 @@ import java.util.UUID
 class IpBanEntry(id: EntityID<UUID>) : PunishmentEntry<String>(id) {
 
     internal companion object : UUIDEntityClass<IpBanEntry>(IpBans) {
-        fun new(target: Inet4Address, issuer: OfflineUser, duration: Long?, reason: String): IpBanEntry {
+        fun new(target: Inet4Address, issuer: OfflinePlayer, duration: Long?, reason: String): IpBanEntry {
             val base = new(issuer, duration, reason)
             return new(base.id.value) {
                 this.target = target.hostAddress
@@ -26,7 +26,7 @@ class IpBanEntry(id: EntityID<UUID>) : PunishmentEntry<String>(id) {
     override var target: String by IpBans.target
         private set
 
-    /** The UUIDs of users that tried to join with this IP address. */
+    /** The UUIDs of players that tried to join with this IP address. */
     val capturedUuids by CapturedUuid via IpBanUuids
 
     class CapturedUuid(id: EntityID<CompositeID>) : CompositeEntity(id) {

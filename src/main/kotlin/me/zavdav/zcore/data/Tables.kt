@@ -6,7 +6,7 @@ import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ReferenceOption.CASCADE
 import java.math.BigDecimal
 
-internal object OfflineUsers : UUIDTable("offline_users") {
+internal object OfflinePlayers : UUIDTable("offline_players") {
     val name = varchar("name", 16).uniqueIndex()
     val nickname = varchar("nickname", 255).nullable().default(null)
     val firstJoin = long("first_join")
@@ -23,32 +23,32 @@ internal object OfflineUsers : UUIDTable("offline_users") {
     val blocksTraveled = decimal("blocks_traveled", 100000, 10).default(BigDecimal.ZERO)
     val damageDealt = long("damage_dealt").default(0)
     val damageTaken = long("damage_taken").default(0)
-    val usersKilled = long("users_killed").default(0)
+    val playersKilled = long("players_killed").default(0)
     val mobsKilled = long("mobs_killed").default(0)
     val deaths = long("deaths").default(0)
 }
 
 internal object Accounts : UUIDTable("accounts") {
-    val owner = reference("owner", OfflineUsers, CASCADE, CASCADE)
+    val owner = reference("owner", OfflinePlayers, CASCADE, CASCADE)
     val balance = decimal("balance", 100000, 10).default(BigDecimal.ZERO)
     val overdrawLimit = decimal("overdraw_limit", 100000, 10).default(BigDecimal.ZERO)
 }
 
-internal object UserAccounts: UUIDTable("user_accounts")
+internal object PersonalAccounts: UUIDTable("personal_accounts")
 
 internal object BankAccounts : UUIDTable("bank_accounts") {
     val name = varchar("name", 255).uniqueIndex()
 }
 
-internal object BankAccountUsers : CompositeIdTable("bank_account_users") {
+internal object BankMembers : CompositeIdTable("bank_members") {
     val bank = reference("bank", BankAccounts, CASCADE, CASCADE)
-    val user = reference("user", OfflineUsers, CASCADE, CASCADE)
+    val player = reference("player", OfflinePlayers, CASCADE, CASCADE)
 
-    override val primaryKey = PrimaryKey(bank, user)
+    override val primaryKey = PrimaryKey(bank, player)
 }
 
 internal object Punishments : UUIDTable("punishments") {
-    val issuer = reference("issuer", OfflineUsers, CASCADE, CASCADE)
+    val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE)
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")
@@ -56,15 +56,15 @@ internal object Punishments : UUIDTable("punishments") {
 }
 
 internal object Mutes : UUIDTable("mutes") {
-    val target = reference("user", OfflineUsers, CASCADE, CASCADE)
+    val target = reference("target", OfflinePlayers, CASCADE, CASCADE)
 }
 
 internal object Bans : UUIDTable("bans") {
-    val target = uuid("uuid")
+    val target = uuid("target")
 }
 
 internal object IpBans : UUIDTable("ip_bans") {
-    val target = varchar("ip_address", 15)
+    val target = varchar("target", 15)
 }
 
 internal object IpBanUuids : CompositeIdTable("ip_ban_uuids") {
@@ -90,10 +90,10 @@ internal object Warps : UUIDTable("warps") {
 }
 
 internal object Homes : UUIDTable("homes") {
-    val user = reference("user", OfflineUsers, CASCADE, CASCADE)
+    val player = reference("player", OfflinePlayers, CASCADE, CASCADE)
     val name = varchar("name", 255)
 
-    init { uniqueIndex(user, name) }
+    init { uniqueIndex(player, name) }
 }
 
 internal object Kits : UUIDTable("kits") {
@@ -113,14 +113,14 @@ internal object KitItems : CompositeIdTable("kit_items") {
 }
 
 internal object Mails : UUIDTable("mail") {
-    val sender = reference("sender", OfflineUsers, CASCADE, CASCADE)
-    val recipient = reference("recipient", OfflineUsers, CASCADE, CASCADE)
+    val sender = reference("sender", OfflinePlayers, CASCADE, CASCADE)
+    val recipient = reference("recipient", OfflinePlayers, CASCADE, CASCADE)
     val message = text("message")
 }
 
 internal object Ignores : CompositeIdTable("ignores") {
-    val user = reference("user", OfflineUsers, CASCADE, CASCADE)
-    val target = reference("target", OfflineUsers, CASCADE, CASCADE)
+    val player = reference("player", OfflinePlayers, CASCADE, CASCADE)
+    val target = reference("target", OfflinePlayers, CASCADE, CASCADE)
 
-    override val primaryKey = PrimaryKey(user, target)
+    override val primaryKey = PrimaryKey(player, target)
 }
