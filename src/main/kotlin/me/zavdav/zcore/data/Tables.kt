@@ -12,7 +12,7 @@ internal object OfflinePlayers : UUIDTable("offline_players") {
     val firstJoin = long("first_join")
     val lastJoin = long("last_join")
     val lastOnline = long("last_online")
-    val account = reference("account", Accounts, CASCADE, CASCADE)
+    val account = reference("account", PersonalAccounts, CASCADE, CASCADE)
     val invincible = bool("invincible").default(false)
     val vanished = bool("vanished").default(false)
     val chatEnabled = bool("chat_enabled").default(true)
@@ -28,16 +28,17 @@ internal object OfflinePlayers : UUIDTable("offline_players") {
     val deaths = long("deaths").default(0)
 }
 
-internal object Accounts : UUIDTable("accounts") {
+internal object PersonalAccounts: UUIDTable("personal_accounts") {
     val owner = reference("owner", OfflinePlayers, CASCADE, CASCADE)
     val balance = decimal("balance", 100000, 10).default(BigDecimal.ZERO)
     val overdrawLimit = decimal("overdraw_limit", 100000, 10).default(BigDecimal.ZERO)
 }
 
-internal object PersonalAccounts: UUIDTable("personal_accounts")
-
 internal object BankAccounts : UUIDTable("bank_accounts") {
     val name = varchar("name", 255).uniqueIndex()
+    val owner = reference("owner", OfflinePlayers, CASCADE, CASCADE)
+    val balance = decimal("balance", 100000, 10).default(BigDecimal.ZERO)
+    val overdrawLimit = decimal("overdraw_limit", 100000, 10).default(BigDecimal.ZERO)
 }
 
 internal object BankMembers : CompositeIdTable("bank_members") {
@@ -47,7 +48,8 @@ internal object BankMembers : CompositeIdTable("bank_members") {
     override val primaryKey = PrimaryKey(bank, player)
 }
 
-internal object Punishments : UUIDTable("punishments") {
+internal object MuteEntries : UUIDTable("mute_entries") {
+    val target = reference("target", OfflinePlayers, CASCADE, CASCADE)
     val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE)
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
@@ -55,26 +57,39 @@ internal object Punishments : UUIDTable("punishments") {
     val active = bool("active").default(true)
 }
 
-internal object Mutes : UUIDTable("mutes") {
-    val target = reference("target", OfflinePlayers, CASCADE, CASCADE)
-}
-
-internal object Bans : UUIDTable("bans") {
+internal object BanEntries : UUIDTable("ban_entries") {
     val target = uuid("target")
+    val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE)
+    val timeIssued = long("time_issued")
+    val duration = long("duration").nullable()
+    val reason = text("reason")
+    val active = bool("active").default(true)
 }
 
-internal object IpBans : UUIDTable("ip_bans") {
+internal object IpBanEntries : UUIDTable("ip_ban_entries") {
     val target = varchar("target", 15)
+    val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE)
+    val timeIssued = long("time_issued")
+    val duration = long("duration").nullable()
+    val reason = text("reason")
+    val active = bool("active").default(true)
 }
 
-internal object IpBanUuids : CompositeIdTable("ip_ban_uuids") {
-    val ipBan = reference("ip_ban", IpBans, CASCADE, CASCADE)
-    val uuid = uuid("uuid")
+internal object Homes : UUIDTable("homes") {
+    val player = reference("player", OfflinePlayers, CASCADE, CASCADE)
+    val name = varchar("name", 255)
+    val world = varchar("world", 255)
+    val x = double("x")
+    val y = double("y")
+    val z = double("z")
+    val pitch = float("pitch")
+    val yaw = float("yaw")
 
-    override val primaryKey = PrimaryKey(ipBan, uuid)
+    init { uniqueIndex(player, name) }
 }
 
-internal object Locations : UUIDTable("locations") {
+internal object Warps : UUIDTable("warps") {
+    val name = varchar("name", 255).uniqueIndex()
     val world = varchar("world", 255)
     val x = double("x")
     val y = double("y")
@@ -83,36 +98,23 @@ internal object Locations : UUIDTable("locations") {
     val yaw = float("yaw")
 }
 
-internal object WorldSpawns : UUIDTable("world_spawns")
-
-internal object Warps : UUIDTable("warps") {
-    val name = varchar("name", 255).uniqueIndex()
-}
-
-internal object Homes : UUIDTable("homes") {
-    val player = reference("player", OfflinePlayers, CASCADE, CASCADE)
-    val name = varchar("name", 255)
-
-    init { uniqueIndex(player, name) }
-}
-
 internal object Kits : UUIDTable("kits") {
     val name = varchar("name", 255).uniqueIndex()
     val cost = decimal("cost", 100000, 10).default(BigDecimal.ZERO)
     val cooldown = long("cooldown").default(0)
 }
 
-internal object KitItems : CompositeIdTable("kit_items") {
+internal object KitItems : UUIDTable("kit_items") {
     val kit = reference("kit", Kits, CASCADE, CASCADE)
-    val slot = integer("slot").entityId()
+    val slot = integer("slot")
     val material = enumeration<Material>("material")
-    val data = integer("data")
+    val data = short("data")
     val amount = integer("amount")
 
-    override val primaryKey = PrimaryKey(kit, slot)
+    init { uniqueIndex(kit, slot) }
 }
 
-internal object Mails : UUIDTable("mail") {
+internal object Mails : UUIDTable("mails") {
     val sender = reference("sender", OfflinePlayers, CASCADE, CASCADE)
     val recipient = reference("recipient", OfflinePlayers, CASCADE, CASCADE)
     val message = text("message")
