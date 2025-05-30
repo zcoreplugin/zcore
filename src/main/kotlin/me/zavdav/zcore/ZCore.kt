@@ -4,73 +4,66 @@ import me.zavdav.zcore.command.CommandDispatcher
 import me.zavdav.zcore.command.TranslatableException
 import me.zavdav.zcore.command.motdCommand
 import me.zavdav.zcore.config.Config
-import me.zavdav.zcore.data.Accounts
+import me.zavdav.zcore.data.BanEntries
 import me.zavdav.zcore.data.BankAccounts
 import me.zavdav.zcore.data.BankMembers
-import me.zavdav.zcore.data.Bans
 import me.zavdav.zcore.data.Homes
 import me.zavdav.zcore.data.Ignores
-import me.zavdav.zcore.data.IpBanUuids
-import me.zavdav.zcore.data.IpBans
+import me.zavdav.zcore.data.IpBanEntries
 import me.zavdav.zcore.data.KitItems
 import me.zavdav.zcore.data.Kits
-import me.zavdav.zcore.data.Locations
 import me.zavdav.zcore.data.Mails
-import me.zavdav.zcore.data.Mutes
+import me.zavdav.zcore.data.MuteEntries
 import me.zavdav.zcore.data.OfflinePlayers
-import me.zavdav.zcore.data.Punishments
+import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.data.Warps
-import me.zavdav.zcore.data.WorldSpawns
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.kit.Kit
+import me.zavdav.zcore.kit.KitItem
 import me.zavdav.zcore.location.Warp
-import me.zavdav.zcore.location.WorldSpawn
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.tl
 import me.zavdav.zcore.version.ZCoreVersion
-import org.bukkit.World
+import org.bukkit.Location
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.lowerCase
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.math.BigDecimal
+import java.sql.Connection
 import java.util.UUID
 
 /** The main class of the ZCore plugin. */
 class ZCore : JavaPlugin() {
 
+    private lateinit var transaction: Transaction
+
     override fun onEnable() {
         INSTANCE = this
         Config.load()
         Database.connect("jdbc:h2:${dataFolder.absolutePath}/db/zcore", "org.h2.Driver")
+        transaction = TransactionManager.currentOrNew(Connection.TRANSACTION_REPEATABLE_READ)
 
-        transaction {
-            SchemaUtils.create(
-                OfflinePlayers,
-                Accounts,
-                BankAccounts,
-                BankMembers,
-                Punishments,
-                Mutes,
-                Bans,
-                IpBans,
-                IpBanUuids,
-                Locations,
-                WorldSpawns,
-                Warps,
-                Homes,
-                Kits,
-                KitItems,
-                Mails,
-                Ignores
-            )
-        }
+        SchemaUtils.create(
+            OfflinePlayers,
+            PersonalAccounts,
+            BankAccounts,
+            BankMembers,
+            MuteEntries,
+            BanEntries,
+            IpBanEntries,
+            Homes,
+            Warps,
+            Kits,
+            KitItems,
+            Mails,
+            Ignores
+        )
 
         val commands = mutableListOf(
             motdCommand
@@ -79,7 +72,10 @@ class ZCore : JavaPlugin() {
         commands.forEach { it.register() }
     }
 
-    override fun onDisable() { }
+    override fun onDisable() {
+        transaction.commit()
+        transaction.close()
+    }
 
     override fun onCommand(
         sender: CommandSender,
@@ -118,10 +114,6 @@ class ZCore : JavaPlugin() {
         @JvmStatic
         val players: Iterable<OfflinePlayer> get() = OfflinePlayer.all()
 
-        /** The spawn points of all worlds. */
-        @JvmStatic
-        val worldSpawns: Iterable<WorldSpawn> get() = WorldSpawn.all()
-
         /** All existing warps. */
         @JvmStatic
         val warps: Iterable<Warp> get() = Warp.all()
@@ -154,26 +146,6 @@ class ZCore : JavaPlugin() {
         fun getBankAccount(name: String): BankAccount? =
             BankAccount.find { BankAccounts.name.lowerCase() eq name.lowercase() }.firstOrNull()
 
-        /** Gets the spawn point of a [world], or `null` if this world does not exist. */
-        @JvmStatic
-        fun getWorldSpawn(world: World): WorldSpawn? =
-            WorldSpawn.find { Locations.world.lowerCase() eq world.name.lowercase() }.firstOrNull()
-
-        /** Sets the spawn point of a [world] to a [location]. */
-        @JvmStatic
-        fun setWorldSpawn(world: World, location: org.bukkit.Location) {
-            world.setSpawnLocation(location.x.toInt(), location.y.toInt(), location.z.toInt())
-            WorldSpawns.deleteWhere { Locations.world.lowerCase() eq world.name.lowercase() }
-            WorldSpawn.new(
-                world.name,
-                location.x,
-                location.y,
-                location.z,
-                location.pitch,
-                location.yaw
-            )
-        }
-
         /** Gets a warp by its [name], or `null` if no such warp exists. */
         @JvmStatic
         fun getWarp(name: String): Warp? =
@@ -184,18 +156,18 @@ class ZCore : JavaPlugin() {
          * Returns `null` on success, or the warp with this name if it already exists.
          */
         @JvmStatic
-        fun setWarp(name: String, location: org.bukkit.Location): Warp? {
+        fun setWarp(name: String, location: Location): Warp? {
             val warp = getWarp(name)
             if (warp == null) {
-                Warp.new(
-                    name,
-                    location.world.name,
-                    location.x,
-                    location.y,
-                    location.z,
-                    location.pitch,
-                    location.yaw
-                )
+                Warp.new {
+                    this.name = name
+                    this.world = location.world.name
+                    this.x = location.x
+                    this.y = location.y
+                    this.z = location.z
+                    this.pitch = location.pitch
+                    this.yaw = location.yaw
+                }
             }
             return warp
         }
@@ -229,7 +201,21 @@ class ZCore : JavaPlugin() {
         ): Kit? {
             val kit = getKit(name)
             if (kit == null) {
-                Kit.new(name, items, cost, cooldown)
+                val newKit = Kit.new {
+                    this.name = name
+                    this.cost = cost
+                    this.cooldown = cooldown
+                }
+
+                items.forEach { (slot, item) ->
+                    KitItem.new {
+                        this.kit = newKit
+                        this.slot = slot
+                        this.material = item.type
+                        this.data = item.durability
+                        this.amount = item.amount
+                    }
+                }
             }
             return kit
         }

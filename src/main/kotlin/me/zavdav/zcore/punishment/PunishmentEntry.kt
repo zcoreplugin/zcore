@@ -1,37 +1,21 @@
 package me.zavdav.zcore.punishment
 
-import me.zavdav.zcore.data.Punishments
 import me.zavdav.zcore.player.OfflinePlayer
-import org.jetbrains.exposed.dao.UUIDEntity
-import org.jetbrains.exposed.dao.UUIDEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
-import java.util.UUID
 
 /** Represents a punishment with a target [T]. */
-sealed class PunishmentEntry<T>(id: EntityID<UUID>) : UUIDEntity(id) {
-
-    internal companion object : UUIDEntityClass<PunishmentEntry<*>>(Punishments) {
-        fun new(issuer: OfflinePlayer, duration: Long?, reason: String): PunishmentEntry<*> =
-            new {
-                this.issuer = issuer
-                this.timeIssued = System.currentTimeMillis()
-                this.duration = duration
-                this.reason = reason
-            }
-    }
+sealed interface PunishmentEntry<T> {
 
     /** The target of this punishment. */
-    abstract val target: T
+    val target: T
 
     /** The player that issued this punishment. */
-    var issuer by OfflinePlayer referencedOn Punishments.issuer
+    var issuer: OfflinePlayer
 
     /** The timestamp of when this punishment was issued. */
-    var timeIssued: Long by Punishments.timeIssued
-        private set
+    val timeIssued: Long
 
     /** The duration of this punishment in milliseconds, or `null` if this punishment is permanent. */
-    var duration: Long? by Punishments.duration
+    var duration: Long?
 
     /** The timestamp of when this punishment expires, or `null` if this punishment is permanent. */
     var expiration: Long?
@@ -41,9 +25,9 @@ sealed class PunishmentEntry<T>(id: EntityID<UUID>) : UUIDEntity(id) {
         }
 
     /** The reason for this punishment. */
-    var reason: String by Punishments.reason
+    var reason: String
 
     /** Determines if this punishment is active. */
-    var active: Boolean by Punishments.active
+    var active: Boolean
 
 }

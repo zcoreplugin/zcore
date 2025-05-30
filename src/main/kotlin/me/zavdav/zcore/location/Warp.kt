@@ -1,32 +1,36 @@
 package me.zavdav.zcore.location
 
 import me.zavdav.zcore.data.Warps
+import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID
 
 /** Represents a location that players can warp to. */
-class Warp(id: EntityID<UUID>) : Location(id) {
+class Warp private constructor(id: EntityID<UUID>) : UUIDEntity(id), NamedLocation {
 
-    internal companion object : UUIDEntityClass<Warp>(Warps) {
-        fun new(
-            name: String,
-            world: String,
-            x: Double,
-            y: Double,
-            z: Double,
-            pitch: Float,
-            yaw: Float
-        ): Warp {
-            val base = new(world, x, y, z, pitch, yaw)
-            return new(base.id.value) {
-                this.name = name
-            }
-        }
-    }
+    companion object : UUIDEntityClass<Warp>(Warps)
 
     /** The name of this warp. */
-    var name: String by Warps.name
-        private set
+    override var name: String by Warps.name
+        internal set
+
+    override var world: String by Warps.world
+        internal set
+
+    override var x: Double by Warps.x
+        internal set
+
+    override var y: Double by Warps.y
+        internal set
+
+    override var z: Double by Warps.z
+        internal set
+
+    override var pitch: Float by Warps.pitch
+        internal set
+
+    override var yaw: Float by Warps.yaw
+        internal set
 
 }

@@ -12,7 +12,7 @@ fun Player.core(): CorePlayer = CorePlayer.get(this)
 class CorePlayer(val base: Player) : Player by base {
 
     /** The [OfflinePlayer] associated with this player. */
-    val data: OfflinePlayer get() = ZCore.getOfflinePlayer(uniqueId)!!
+    val data: OfflinePlayer = ZCore.getOfflinePlayer(uniqueId)!!
 
     /** Determines if this player is AFK. */
     var isAfk: Boolean = false

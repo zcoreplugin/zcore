@@ -1,6 +1,6 @@
 package me.zavdav.zcore.player
 
-import me.zavdav.zcore.data.Accounts
+import me.zavdav.zcore.data.BankAccounts
 import me.zavdav.zcore.data.Homes
 import me.zavdav.zcore.data.Ignores
 import me.zavdav.zcore.data.Mails
@@ -20,20 +20,9 @@ import java.math.BigDecimal
 import java.util.UUID
 
 /** Represents an offline player that has played before. */
-sealed class OfflinePlayer(id: EntityID<UUID>) : UUIDEntity(id) {
+class OfflinePlayer private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 
-    internal companion object : UUIDEntityClass<OfflinePlayer>(OfflinePlayers) {
-        fun new(uuid: UUID, name: String): OfflinePlayer {
-            val now = System.currentTimeMillis()
-            return new(uuid) {
-                this.name = name
-                this.firstJoin = now
-                this.lastJoin = now
-                this.lastOnline = now
-                this.account = PersonalAccount.new(this)
-            }
-        }
-    }
+    companion object : UUIDEntityClass<OfflinePlayer>(OfflinePlayers)
 
     /** This player's UUID. */
     val uuid: UUID get() = id.value
@@ -47,7 +36,7 @@ sealed class OfflinePlayer(id: EntityID<UUID>) : UUIDEntity(id) {
 
     /** The timestamp of this player's first join. */
     var firstJoin: Long by OfflinePlayers.firstJoin
-        private set
+        internal set
 
     /** The timestamp of this player's last join. */
     var lastJoin: Long by OfflinePlayers.lastJoin
@@ -59,10 +48,10 @@ sealed class OfflinePlayer(id: EntityID<UUID>) : UUIDEntity(id) {
 
     /** This player's account where their balance is stored. */
     var account by PersonalAccount referencedOn OfflinePlayers.account
-        private set
+        internal set
 
     /** The bank accounts that this player owns. */
-    val bankAccounts by BankAccount referrersOn Accounts.owner
+    val bankAccounts by BankAccount referrersOn BankAccounts.owner
 
     /** This player's homes. */
     val homes by Home referrersOn Homes.player
@@ -134,16 +123,16 @@ sealed class OfflinePlayer(id: EntityID<UUID>) : UUIDEntity(id) {
     fun setHome(name: String, location: org.bukkit.Location): Home? {
         val home = getHome(name)
         if (home == null) {
-            Home.new(
-                this,
-                name,
-                location.world.name,
-                location.x,
-                location.y,
-                location.z,
-                location.pitch,
-                location.yaw
-            )
+            Home.new {
+                this.player = this@OfflinePlayer
+                this.name = name
+                this.world = location.world.name
+                this.x = location.x
+                this.y = location.y
+                this.z = location.z
+                this.pitch = location.pitch
+                this.yaw = location.yaw
+            }
         }
         return home
     }
@@ -160,7 +149,11 @@ sealed class OfflinePlayer(id: EntityID<UUID>) : UUIDEntity(id) {
 
     /** Adds a [message] from a [sender] to this player's mail. */
     fun addMail(sender: OfflinePlayer, message: String) {
-        Mail.new(sender, this, message)
+        Mail.new {
+            this.sender = sender
+            this.recipient = this@OfflinePlayer
+            this.message = message
+        }
     }
 
     /** Clears this player's mail. */

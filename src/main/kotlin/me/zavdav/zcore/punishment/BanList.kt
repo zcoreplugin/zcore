@@ -1,13 +1,12 @@
 package me.zavdav.zcore.punishment
 
-import me.zavdav.zcore.data.Bans
-import me.zavdav.zcore.data.Punishments
+import me.zavdav.zcore.data.BanEntries
 import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.sql.and
 import java.util.UUID
 
 /** Represents a record of all issued bans. */
-object BanList : PunishmentList<BanEntry, UUID>() {
+object BanList : PunishmentList<BanEntry, UUID> {
 
     override val entries: Iterable<BanEntry> get() = BanEntry.all()
 
@@ -20,7 +19,13 @@ object BanList : PunishmentList<BanEntry, UUID>() {
     @JvmStatic
     fun addBan(target: UUID, issuer: OfflinePlayer, duration: Long?, reason: String): BanEntry {
         getActiveBan(target)?.active = false
-        return BanEntry.new(target, issuer, duration, reason)
+        return BanEntry.new {
+            this.target = target
+            this.issuer = issuer
+            this.timeIssued = System.currentTimeMillis()
+            this.duration = duration
+            this.reason = reason
+        }
     }
 
     /**
@@ -49,7 +54,7 @@ object BanList : PunishmentList<BanEntry, UUID>() {
     /** Gets a [target] UUID's active ban, or `null` if this UUID is not banned. */
     @JvmStatic
     fun getActiveBan(target: UUID): BanEntry? =
-        BanEntry.find { Punishments.active and (Bans.target eq target) }.lastOrNull()
+        BanEntry.find { BanEntries.active and (BanEntries.target eq target) }.lastOrNull()
 
     /** Gets a [target] player's most recent ban, or `null` if this player has never been banned. */
     @JvmStatic
@@ -58,6 +63,6 @@ object BanList : PunishmentList<BanEntry, UUID>() {
     /** Gets a [target] UUID's most recent ban, or `null` if this UUID has never been banned. */
     @JvmStatic
     fun getLastBan(target: UUID): BanEntry? =
-        BanEntry.find { Bans.target eq target }.lastOrNull()
+        BanEntry.find { BanEntries.target eq target }.lastOrNull()
 
 }

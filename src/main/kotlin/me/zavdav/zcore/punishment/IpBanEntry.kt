@@ -1,39 +1,29 @@
 package me.zavdav.zcore.punishment
 
-import me.zavdav.zcore.data.IpBanUuids
-import me.zavdav.zcore.data.IpBans
+import me.zavdav.zcore.data.IpBanEntries
 import me.zavdav.zcore.player.OfflinePlayer
-import org.jetbrains.exposed.dao.CompositeEntity
-import org.jetbrains.exposed.dao.CompositeEntityClass
+import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
-import org.jetbrains.exposed.dao.id.CompositeID
 import org.jetbrains.exposed.dao.id.EntityID
-import java.net.Inet4Address
 import java.util.UUID
 
 /** Represents a ban targeting an IP address. */
-class IpBanEntry(id: EntityID<UUID>) : PunishmentEntry<String>(id) {
+class IpBanEntry private constructor(id: EntityID<UUID>) : UUIDEntity(id), PunishmentEntry<String> {
 
-    internal companion object : UUIDEntityClass<IpBanEntry>(IpBans) {
-        fun new(target: Inet4Address, issuer: OfflinePlayer, duration: Long?, reason: String): IpBanEntry {
-            val base = new(issuer, duration, reason)
-            return new(base.id.value) {
-                this.target = target.hostAddress
-            }
-        }
-    }
+    companion object : UUIDEntityClass<IpBanEntry>(IpBanEntries)
 
-    override var target: String by IpBans.target
-        private set
+    override var target: String by IpBanEntries.target
+        internal set
 
-    /** The UUIDs of players that tried to join with this IP address. */
-    val capturedUuids by CapturedUuid via IpBanUuids
+    override var issuer by OfflinePlayer referencedOn IpBanEntries.issuer
 
-    class CapturedUuid(id: EntityID<CompositeID>) : CompositeEntity(id) {
-        internal companion object : CompositeEntityClass<CapturedUuid>(IpBanUuids)
+    override var timeIssued: Long by IpBanEntries.timeIssued
+        internal set
 
-        val value: UUID by IpBanUuids.uuid
+    override var duration: Long? by IpBanEntries.duration
 
-    }
+    override var reason: String by IpBanEntries.reason
+
+    override var active: Boolean by IpBanEntries.active
 
 }

@@ -2,47 +2,34 @@ package me.zavdav.zcore.kit
 
 import me.zavdav.zcore.data.KitItems
 import org.bukkit.Material
-import org.jetbrains.exposed.dao.CompositeEntity
-import org.jetbrains.exposed.dao.CompositeEntityClass
-import org.jetbrains.exposed.dao.id.CompositeID
+import org.jetbrains.exposed.dao.UUIDEntity
+import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import java.util.UUID
 
 /** Represents an item stack of a kit. */
-class KitItem(id: EntityID<CompositeID>) : CompositeEntity(id) {
+class KitItem private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 
-    internal companion object : CompositeEntityClass<KitItem>(KitItems) {
-        fun new(
-            kit: Kit,
-            slot: Int,
-            material: Material,
-            data: Int,
-            amount: Int
-        ): KitItem =
-            new(CompositeID {
-                it[KitItems.kit] = kit.id
-                it[KitItems.slot] = slot
-            }) {
-                this.material = material
-                this.data = data
-                this.amount = amount
-            }
-    }
+    companion object : UUIDEntityClass<KitItem>(KitItems)
 
-    private var _slot by KitItems.slot
+    /** The kit this stack belongs to. */
+    var kit by Kit referencedOn KitItems.kit
+        internal set
 
-    /** The inventory slot the stack is in. */
-    val slot: Int get() = _slot.value
+    /** The inventory slot this stack is in. */
+    var slot: Int by KitItems.slot
+        internal set
 
     /** The item material. */
     var material: Material by KitItems.material
-        private set
+        internal set
 
     /** The item data. */
-    var data: Int by KitItems.data
-        private set
+    var data: Short by KitItems.data
+        internal set
 
     /** The amount of items in this stack. */
     var amount: Int by KitItems.amount
-        private set
+        internal set
 
 }

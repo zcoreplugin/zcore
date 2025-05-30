@@ -1,12 +1,11 @@
 package me.zavdav.zcore.punishment
 
-import me.zavdav.zcore.data.Mutes
-import me.zavdav.zcore.data.Punishments
+import me.zavdav.zcore.data.MuteEntries
 import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.sql.and
 
 /** Represents a record of all issued mutes. */
-object MuteList : PunishmentList<MuteEntry, OfflinePlayer>() {
+object MuteList : PunishmentList<MuteEntry, OfflinePlayer> {
 
     override val entries: Iterable<MuteEntry> get() = MuteEntry.all()
 
@@ -14,7 +13,13 @@ object MuteList : PunishmentList<MuteEntry, OfflinePlayer>() {
     @JvmStatic
     fun addMute(target: OfflinePlayer, issuer: OfflinePlayer, duration: Long?, reason: String): MuteEntry {
         getActiveMute(target)?.active = false
-        return MuteEntry.new(target, issuer, duration, reason)
+        return MuteEntry.new {
+            this.target = target
+            this.issuer = issuer
+            this.timeIssued = System.currentTimeMillis()
+            this.duration = duration
+            this.reason = reason
+        }
     }
 
     /**
@@ -32,11 +37,11 @@ object MuteList : PunishmentList<MuteEntry, OfflinePlayer>() {
     /** Gets a [target] player's active mute, or `null` if this player is not muted. */
     @JvmStatic
     fun getActiveMute(target: OfflinePlayer): MuteEntry? =
-        MuteEntry.find { Punishments.active and (Mutes.target eq target.uuid) }.lastOrNull()
+        MuteEntry.find { MuteEntries.active and (MuteEntries.target eq target.uuid) }.lastOrNull()
 
     /** Gets a [target] player's most recent mute, or `null` if this player has never been muted. */
     @JvmStatic
     fun getLastMute(target: OfflinePlayer): MuteEntry? =
-        MuteEntry.find { Mutes.target eq target.uuid }.lastOrNull()
+        MuteEntry.find { MuteEntries.target eq target.uuid }.lastOrNull()
 
 }

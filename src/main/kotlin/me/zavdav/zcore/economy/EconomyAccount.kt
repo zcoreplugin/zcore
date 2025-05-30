@@ -1,48 +1,22 @@
 package me.zavdav.zcore.economy
 
 import me.zavdav.zcore.ZCore.Api.SYSTEM_PLAYER
-import me.zavdav.zcore.data.Accounts
 import me.zavdav.zcore.event.EconomyTransactionEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import org.bukkit.Bukkit
-import org.jetbrains.exposed.dao.UUIDEntity
-import org.jetbrains.exposed.dao.UUIDEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
 import java.math.BigDecimal
-import java.math.RoundingMode
-import java.util.UUID
 
 /** Represents an account that is owned by a player. */
-sealed class EconomyAccount(id: EntityID<UUID>) : UUIDEntity(id) {
-
-    internal companion object : UUIDEntityClass<EconomyAccount>(Accounts) {
-        fun new(
-            owner: OfflinePlayer,
-            balance: BigDecimal = BigDecimal.ZERO,
-            overdrawLimit: BigDecimal = BigDecimal.ZERO
-        ): EconomyAccount =
-            new {
-                this.owner = owner
-                this._balance = balance
-                this.overdrawLimit = overdrawLimit
-            }
-    }
+sealed interface EconomyAccount {
 
     /** The owner of this account. */
-    open var owner by OfflinePlayer referencedOn Accounts.owner
-
-    private var _balance: BigDecimal by Accounts.balance
+    var owner: OfflinePlayer
 
     /** This account's current balance. */
-    var balance: BigDecimal get() = _balance
-        set(value) {
-            if (value < -overdrawLimit) return
-            // Set to 10 decimal places
-            _balance = value.setScale(10, RoundingMode.FLOOR)
-        }
+    var balance: BigDecimal
 
     /** Determines how far this account can be overdrawn. */
-    var overdrawLimit: BigDecimal by Accounts.overdrawLimit
+    var overdrawLimit: BigDecimal
 
     /** Adds an [amount] to the current balance. */
     fun add(amount: BigDecimal) {
@@ -97,7 +71,7 @@ sealed class EconomyAccount(id: EntityID<UUID>) : UUIDEntity(id) {
      * Returns `true` on success, `false` if the [overdrawLimit] would be
      * exceeded by doing so.
      */
-    open fun transfer(amount: BigDecimal, account: EconomyAccount): Boolean {
+    fun transfer(amount: BigDecimal, account: EconomyAccount): Boolean {
         if (amount < BigDecimal.ZERO) {
             throw IllegalArgumentException("Cannot transfer negative amount")
         }

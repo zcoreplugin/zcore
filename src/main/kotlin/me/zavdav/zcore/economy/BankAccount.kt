@@ -3,6 +3,7 @@ package me.zavdav.zcore.economy
 import me.zavdav.zcore.data.BankAccounts
 import me.zavdav.zcore.data.BankMembers
 import me.zavdav.zcore.player.OfflinePlayer
+import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -10,40 +11,43 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.UUID
 
 /** Represents a bank account that is owned by a player. */
-class BankAccount(id: EntityID<UUID>) : EconomyAccount(id) {
+class BankAccount private constructor(id: EntityID<UUID>) : UUIDEntity(id), EconomyAccount {
 
-    internal companion object : UUIDEntityClass<BankAccount>(BankAccounts) {
-        fun new(
-            name: String,
-            owner: OfflinePlayer,
-            balance: BigDecimal = BigDecimal.ZERO,
-            overdrawLimit: BigDecimal = BigDecimal.ZERO
-        ): BankAccount {
-            val base = new(owner, balance, overdrawLimit)
-            return new(base.id.value) {
-                this.name = name
-            }
-        }
-    }
+    companion object : UUIDEntityClass<BankAccount>(BankAccounts)
 
     /** This bank account's UUID. */
     val uuid: UUID get() = id.value
 
-    override var owner: OfflinePlayer get() = super.owner
-        set(value) {
-            val prevOwner = super.owner
-            super.owner = value
-            addPlayer(prevOwner)
-        }
-
     /** This bank account's name. */
     var name: String by BankAccounts.name
 
+    private var _owner by OfflinePlayer referencedOn BankAccounts.owner
+
+    override var owner: OfflinePlayer
+        get() = _owner
+        set(value) {
+            val prevOwner = _owner
+            _owner = value
+            addPlayer(prevOwner)
+        }
+
     /** The players that can access this bank account. */
     val members by OfflinePlayer via BankMembers
+
+    private var _balance: BigDecimal by BankAccounts.balance
+
+    override var balance: BigDecimal
+        get() = _balance
+        set(value) {
+            if (value < -overdrawLimit) return
+            _balance = value.setScale(10, RoundingMode.FLOOR)
+        }
+
+    override var overdrawLimit: BigDecimal by BankAccounts.overdrawLimit
 
     /**
      * Adds a [player] to this bank account.
