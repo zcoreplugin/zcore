@@ -12,7 +12,6 @@ internal object OfflinePlayers : UUIDTable("offline_players") {
     val firstJoin = long("first_join")
     val lastJoin = long("last_join")
     val lastOnline = long("last_online")
-    val account = reference("account", PersonalAccounts, CASCADE, CASCADE)
     val invincible = bool("invincible").default(false)
     val vanished = bool("vanished").default(false)
     val chatEnabled = bool("chat_enabled").default(true)
@@ -28,8 +27,8 @@ internal object OfflinePlayers : UUIDTable("offline_players") {
     val deaths = long("deaths").default(0)
 }
 
-internal object PersonalAccounts: UUIDTable("personal_accounts") {
-    val owner = reference("owner", OfflinePlayers, CASCADE, CASCADE)
+internal object PersonalAccounts : UUIDTable("personal_accounts") {
+    val owner = reference("owner", OfflinePlayers, CASCADE, CASCADE).uniqueIndex()
     val balance = decimal("balance", 100000, 10).default(BigDecimal.ZERO)
     val overdrawLimit = decimal("overdraw_limit", 100000, 10).default(BigDecimal.ZERO)
 }

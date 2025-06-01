@@ -5,6 +5,7 @@ import me.zavdav.zcore.data.Homes
 import me.zavdav.zcore.data.Ignores
 import me.zavdav.zcore.data.Mails
 import me.zavdav.zcore.data.OfflinePlayers
+import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.PersonalAccount
 import me.zavdav.zcore.location.Home
@@ -47,8 +48,7 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         internal set
 
     /** This player's account where their balance is stored. */
-    var account by PersonalAccount referencedOn OfflinePlayers.account
-        internal set
+    val account by PersonalAccount backReferencedOn PersonalAccounts.owner
 
     /** The bank accounts that this player owns. */
     val bankAccounts by BankAccount referrersOn BankAccounts.owner
@@ -60,7 +60,7 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     val mail by Mail referrersOn Mails.recipient
 
     /** The players that this player is ignoring. */
-    val ignoredPlayers by OfflinePlayer via Ignores
+    val ignoredPlayers by OfflinePlayer.via(Ignores.player, Ignores.target)
 
     /** Determines if this player is invincible. */
     var invincible: Boolean by OfflinePlayers.invincible

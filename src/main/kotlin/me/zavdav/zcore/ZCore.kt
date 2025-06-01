@@ -1,8 +1,6 @@
 package me.zavdav.zcore
 
-import me.zavdav.zcore.command.CommandDispatcher
-import me.zavdav.zcore.command.TranslatableException
-import me.zavdav.zcore.command.motdCommand
+import me.zavdav.zcore.command.*
 import me.zavdav.zcore.config.Config
 import me.zavdav.zcore.data.BanEntries
 import me.zavdav.zcore.data.BankAccounts
@@ -18,6 +16,7 @@ import me.zavdav.zcore.data.OfflinePlayers
 import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.data.Warps
 import me.zavdav.zcore.economy.BankAccount
+import me.zavdav.zcore.event.JoinQuitListener
 import me.zavdav.zcore.kit.Kit
 import me.zavdav.zcore.kit.KitItem
 import me.zavdav.zcore.location.Warp
@@ -66,10 +65,14 @@ class ZCore : JavaPlugin() {
         )
 
         val commands = mutableListOf(
-            motdCommand
+            motdCommand,
+            msgCommand,
+            rCommand
         )
 
         commands.forEach { it.register() }
+
+        server.pluginManager.registerEvents(JoinQuitListener(), this)
     }
 
     override fun onDisable() {

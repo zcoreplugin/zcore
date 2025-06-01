@@ -1,6 +1,7 @@
 package me.zavdav.zcore.player
 
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.util.tl
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.UUID
@@ -17,8 +18,19 @@ class CorePlayer(val base: Player) : Player by base {
     /** Determines if this player is AFK. */
     var isAfk: Boolean = false
 
+    /** The player this player is replying to with /r. */
+    var replyingTo: CorePlayer? = null
+
     override fun isOnline(): Boolean =
         server.onlinePlayers.any { it.uniqueId == uniqueId }
+
+    /** Sends a private [message] to a [target] player. */
+    fun privateMessage(target: CorePlayer, message: String) {
+        replyingTo = target
+        target.replyingTo = this
+        sendMessage(tl("command.msg.toPlayer", target.displayName, message))
+        target.sendMessage(tl("command.msg.fromPlayer", displayName, message))
+    }
 
     internal companion object {
         private val players = mutableMapOf<UUID, CorePlayer>()
