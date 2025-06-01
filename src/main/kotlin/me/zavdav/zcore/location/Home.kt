@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID
 
 /** Represents a home that belongs to a player. */
-class Home private constructor(id: EntityID<UUID>) : UUIDEntity(id), NamedLocation {
+class Home internal constructor(id: EntityID<UUID>) : UUIDEntity(id), NamedLocation {
 
     companion object : UUIDEntityClass<Home>(Homes)
 

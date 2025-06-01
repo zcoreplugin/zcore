@@ -10,7 +10,7 @@ import java.math.RoundingMode
 import java.util.UUID
 
 /** Represents a player's personal account. */
-class PersonalAccount private constructor(id: EntityID<UUID>) : UUIDEntity(id), EconomyAccount {
+class PersonalAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id), EconomyAccount {
 
     companion object : UUIDEntityClass<PersonalAccount>(PersonalAccounts)
 

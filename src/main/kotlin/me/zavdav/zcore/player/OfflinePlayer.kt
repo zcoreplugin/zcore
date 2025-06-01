@@ -20,7 +20,7 @@ import java.math.BigDecimal
 import java.util.UUID
 
 /** Represents an offline player that has played before. */
-class OfflinePlayer private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 
     companion object : UUIDEntityClass<OfflinePlayer>(OfflinePlayers)
 

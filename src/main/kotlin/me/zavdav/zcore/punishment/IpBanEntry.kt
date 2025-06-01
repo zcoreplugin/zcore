@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID
 
 /** Represents a ban targeting an IP address. */
-class IpBanEntry private constructor(id: EntityID<UUID>) : UUIDEntity(id), PunishmentEntry<String> {
+class IpBanEntry internal constructor(id: EntityID<UUID>) : UUIDEntity(id), PunishmentEntry<String> {
 
     companion object : UUIDEntityClass<IpBanEntry>(IpBanEntries)
 

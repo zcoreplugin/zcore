@@ -15,7 +15,7 @@ import java.math.RoundingMode
 import java.util.UUID
 
 /** Represents a bank account that is owned by a player. */
-class BankAccount private constructor(id: EntityID<UUID>) : UUIDEntity(id), EconomyAccount {
+class BankAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id), EconomyAccount {
 
     companion object : UUIDEntityClass<BankAccount>(BankAccounts)
 

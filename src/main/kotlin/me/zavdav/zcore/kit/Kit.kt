@@ -9,7 +9,7 @@ import java.math.BigDecimal
 import java.util.UUID
 
 /** Represents a kit that players can equip. */
-class Kit private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+class Kit internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 
     companion object : UUIDEntityClass<Kit>(Kits)
 

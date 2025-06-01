@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID
 
 /** Represents a mute targeting a player. */
-class MuteEntry private constructor(id: EntityID<UUID>) : UUIDEntity(id), PunishmentEntry<OfflinePlayer> {
+class MuteEntry internal constructor(id: EntityID<UUID>) : UUIDEntity(id), PunishmentEntry<OfflinePlayer> {
 
     companion object : UUIDEntityClass<MuteEntry>(MuteEntries)
 

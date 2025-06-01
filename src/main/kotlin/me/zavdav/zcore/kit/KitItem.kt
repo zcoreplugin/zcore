@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID
 
 /** Represents an item stack of a kit. */
-class KitItem private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+class KitItem internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 
     companion object : UUIDEntityClass<KitItem>(KitItems)
 

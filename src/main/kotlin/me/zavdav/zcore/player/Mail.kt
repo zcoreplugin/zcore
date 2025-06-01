@@ -7,7 +7,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID
 
 /** Represents mail that a player sent to another player. */
-class Mail private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+class Mail internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 
     companion object : UUIDEntityClass<Mail>(Mails)
 

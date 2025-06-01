@@ -7,7 +7,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID
 
 /** Represents a location that players can warp to. */
-class Warp private constructor(id: EntityID<UUID>) : UUIDEntity(id), NamedLocation {
+class Warp internal constructor(id: EntityID<UUID>) : UUIDEntity(id), NamedLocation {
 
     companion object : UUIDEntityClass<Warp>(Warps)
 
