@@ -9,6 +9,7 @@ import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.PersonalAccount
 import me.zavdav.zcore.location.Home
+import me.zavdav.zcore.permission.ValuePermissions
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -109,6 +110,18 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     /** The amount of times this player has perished. */
     var deaths: Long by OfflinePlayers.deaths
         internal set
+
+    /** Gets the value of a [permission], or [default] if it is not set. */
+    fun getPermissionValue(permission: String, default: Int): Int =
+        ValuePermissions.getPermissionValue(this, permission, default)
+
+    /** Sets the [value] of a [permission]. */
+    fun setPermissionValue(permission: String, value: Int) =
+        ValuePermissions.setPermissionValue(this, permission, value)
+
+    /** Adds [delta] to the value of a [permission]. */
+    fun addToPermissionValue(permission: String, delta: Int) =
+        ValuePermissions.addToPermissionValue(this, permission, delta)
 
     /** Gets the location of a home by its [name], or `null` if no home with this name exists. */
     fun getHome(name: String): Home? =

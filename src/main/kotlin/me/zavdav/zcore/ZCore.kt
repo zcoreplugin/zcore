@@ -20,6 +20,7 @@ import me.zavdav.zcore.event.JoinQuitListener
 import me.zavdav.zcore.kit.Kit
 import me.zavdav.zcore.kit.KitItem
 import me.zavdav.zcore.location.Warp
+import me.zavdav.zcore.permission.ValuePermissions
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.tl
 import me.zavdav.zcore.version.ZCoreVersion
@@ -45,6 +46,7 @@ class ZCore : JavaPlugin() {
     override fun onEnable() {
         INSTANCE = this
         Config.load()
+        ValuePermissions.load()
         Database.connect("jdbc:h2:${dataFolder.absolutePath}/db/zcore", "org.h2.Driver")
         transaction = TransactionManager.currentOrNew(Connection.TRANSACTION_REPEATABLE_READ)
 
@@ -78,6 +80,7 @@ class ZCore : JavaPlugin() {
     override fun onDisable() {
         transaction.commit()
         transaction.close()
+        ValuePermissions.save()
     }
 
     override fun onCommand(
