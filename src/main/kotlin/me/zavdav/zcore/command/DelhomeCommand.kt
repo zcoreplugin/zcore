@@ -37,13 +37,10 @@ private fun CommandContext<CommandSender>.doDelhome(target: OfflinePlayer, homeN
     val self = source is Player && source.core().data.uuid == target.uuid
     if (!self) require("zcore.delhome.other")
 
-    val existingHome = target.deleteHome(homeName)
-    if (existingHome != null) {
-        if (self)
-            source.sendMessage(tl("command.delhome.success", existingHome.name))
-        else
-            source.sendMessage(tl("command.delhome.success.other", target.name, existingHome.name))
-    } else {
-        throw TranslatableException("command.delhome.doesNotExist")
-    }
+    val existingHome = target.deleteHome(homeName) ?: throw TranslatableException("command.delhome.doesNotExist")
+    if (self)
+        source.sendMessage(tl("command.delhome.success", existingHome.name))
+    else
+        source.sendMessage(tl("command.delhome.success.other", target.name, existingHome.name))
+
 }

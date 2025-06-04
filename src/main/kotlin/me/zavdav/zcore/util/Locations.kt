@@ -81,3 +81,16 @@ internal fun Location.getSafe(): Location? {
 
     return null
 }
+
+internal fun Location.normalizedDirection(): Location {
+    val location = clone()
+    location.pitch = 0f
+    val yaw = (location.yaw % 360 + 360) % 360
+    when {
+        yaw >= 45 && yaw < 135 -> location.yaw = 90f
+        yaw >= 135 && yaw < 225 -> location.yaw = 180f
+        yaw >= 225 && yaw < 315 -> location.yaw = 270f
+        else -> location.yaw = 0f
+    }
+    return location
+}

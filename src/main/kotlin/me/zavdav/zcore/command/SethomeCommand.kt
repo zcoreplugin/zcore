@@ -52,11 +52,11 @@ private fun CommandContext<CommandSender>.doSethome(target: OfflinePlayer, homeN
     if (existingHome == null) {
         if (self)
             source.sendMessage(tl("command.sethome.success",
-                homeName, location.blockX, location.blockY, location.blockZ
+                homeName, location.world.name, location.blockX, location.blockY, location.blockZ
             ))
         else
             source.sendMessage(tl("command.sethome.success.other",
-                target.name, homeName, location.blockX, location.blockY, location.blockZ
+                target.name, homeName, location.world.name, location.blockX, location.blockY, location.blockZ
             ))
     } else {
         throw TranslatableException("command.sethome.alreadyExists", existingHome.name)

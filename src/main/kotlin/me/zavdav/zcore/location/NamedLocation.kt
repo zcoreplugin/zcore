@@ -1,5 +1,8 @@
 package me.zavdav.zcore.location
 
+import org.bukkit.Bukkit
+import org.bukkit.Location
+
 /** Represents a location with a name. */
 sealed interface NamedLocation {
 
@@ -23,5 +26,8 @@ sealed interface NamedLocation {
 
     /** This location's yaw. */
     val yaw: Float
+
+    fun toBukkitLocation(): Location =
+        Location(Bukkit.getWorld(world), x, y, z, yaw, pitch)
 
 }
