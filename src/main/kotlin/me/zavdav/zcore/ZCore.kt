@@ -67,13 +67,16 @@ class ZCore : JavaPlugin() {
         )
 
         val commands = mutableListOf(
+            clearmailCommand,
             delhomeCommand,
             delwarpCommand,
             homeCommand,
             homesCommand,
+            mailCommand,
             motdCommand,
             msgCommand,
             rCommand,
+            sendmailCommand,
             sethomeCommand,
             setwarpCommand,
             warpCommand,

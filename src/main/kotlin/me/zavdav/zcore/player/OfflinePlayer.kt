@@ -160,18 +160,23 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         return home
     }
 
-    /** Adds a [message] from a [sender] to this player's mail. */
-    fun addMail(sender: OfflinePlayer, message: String) {
+    /** Adds a [message] to the mail of a [recipient]. */
+    fun sendMail(recipient: OfflinePlayer, message: String) {
         Mail.new {
-            this.sender = sender
-            this.recipient = this@OfflinePlayer
+            this.sender = this@OfflinePlayer
+            this.recipient = recipient
             this.message = message
         }
     }
 
-    /** Clears this player's mail. */
-    fun clearMail() {
-        Mails.deleteWhere { Mails.recipient eq this@OfflinePlayer.id }
+    /**
+     * Clears this player's mail.
+     * Returns `true` on success, `false` if this player has no mail.
+     */
+    fun clearMail(): Boolean {
+        if (mail.empty()) return false
+        mail.forEach { it.delete() }
+        return true
     }
 
     /**
