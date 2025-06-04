@@ -12,7 +12,8 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
             throw TranslatableException("command.syntaxError")
         } catch (e: TranslatableException) {
             throw e
-        } catch (_: Throwable) {
+        } catch (e: Throwable) {
+            e.printStackTrace()
             throw TranslatableException("command.genericError")
         }
     }

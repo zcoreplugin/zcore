@@ -1,8 +1,11 @@
 package me.zavdav.zcore.player
 
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.util.getSafe
 import me.zavdav.zcore.util.tl
 import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Player
 import java.util.UUID
 
@@ -23,6 +26,19 @@ class CorePlayer(val base: Player) : Player by base {
 
     override fun isOnline(): Boolean =
         server.onlinePlayers.any { it.uniqueId == uniqueId }
+
+    override fun teleport(location: Location): Boolean {
+        location.block.chunk.load()
+        vehicle?.eject()
+        (base as? CraftPlayer)?.handle?.a(false, false, false)
+        return base.teleport(location)
+    }
+
+    fun safelyTeleport(location: Location): Boolean {
+        val safeLocation = location.getSafe() ?: return false
+        teleport(safeLocation)
+        return true
+    }
 
     /** Sends a private [message] to a [target] player. */
     fun privateMessage(target: CorePlayer, message: String) {
