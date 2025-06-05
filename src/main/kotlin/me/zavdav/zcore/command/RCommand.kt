@@ -1,5 +1,8 @@
 package me.zavdav.zcore.command
 
+import com.mojang.brigadier.context.CommandContext
+import org.bukkit.command.CommandSender
+
 internal val rCommand = command(
     "r",
     arrayOf("reply"),
@@ -7,17 +10,20 @@ internal val rCommand = command(
     "/r <message>",
     "zcore.r"
 ) {
-    stringArgument("message", StringType.GREEDY_STRING) {
-        runs(permission) {
-            val source = requirePlayer()
+    textArgument("message") {
+        runs {
             val message: String by this
-            val replyingTo = source.replyingTo
-
-            if (replyingTo == null || !replyingTo.isOnline) {
-                throw TranslatableException("command.r.noOne")
-            }
-
-            source.privateMessage(replyingTo, message)
+            doR(message)
         }
     }
+}
+
+private fun CommandContext<CommandSender>.doR(message: String) {
+    val source = requirePlayer()
+    val replyingTo = source.replyingTo
+    if (replyingTo == null || !replyingTo.isOnline) {
+        throw TranslatableException("command.r.noOne")
+    }
+
+    source.privateMessage(replyingTo, message)
 }

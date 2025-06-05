@@ -12,8 +12,8 @@ internal val warpCommand = command(
     "/warp <name>",
     "zcore.warp"
 ) {
-    stringArgument("warpName", StringType.SINGLE_WORD) {
-        runs(permission) {
+    stringArgument("warpName") {
+        runs {
             val warpName: String by this
             doWarp(warpName)
         }

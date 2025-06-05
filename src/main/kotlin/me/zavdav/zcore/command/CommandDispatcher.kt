@@ -8,8 +8,12 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
     override fun execute(input: String, source: CommandSender): Int {
         try {
             return super.execute(input, source)
-        } catch (_: CommandSyntaxException) {
-            throw TranslatableException("command.syntaxError")
+        } catch (e: CommandSyntaxException) {
+            when (e.type) {
+                is PlayerNotOnlineExceptionType -> throw TranslatableException("command.playerNotOnline")
+                is PlayerUnknownExceptionType -> throw TranslatableException("command.playerUnknown")
+                else -> throw TranslatableException("command.syntaxError")
+            }
         } catch (e: TranslatableException) {
             throw e
         } catch (e: Throwable) {

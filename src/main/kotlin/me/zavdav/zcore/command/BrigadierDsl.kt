@@ -26,9 +26,9 @@ internal inline fun command(
     usage: String,
     permission: String,
     action: CommandBuilder.() -> Unit
-): Command {
+): CoreCommand {
     val builder = CommandBuilder(name, aliases, description, usage, permission).apply { action() }
-    return Command(name, aliases, description, usage, permission, builder)
+    return CoreCommand(name, aliases, description, usage, permission, builder)
 }
 
 internal inline fun command(
@@ -37,7 +37,7 @@ internal inline fun command(
     usage: String,
     permission: String,
     action: CommandBuilder.() -> Unit
-): Command = command(name, emptyArray(), description, usage, permission, action)
+): CoreCommand = command(name, emptyArray(), description, usage, permission, action)
 
 internal inline fun <S> ArgumentBuilder<S, *>.literal(
     literal: String,
@@ -57,11 +57,9 @@ internal inline fun <S, T> ArgumentBuilder<S, *>.argument(
 }
 
 internal fun <S : CommandSender> ArgumentBuilder<S, *>.runs(
-    permission: String,
     action: CommandContext<S>.() -> Unit
 ): ArgumentBuilder<S, *> {
     executes {
-        it.require(permission)
         action(it)
         return@executes 1
     }

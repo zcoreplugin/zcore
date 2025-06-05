@@ -11,8 +11,8 @@ internal val delwarpCommand = command(
     "/delwarp <name>",
     "zcore.delwarp"
 ) {
-    stringArgument("warpName", StringType.SINGLE_WORD) {
-        runs(permission) {
+    stringArgument("warpName") {
+        runs {
             val warpName: String by this
             doDelwarp(warpName)
         }

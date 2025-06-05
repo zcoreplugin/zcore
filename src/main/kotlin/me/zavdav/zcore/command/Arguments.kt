@@ -1,35 +1,51 @@
 package me.zavdav.zcore.command
 
+import com.mojang.brigadier.LiteralMessage
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
+import com.mojang.brigadier.exceptions.CommandExceptionType
+import com.mojang.brigadier.exceptions.CommandSyntaxException
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
+import me.zavdav.zcore.util.tl
 import org.bukkit.Bukkit
 import java.math.BigDecimal
 
-internal class StringArgument(val type: StringType) : ArgumentType<String> {
-    override fun parse(reader: StringReader): String =
-        when (type) {
-            StringType.SINGLE_WORD -> reader.readArgument()
-            StringType.GREEDY_STRING -> reader.readRemaining()
-        }
+internal object PlayerNotOnlineExceptionType : CommandExceptionType {
+    fun create() = CommandSyntaxException(this, LiteralMessage(tl("command.playerNotOnline")))
 }
 
-internal enum class StringType { SINGLE_WORD, GREEDY_STRING }
+internal object PlayerUnknownExceptionType : CommandExceptionType {
+    fun create() = CommandSyntaxException(this, LiteralMessage(tl("command.playerUnknown")))
+}
+
+private val PLAYER_NOT_ONLINE = PlayerNotOnlineExceptionType
+private val PLAYER_UNKNOWN = PlayerUnknownExceptionType
+
+internal object StringArgument : ArgumentType<String> {
+    override fun parse(reader: StringReader): String = reader.readArgument()
+}
 
 internal inline fun <S> ArgumentBuilder<S, *>.stringArgument(
     name: String,
-    type: StringType,
     action: RequiredArgumentBuilder<S, String>.() -> Unit
-) = argument(name, StringArgument(type), action)
+) = argument(name, StringArgument, action)
+
+internal object TextArgument : ArgumentType<String> {
+    override fun parse(reader: StringReader): String = reader.readRemaining()
+}
+
+internal inline fun <S> ArgumentBuilder<S, *>.textArgument(
+    name: String,
+    action: RequiredArgumentBuilder<S, String>.() -> Unit
+) = argument(name, TextArgument, action)
 
 internal object IntArgument : ArgumentType<Int> {
-    override fun parse(reader: StringReader): Int =
-        reader.readArgument().toIntOrNull() ?: throw TranslatableException("command.syntaxError")
+    override fun parse(reader: StringReader): Int = reader.readArgument().toInt()
 }
 
 internal inline fun <S> ArgumentBuilder<S, *>.intArgument(
@@ -38,8 +54,7 @@ internal inline fun <S> ArgumentBuilder<S, *>.intArgument(
 ): ArgumentBuilder<S, *> = argument(name, IntArgument, action)
 
 internal object DoubleArgument : ArgumentType<Double> {
-    override fun parse(reader: StringReader): Double =
-        reader.readArgument().toDoubleOrNull() ?: throw TranslatableException("command.syntaxError")
+    override fun parse(reader: StringReader): Double = reader.readArgument().toDouble()
 }
 
 internal inline fun <S> ArgumentBuilder<S, *>.doubleArgument(
@@ -48,8 +63,7 @@ internal inline fun <S> ArgumentBuilder<S, *>.doubleArgument(
 ): ArgumentBuilder<S, *> = argument(name, DoubleArgument, action)
 
 internal object BigDecimalArgument : ArgumentType<BigDecimal> {
-    override fun parse(reader: StringReader): BigDecimal =
-        reader.readArgument().toBigDecimalOrNull() ?: throw TranslatableException("command.syntaxError")
+    override fun parse(reader: StringReader): BigDecimal = reader.readArgument().toBigDecimal()
 }
 
 internal inline fun <S> ArgumentBuilder<S, *>.bigDecimalArgument(
@@ -58,10 +72,8 @@ internal inline fun <S> ArgumentBuilder<S, *>.bigDecimalArgument(
 ): ArgumentBuilder<S, *> = argument(name, BigDecimalArgument, action)
 
 internal object PlayerArgument : ArgumentType<CorePlayer> {
-    override fun parse(reader: StringReader): CorePlayer {
-        val name = reader.readArgument()
-        return Bukkit.getPlayer(name)?.core() ?: throw TranslatableException("command.playerOfflineOrUnknown")
-    }
+    override fun parse(reader: StringReader): CorePlayer =
+        Bukkit.getPlayer(reader.readArgument())?.core() ?: throw PLAYER_NOT_ONLINE.create()
 }
 
 internal inline fun <S> ArgumentBuilder<S, *>.playerArgument(
@@ -70,10 +82,8 @@ internal inline fun <S> ArgumentBuilder<S, *>.playerArgument(
 ): ArgumentBuilder<S, *> = argument(name, PlayerArgument, action)
 
 internal object OfflinePlayerArgument : ArgumentType<OfflinePlayer> {
-    override fun parse(reader: StringReader): OfflinePlayer {
-        val name = reader.readArgument()
-        return ZCore.getOfflinePlayer(name) ?: throw TranslatableException("command.playerUnknown")
-    }
+    override fun parse(reader: StringReader): OfflinePlayer =
+        ZCore.getOfflinePlayer(reader.readArgument()) ?: throw PLAYER_UNKNOWN.create()
 }
 
 internal inline fun <S> ArgumentBuilder<S, *>.offlinePlayerArgument(

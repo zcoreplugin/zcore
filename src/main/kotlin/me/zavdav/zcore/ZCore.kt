@@ -22,11 +22,8 @@ import me.zavdav.zcore.kit.KitItem
 import me.zavdav.zcore.location.Warp
 import me.zavdav.zcore.permission.ValuePermissions
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.util.tl
 import me.zavdav.zcore.version.ZCoreVersion
 import org.bukkit.Location
-import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Database
@@ -92,22 +89,6 @@ class ZCore : JavaPlugin() {
         transaction.commit()
         transaction.close()
         ValuePermissions.save()
-    }
-
-    override fun onCommand(
-        sender: CommandSender,
-        command: Command,
-        label: String,
-        args: Array<String>
-    ): Boolean {
-        try {
-            val parsedArgs = if (args.isEmpty()) "" else " " + args.joinToString(" ").trim()
-            CommandDispatcher.execute(command.name + parsedArgs, sender)
-        } catch (e: TranslatableException) {
-            sender.sendMessage(tl(e.key, *e.args))
-        }
-
-        return true
     }
 
     /** Represents the ZCore API. */

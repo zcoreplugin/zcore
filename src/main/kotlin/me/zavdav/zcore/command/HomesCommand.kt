@@ -15,24 +15,24 @@ internal val homesCommand = command(
     "/homes [<page>]",
     "zcore.homes"
 ) {
-    runs(permission) {
+    runs {
         val source = requirePlayer()
         doHomes(source.data, 1)
     }
     intArgument("page") {
-        runs(permission) {
+        runs {
             val source = requirePlayer()
             val page: Int by this
             doHomes(source.data, page)
         }
     }
     offlinePlayerArgument("target") {
-        runs(permission) {
+        runs {
             val target: OfflinePlayer by this
             doHomes(target, 1)
         }
         intArgument("page") {
-            runs(permission) {
+            runs {
                 val target: OfflinePlayer by this
                 val page: Int by this
                 doHomes(target, page)

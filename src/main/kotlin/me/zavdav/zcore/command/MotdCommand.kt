@@ -1,9 +1,10 @@
 package me.zavdav.zcore.command
 
+import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.config.Config
 import me.zavdav.zcore.util.fmt
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
+import org.bukkit.command.CommandSender
 
 internal val motdCommand = command(
     "motd",
@@ -11,22 +12,24 @@ internal val motdCommand = command(
     "/motd",
     "zcore.motd"
 ) {
-    runs(permission) {
-        val source = requirePlayer()
-        createMotd(source).forEach { source.sendMessage(it) }
+    runs {
+        doMotd()
     }
 }
 
-private fun createMotd(player: Player): List<String> {
+private fun CommandContext<CommandSender>.doMotd() {
+    val source = requirePlayer()
     val lines = Config.motd.toMutableList()
+
     for (i in lines.indices) {
         lines[i] = fmt(
             lines[i],
-            "name" to player.name,
-            "displayname" to player.displayName,
+            "name" to source.name,
+            "displayname" to source.displayName,
             "playercount" to Bukkit.getOnlinePlayers().size,
             "maxplayers" to Bukkit.getMaxPlayers()
         )
     }
-    return lines
+
+    lines.forEach { source.sendMessage(it) }
 }

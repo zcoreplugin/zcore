@@ -12,8 +12,8 @@ internal val sendmailCommand = command(
     "zcore.sendmail"
 ) {
     offlinePlayerArgument("target") {
-        stringArgument("message", StringType.GREEDY_STRING) {
-            runs(permission) {
+        textArgument("message") {
+            runs {
                 val target: OfflinePlayer by this
                 val message: String by this
                 doSendmail(target, message)

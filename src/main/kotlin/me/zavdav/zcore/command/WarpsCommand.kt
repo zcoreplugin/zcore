@@ -12,11 +12,11 @@ internal val warpsCommand = command(
     "/warps [<page>]",
     "zcore.warps"
 ) {
-    runs(permission) {
+    runs {
         doWarps(1)
     }
     intArgument("page") {
-        runs(permission) {
+        runs {
             val page: Int by this
             doWarps(page)
         }

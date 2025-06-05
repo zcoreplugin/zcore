@@ -14,16 +14,16 @@ internal val delhomeCommand = command(
     "/delhome <name>",
     "zcore.delhome"
 ) {
-    stringArgument("homeName", StringType.SINGLE_WORD) {
-        runs(permission) {
+    stringArgument("homeName") {
+        runs {
             val source = requirePlayer()
             val homeName: String by this
             doDelhome(source.data, homeName)
         }
     }
     offlinePlayerArgument("target") {
-        stringArgument("homeName", StringType.SINGLE_WORD) {
-            runs(permission) {
+        stringArgument("homeName") {
+            runs {
                 val target: OfflinePlayer by this
                 val homeName: String by this
                 doDelhome(target, homeName)

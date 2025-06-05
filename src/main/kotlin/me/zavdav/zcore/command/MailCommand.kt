@@ -14,24 +14,24 @@ internal val mailCommand = command(
     "/mail [<page>]",
     "zcore.mail"
 ) {
-    runs(permission) {
+    runs {
         val source = requirePlayer()
         doMail(source.data, 1)
     }
     intArgument("page") {
-        runs(permission) {
+        runs {
             val source = requirePlayer()
             val page: Int by this
             doMail(source.data, page)
         }
     }
     offlinePlayerArgument("target") {
-        runs(permission) {
+        runs {
             val target: OfflinePlayer by this
             doMail(target, 1)
         }
         intArgument("page") {
-            runs(permission) {
+            runs {
                 val target: OfflinePlayer by this
                 val page: Int by this
                 doMail(target, page)

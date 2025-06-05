@@ -12,16 +12,16 @@ internal val homeCommand = command(
     "/home <name>",
     "zcore.home"
 ) {
-    stringArgument("homeName", StringType.SINGLE_WORD) {
-        runs(permission) {
+    stringArgument("homeName") {
+        runs {
             val source = requirePlayer()
             val homeName: String by this
             doHome(source.data, homeName)
         }
     }
     offlinePlayerArgument("target") {
-        stringArgument("homeName", StringType.SINGLE_WORD) {
-            runs(permission) {
+        stringArgument("homeName") {
+            runs {
                 val target: OfflinePlayer by this
                 val homeName: String by this
                 doHome(target, homeName)

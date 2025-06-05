@@ -13,12 +13,12 @@ internal val clearmailCommand = command(
     "/clearmail",
     "zcore.clearmail"
 ) {
-    runs(permission) {
+    runs {
         val source = requirePlayer()
         doClearmail(source.data)
     }
     offlinePlayerArgument("target") {
-        runs(permission) {
+        runs {
             val target: OfflinePlayer by this
             doClearmail(target)
         }
