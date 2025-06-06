@@ -1,5 +1,6 @@
 package me.zavdav.zcore.player
 
+import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.data.BankAccounts
 import me.zavdav.zcore.data.Homes
 import me.zavdav.zcore.data.Ignores
@@ -75,9 +76,15 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     /** Determines if this player can see social interactions by others. */
     var socialspy: Boolean by OfflinePlayers.socialspy
 
+    internal var _playtime: Long by OfflinePlayers.playtime
+
     /** This player's playtime in milliseconds. */
-    var playtime: Long by OfflinePlayers.playtime
-        internal set
+    val playtime: Long
+        get() =
+            if (isOnline)
+                _playtime + System.currentTimeMillis() - lastJoin
+            else
+                _playtime
 
     /** The amount of blocks this player has placed. */
     var blocksPlaced: Long by OfflinePlayers.blocksPlaced
@@ -110,6 +117,9 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     /** The amount of times this player has perished. */
     var deaths: Long by OfflinePlayers.deaths
         internal set
+
+    /** Returns `true` if this player is online. */
+    val isOnline: Boolean get() = ZCore.getPlayer(uuid) != null
 
     /** Gets the value of a [permission], or [default] if it is not set. */
     fun getPermissionValue(permission: String, default: Int): Int =

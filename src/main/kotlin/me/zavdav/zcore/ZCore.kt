@@ -17,12 +17,16 @@ import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.data.Warps
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.event.JoinQuitListener
+import me.zavdav.zcore.event.StatisticsListener
 import me.zavdav.zcore.kit.Kit
 import me.zavdav.zcore.kit.KitItem
 import me.zavdav.zcore.location.Warp
 import me.zavdav.zcore.permission.ValuePermissions
+import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
+import me.zavdav.zcore.player.core
 import me.zavdav.zcore.version.ZCoreVersion
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
@@ -76,6 +80,7 @@ class ZCore : JavaPlugin() {
             sendmailCommand,
             sethomeCommand,
             setwarpCommand,
+            statsCommand,
             warpCommand,
             warpsCommand
         )
@@ -83,6 +88,7 @@ class ZCore : JavaPlugin() {
         commands.forEach { it.register() }
 
         server.pluginManager.registerEvents(JoinQuitListener(), this)
+        server.pluginManager.registerEvents(StatisticsListener(), this)
     }
 
     override fun onDisable() {
@@ -123,6 +129,41 @@ class ZCore : JavaPlugin() {
         /** All existing bank accounts. */
         @JvmStatic
         val bankAccounts: Iterable<BankAccount> get() = BankAccount.all()
+
+        /** Gets a player by their [uuid], or `null` if no such player is online. */
+        @JvmStatic
+        fun getPlayer(uuid: UUID): CorePlayer? =
+            Bukkit.getOnlinePlayers().firstOrNull { it.uniqueId == uuid }?.core()
+
+        /** Gets a player by their [name], or `null` if no such player is online. */
+        @JvmStatic
+        fun getPlayer(name: String): CorePlayer? =
+            Bukkit.getOnlinePlayers().firstOrNull { it.name.equals(name, true) }?.core()
+
+        /**
+         * Gets all players whose names match a [partialName].
+         * If an exact match is found, a list with only that match is returned,
+         * if no matches are found, an empty list is returned.
+         */
+        @JvmStatic
+        fun matchPlayer(partialName: String): List<CorePlayer> {
+            val matches = mutableListOf<CorePlayer>()
+
+            for (player in Bukkit.getOnlinePlayers()) {
+                val name = player.name
+                if (partialName.equals(name, true)) {
+                    matches.clear()
+                    matches.add(player.core())
+                    break
+                }
+
+                if (player.name.startsWith(partialName, true)) {
+                    matches.add(player.core())
+                }
+            }
+
+            return matches
+        }
 
         /** Gets an offline player by their [uuid], or `null` if no such player exists. */
         @JvmStatic
