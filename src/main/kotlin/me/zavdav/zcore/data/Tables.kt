@@ -11,7 +11,7 @@ internal object OfflinePlayers : UUIDTable("offline_players") {
     val nickname = varchar("nickname", 255).nullable().default(null)
     val firstJoin = long("first_join")
     val lastJoin = long("last_join")
-    val lastOnline = long("last_online")
+    val lastActivity = long("last_activity")
     val invincible = bool("invincible").default(false)
     val vanished = bool("vanished").default(false)
     val chatEnabled = bool("chat_enabled").default(true)

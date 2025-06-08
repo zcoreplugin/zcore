@@ -1,7 +1,9 @@
 package me.zavdav.zcore.player
 
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.config.Config
 import me.zavdav.zcore.util.getSafe
+import me.zavdav.zcore.util.syncRepeatingTask
 import me.zavdav.zcore.util.tl
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -20,12 +22,16 @@ class CorePlayer(val base: Player) : Player by base {
 
     /** Determines if this player is AFK. */
     var isAfk: Boolean = false
+        internal set
 
     /** The player this player is replying to with /r. */
     var replyingTo: CorePlayer? = null
 
     override fun isOnline(): Boolean =
         server.onlinePlayers.any { it.uniqueId == uniqueId }
+
+    override fun kickPlayer(message: String) =
+        base.kickPlayer(if (message.length <= 100) message else message.substring(0, 100))
 
     override fun teleport(location: Location): Boolean {
         location.block.chunk.load()
@@ -40,6 +46,35 @@ class CorePlayer(val base: Player) : Player by base {
         return true
     }
 
+    fun setInactive() {
+        if (!isOnline || isAfk) return
+        isAfk = true
+        Bukkit.broadcastMessage(tl("afk.nowAfk", name))
+    }
+
+    fun updateActivity() {
+        if (!isOnline) return
+        data.lastActivity = System.currentTimeMillis()
+
+        if (isAfk) {
+            isAfk = false
+            Bukkit.broadcastMessage(tl("afk.noLongerAfk", name))
+        }
+    }
+
+    private fun checkAfk() {
+        if (!isOnline) return
+        val inactiveTime = System.currentTimeMillis() - data.lastActivity
+
+        if (!isAfk && inactiveTime >= Config.afkTime * 1000)
+            setInactive()
+
+        if (!Config.afkKickEnabled) return
+        if (isAfk && inactiveTime >= Config.afkKickTime * 1000 &&
+            !isOp && !hasPermission("zcore.exempt.afk.kick"))
+            kickPlayer(tl("afk.kickReason"))
+    }
+
     /** Sends a private [message] to a [target] player. */
     fun privateMessage(target: CorePlayer, message: String) {
         replyingTo = target
@@ -52,17 +87,10 @@ class CorePlayer(val base: Player) : Player by base {
         private val players = mutableMapOf<UUID, CorePlayer>()
 
         init {
-            Bukkit.getScheduler().scheduleAsyncRepeatingTask(
-                ZCore.INSTANCE,
-                {
-                    synchronized(players) {
-                        players.entries.removeIf { (_, player) ->
-                            !player.isOnline && System.currentTimeMillis() - player.data.lastOnline > 600 * 1000
-                        }
-                    }
-                },
-                0, 20
-            )
+            syncRepeatingTask(0, 20) {
+                checkAfkPlayers()
+                clearOfflinePlayers()
+            }
         }
 
         internal fun get(player: Player): CorePlayer {
@@ -73,6 +101,21 @@ class CorePlayer(val base: Player) : Player by base {
                     players[player.uniqueId] = corePlayer
                 }
                 return corePlayer
+            }
+        }
+
+        private fun checkAfkPlayers() {
+            if (!Config.afkEnabled) return
+            synchronized(players) {
+                players.forEach { (_, player) -> player.checkAfk() }
+            }
+        }
+
+        private fun clearOfflinePlayers() {
+            synchronized(players) {
+                players.entries.removeIf { (_, player) ->
+                    !player.isOnline && System.currentTimeMillis() - player.data.lastActivity > 600 * 1000
+                }
             }
         }
 

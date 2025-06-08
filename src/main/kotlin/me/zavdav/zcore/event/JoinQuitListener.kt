@@ -21,7 +21,7 @@ internal class JoinQuitListener : Listener {
                 this.name = event.player.name
                 this.firstJoin = now
                 this.lastJoin = now
-                this.lastOnline = now
+                this.lastActivity = now
             }
 
             PersonalAccount.new {
@@ -30,13 +30,14 @@ internal class JoinQuitListener : Listener {
         }
 
         player.lastJoin = now
-        player.lastOnline = now
+        player.lastActivity = now
     }
 
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val player = event.player.core()
         player.data._playtime = player.data.playtime
+        player.isAfk = false
     }
 
 }

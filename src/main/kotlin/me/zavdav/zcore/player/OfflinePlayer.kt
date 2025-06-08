@@ -45,8 +45,8 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     var lastJoin: Long by OfflinePlayers.lastJoin
         internal set
 
-    /** The timestamp of when this player was last online. */
-    var lastOnline: Long by OfflinePlayers.lastOnline
+    /** The timestamp of this player's last activity. */
+    var lastActivity: Long by OfflinePlayers.lastActivity
         internal set
 
     /** This player's account where their balance is stored. */
