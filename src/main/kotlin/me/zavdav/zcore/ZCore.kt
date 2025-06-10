@@ -37,7 +37,10 @@ import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.sql.Connection
+import java.text.NumberFormat
+import java.util.Locale
 import java.util.UUID
 
 /** The main class of the ZCore plugin. */
@@ -70,6 +73,7 @@ class ZCore : JavaPlugin() {
 
         val commands = mutableListOf(
             afkCommand,
+            balanceCommand,
             broadcastCommand,
             clearmailCommand,
             delhomeCommand,
@@ -79,6 +83,7 @@ class ZCore : JavaPlugin() {
             mailCommand,
             motdCommand,
             msgCommand,
+            payCommand,
             rCommand,
             seenCommand,
             sendmailCommand,
@@ -273,6 +278,21 @@ class ZCore : JavaPlugin() {
             val kit = getKit(name)
             kit?.delete()
             return kit
+        }
+
+        @JvmStatic
+        fun formatCurrency(amount: BigDecimal): String {
+            var roundedAmount = amount.setScale(2, RoundingMode.DOWN)
+
+            try {
+                roundedAmount = roundedAmount.setScale(0, RoundingMode.UNNECESSARY)
+            } catch (_: ArithmeticException) {}
+
+            val currencyFormat = NumberFormat.getInstance(Locale.US)
+            currencyFormat.minimumFractionDigits = 0
+            currencyFormat.maximumFractionDigits = roundedAmount.scale()
+
+            return "${Config.currency}${currencyFormat.format(roundedAmount)}"
         }
 
     }

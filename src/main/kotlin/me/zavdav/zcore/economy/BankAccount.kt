@@ -2,6 +2,7 @@ package me.zavdav.zcore.economy
 
 import me.zavdav.zcore.data.BankAccounts
 import me.zavdav.zcore.data.BankMembers
+import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -15,7 +16,7 @@ import java.math.RoundingMode
 import java.util.UUID
 
 /** Represents a bank account that is owned by a player. */
-class BankAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id), EconomyAccount {
+class BankAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Account {
 
     companion object : UUIDEntityClass<BankAccount>(BankAccounts)
 
@@ -44,10 +45,19 @@ class BankAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Eco
         get() = _balance
         set(value) {
             if (value < -overdrawLimit) return
-            _balance = value.setScale(10, RoundingMode.FLOOR)
+            _balance = value.setScale(10, RoundingMode.DOWN)
         }
 
-    override var overdrawLimit: BigDecimal by BankAccounts.overdrawLimit
+    private var _overdrawLimit: BigDecimal by PersonalAccounts.overdrawLimit
+
+    override var overdrawLimit: BigDecimal
+        get() = _overdrawLimit
+        set(value) {
+            if (value < BigDecimal.ZERO)
+                throw IllegalArgumentException("Invalid amount: $value")
+
+            _overdrawLimit = value
+        }
 
     /**
      * Adds a [player] to this bank account.
