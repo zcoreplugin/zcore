@@ -40,6 +40,10 @@ internal class PageBuilder(builder: PageBuilder.() -> Unit) {
         rows.add(RowBuilder().apply { builder() }.create())
     }
 
+    fun list(columns: Int, list: List<String>) {
+        rows.addAll(ListBuilder(columns, list).create())
+    }
+
     fun create(): Page = Page(header, rows)
 
 }
@@ -76,3 +80,37 @@ internal class RowBuilder {
 }
 
 private class Cell(val width: Int, val content: String)
+
+internal class ListBuilder(columns: Int, private val list: List<String>) {
+
+    private val lines = mutableListOf("")
+    private val columnWidth: Int = CHAT_WINDOW_WIDTH / columns.coerceAtLeast(1)
+
+    fun create(): List<String> {
+        list.forEach { add(it) }
+        return lines
+    }
+
+    private fun add(string: String) {
+        val element = "$string "
+        val lastLine = lines.last()
+        val elementWidth = widthInPixels(element)
+        val lineWidth = widthInPixels(lastLine)
+
+        if (lineWidth + elementWidth < CHAT_WINDOW_WIDTH) {
+            val line = padString(lastLine + element)
+            lines[lines.lastIndex] = line
+            return
+        }
+
+        lines.add(padString(string))
+    }
+
+    private fun padString(string: String): String {
+        val width = widthInPixels(string)
+        val spanningCols = width / columnWidth + 1
+        val padding = spanningCols * columnWidth - width
+        return string + " ".repeat(padding / SPACE_WIDTH)
+    }
+
+}

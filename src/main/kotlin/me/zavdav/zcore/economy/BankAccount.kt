@@ -2,7 +2,6 @@ package me.zavdav.zcore.economy
 
 import me.zavdav.zcore.data.BankAccounts
 import me.zavdav.zcore.data.BankMembers
-import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -26,7 +25,7 @@ class BankAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Acc
     /** This bank account's name. */
     var name: String by BankAccounts.name
 
-    private var _owner by OfflinePlayer referencedOn BankAccounts.owner
+    internal var _owner by OfflinePlayer referencedOn BankAccounts.owner
 
     override var owner: OfflinePlayer
         get() = _owner
@@ -48,7 +47,7 @@ class BankAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Acc
             _balance = value.setScale(10, RoundingMode.DOWN)
         }
 
-    private var _overdrawLimit: BigDecimal by PersonalAccounts.overdrawLimit
+    private var _overdrawLimit: BigDecimal by BankAccounts.overdrawLimit
 
     override var overdrawLimit: BigDecimal
         get() = _overdrawLimit

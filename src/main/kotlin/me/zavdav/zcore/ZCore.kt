@@ -74,10 +74,12 @@ class ZCore : JavaPlugin() {
         val commands = mutableListOf(
             afkCommand,
             balanceCommand,
+            bankCommand,
             broadcastCommand,
             clearmailCommand,
             delhomeCommand,
             delwarpCommand,
+            ecoCommand,
             homeCommand,
             homesCommand,
             mailCommand,
@@ -185,15 +187,28 @@ class ZCore : JavaPlugin() {
         fun getOfflinePlayer(name: String): OfflinePlayer? =
             OfflinePlayer.find { OfflinePlayers.name.lowerCase() eq name.lowercase() }.firstOrNull()
 
-        /** Gets a bank account by its [uuid], or `null` if no such bank account exists. */
+        /** Gets a bank by its [uuid], or `null` if no such bank exists. */
         @JvmStatic
-        fun getBankAccount(uuid: UUID): BankAccount? =
+        fun getBank(uuid: UUID): BankAccount? =
             BankAccount.findById(uuid)
 
-        /** Gets a bank account by its [name], or `null` if no such bank account exists. */
+        /** Gets a bank by its [name], or `null` if no such bank exists. */
         @JvmStatic
-        fun getBankAccount(name: String): BankAccount? =
+        fun getBank(name: String): BankAccount? =
             BankAccount.find { BankAccounts.name.lowerCase() eq name.lowercase() }.firstOrNull()
+
+        /**
+         * Creates a new bank with a [name] and an [owner].
+         * Returns the created bank, or `null` if a bank with this name already exists.
+         */
+        @JvmStatic
+        fun createBank(name: String, owner: OfflinePlayer): BankAccount? {
+            if (getBank(name) != null) return null
+            return BankAccount.new {
+                this.name = name
+                this._owner = owner
+            }
+        }
 
         /** Gets a warp by its [name], or `null` if no such warp exists. */
         @JvmStatic
