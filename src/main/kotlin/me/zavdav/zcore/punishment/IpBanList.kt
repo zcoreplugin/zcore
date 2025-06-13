@@ -1,21 +1,27 @@
 package me.zavdav.zcore.punishment
 
-import me.zavdav.zcore.data.IpBanEntries
+import me.zavdav.zcore.data.IpBans
 import me.zavdav.zcore.player.OfflinePlayer
-import org.jetbrains.exposed.sql.and
-import java.net.Inet4Address
 
 /** Represents a record of all issued IP bans. */
-object IpBanList : PunishmentList<IpBanEntry, String> {
+object IpBanList {
 
-    override val entries: Iterable<IpBanEntry> get() = IpBanEntry.all()
+    val entries: Iterable<IpBan> get() = IpBan.all().sortedBy { it.timeIssued }
 
-    /** Bans a [target] IP address and returns the [IpBanEntry] that was created from the arguments. */
+    /**
+     * Bans a range of IP addresses.
+     *
+     * @param target the target of the ban
+     * @param issuer the player that issued the ban
+     * @param duration the duration of the ban (permanent if `null`)
+     * @param reason the reason for the ban
+     * @return the [IpBan] that was created
+     */
     @JvmStatic
-    fun addIpBan(target: Inet4Address, issuer: OfflinePlayer, duration: Long?, reason: String): IpBanEntry {
-        getActiveIpBan(target)?.active = false
-        return IpBanEntry.new {
-            this.target = target.toString()
+    fun addIpBan(target: IpAddressRange, issuer: OfflinePlayer, duration: Long?, reason: String): IpBan {
+        pardonIpBan(target)
+        return IpBan.new {
+            this.target = target
             this.issuer = issuer
             this.timeIssued = System.currentTimeMillis()
             this.duration = duration
@@ -24,25 +30,36 @@ object IpBanList : PunishmentList<IpBanEntry, String> {
     }
 
     /**
-     * Pardons a [target] IP address's most recent ban.
-     * Returns `true` on success, `false` if this IP address is not banned.
+     * Pardons the currently active ban of a range of IP addresses.
+     *
+     * @param target the target of the ban
+     * @return `true` if the ban was pardoned, `false` if this address range is not currently banned
      */
     @JvmStatic
-    fun pardonIpBan(target: Inet4Address): Boolean {
-        val entry = getLastIpBan(target) ?: return false
-        if (!entry.active) return false
-        entry.active = false
+    fun pardonIpBan(target: IpAddressRange): Boolean {
+        val ban = getActiveIpBan(target) ?: return false
+        ban.pardoned = true
         return true
     }
 
-    /** Gets a [target] IP address's active ban, or `null` if this IP address is not banned. */
+    /**
+     * Gets the currently active ban of a range of IP addresses.
+     *
+     * @param target the target of the ban
+     * @return the active ban, or `null` if this address range is not currently banned
+     */
     @JvmStatic
-    fun getActiveIpBan(target: Inet4Address): IpBanEntry? =
-        IpBanEntry.find { IpBanEntries.active and (IpBanEntries.target eq target.hostAddress) }.lastOrNull()
+    fun getActiveIpBan(target: IpAddressRange): IpBan? =
+        entries.lastOrNull { it.target == target && it.isActive }
 
-    /** Gets a [target] IP address's most recent ban, or `null` if this IP address has never been banned. */
+    /**
+     * Gets all bans of a range of IP addresses.
+     *
+     * @param target the target of the bans
+     * @return a list of the bans of this address range
+     */
     @JvmStatic
-    fun getLastIpBan(target: Inet4Address): IpBanEntry? =
-        IpBanEntry.find { IpBanEntries.target eq target.hostAddress }.lastOrNull()
+    fun getAllIpBans(target: IpAddressRange): List<IpBan> =
+        IpBan.find { IpBans.target eq target }.toList()
 
 }

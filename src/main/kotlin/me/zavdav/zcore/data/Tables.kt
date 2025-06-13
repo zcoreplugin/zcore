@@ -47,31 +47,31 @@ internal object BankMembers : CompositeIdTable("bank_members") {
     override val primaryKey = PrimaryKey(bank, player)
 }
 
-internal object MuteEntries : UUIDTable("mute_entries") {
+internal object Mutes : UUIDTable("mutes") {
     val target = reference("target", OfflinePlayers, CASCADE, CASCADE)
     val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE)
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")
-    val active = bool("active").default(true)
+    val pardoned = bool("pardoned").default(false)
 }
 
-internal object BanEntries : UUIDTable("ban_entries") {
-    val target = uuid("target")
+internal object Bans : UUIDTable("bans") {
+    val target = reference("target", OfflinePlayers, CASCADE, CASCADE)
     val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE)
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")
-    val active = bool("active").default(true)
+    val pardoned = bool("pardoned").default(false)
 }
 
-internal object IpBanEntries : UUIDTable("ip_ban_entries") {
-    val target = varchar("target", 15)
+internal object IpBans : UUIDTable("ip_bans") {
+    val target = ipAddressRange("target")
     val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE)
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")
-    val active = bool("active").default(true)
+    val pardoned = bool("pardoned").default(false)
 }
 
 internal object Homes : UUIDTable("homes") {

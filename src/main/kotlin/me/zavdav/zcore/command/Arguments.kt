@@ -11,6 +11,7 @@ import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
+import me.zavdav.zcore.punishment.IpAddressRange
 import me.zavdav.zcore.util.tl
 import org.bukkit.Bukkit
 import java.math.BigDecimal
@@ -70,6 +71,15 @@ internal inline fun <S> ArgumentBuilder<S, *>.bigDecimalArgument(
     name: String,
     action: RequiredArgumentBuilder<S, BigDecimal>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, BigDecimalArgument, action)
+
+internal object IpAddressRangeArgument : ArgumentType<IpAddressRange> {
+    override fun parse(reader: StringReader): IpAddressRange = IpAddressRange.parse(reader.readArgument())
+}
+
+internal inline fun <S> ArgumentBuilder<S, *>.ipAddressRangeArgument(
+    name: String,
+    action: RequiredArgumentBuilder<S, IpAddressRange>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, IpAddressRangeArgument, action)
 
 internal object PlayerArgument : ArgumentType<CorePlayer> {
     override fun parse(reader: StringReader): CorePlayer =

@@ -1,25 +1,26 @@
 package me.zavdav.zcore.punishment
 
-import me.zavdav.zcore.data.BanEntries
+import me.zavdav.zcore.data.Bans
 import me.zavdav.zcore.player.OfflinePlayer
-import org.jetbrains.exposed.sql.and
-import java.util.UUID
 
 /** Represents a record of all issued bans. */
-object BanList : PunishmentList<BanEntry, UUID> {
+object BanList {
 
-    override val entries: Iterable<BanEntry> get() = BanEntry.all()
+    val entries: Iterable<Ban> get() = Ban.all().sortedBy { it.timeIssued }
 
-    /** Bans a [target] player and returns the [BanEntry] that was created from the arguments. */
+    /**
+     * Bans a player.
+     *
+     * @param target the target of the ban
+     * @param issuer the player that issued the ban
+     * @param duration the duration of the ban (permanent if `null`)
+     * @param reason the reason for the ban
+     * @return the [Ban] that was created
+     */
     @JvmStatic
-    fun addBan(target: OfflinePlayer, issuer: OfflinePlayer, duration: Long?, reason: String): BanEntry =
-        addBan(target.uuid, issuer, duration, reason)
-
-    /** Bans a [target] UUID and returns the [BanEntry] that was created from the arguments. */
-    @JvmStatic
-    fun addBan(target: UUID, issuer: OfflinePlayer, duration: Long?, reason: String): BanEntry {
-        getActiveBan(target)?.active = false
-        return BanEntry.new {
+    fun addBan(target: OfflinePlayer, issuer: OfflinePlayer, duration: Long?, reason: String): Ban {
+        pardonBan(target)
+        return Ban.new {
             this.target = target
             this.issuer = issuer
             this.timeIssued = System.currentTimeMillis()
@@ -29,40 +30,36 @@ object BanList : PunishmentList<BanEntry, UUID> {
     }
 
     /**
-     * Pardons a [target] player's most recent ban.
-     * Returns `true` on success, `false` if this player is not banned.
+     * Pardons a player's currently active ban.
+     *
+     * @param target the target of the ban
+     * @return `true` if the ban was pardoned, `false` if this player is not currently banned
      */
     @JvmStatic
-    fun pardonBan(target: OfflinePlayer) = pardonBan(target.uuid)
-
-    /**
-     * Pardons a [target] UUID's most recent ban.
-     * Returns `true` on success, `false` if this UUID is not banned.
-     */
-    @JvmStatic
-    fun pardonBan(target: UUID): Boolean {
-        val entry = getLastBan(target) ?: return false
-        if (!entry.active) return false
-        entry.active = false
+    fun pardonBan(target: OfflinePlayer): Boolean {
+        val ban = getActiveBan(target) ?: return false
+        ban.pardoned = true
         return true
     }
 
-    /** Gets a [target] player's active ban, or `null` if this player is not banned. */
+    /**
+     * Gets a player's currently active ban.
+     *
+     * @param target the target of the ban
+     * @return the active ban, or `null` if this player is not currently banned
+     */
     @JvmStatic
-    fun getActiveBan(target: OfflinePlayer): BanEntry? = getActiveBan(target.uuid)
+    fun getActiveBan(target: OfflinePlayer): Ban? =
+        entries.lastOrNull { it.target == target && it.isActive }
 
-    /** Gets a [target] UUID's active ban, or `null` if this UUID is not banned. */
+    /**
+     * Gets all bans of a player.
+     *
+     * @param target the target of the bans
+     * @return a list of this player's bans
+     */
     @JvmStatic
-    fun getActiveBan(target: UUID): BanEntry? =
-        BanEntry.find { BanEntries.active and (BanEntries.target eq target) }.lastOrNull()
-
-    /** Gets a [target] player's most recent ban, or `null` if this player has never been banned. */
-    @JvmStatic
-    fun getLastBan(target: OfflinePlayer): BanEntry? = getLastBan(target.uuid)
-
-    /** Gets a [target] UUID's most recent ban, or `null` if this UUID has never been banned. */
-    @JvmStatic
-    fun getLastBan(target: UUID): BanEntry? =
-        BanEntry.find { BanEntries.target eq target }.lastOrNull()
+    fun getAllBans(target: OfflinePlayer): List<Ban> =
+        Ban.find { Bans.target eq target.id }.toList()
 
 }

@@ -2,16 +2,16 @@ package me.zavdav.zcore
 
 import me.zavdav.zcore.command.*
 import me.zavdav.zcore.config.Config
-import me.zavdav.zcore.data.BanEntries
 import me.zavdav.zcore.data.BankAccounts
 import me.zavdav.zcore.data.BankMembers
+import me.zavdav.zcore.data.Bans
 import me.zavdav.zcore.data.Homes
 import me.zavdav.zcore.data.Ignores
-import me.zavdav.zcore.data.IpBanEntries
+import me.zavdav.zcore.data.IpBans
 import me.zavdav.zcore.data.KitItems
 import me.zavdav.zcore.data.Kits
 import me.zavdav.zcore.data.Mails
-import me.zavdav.zcore.data.MuteEntries
+import me.zavdav.zcore.data.Mutes
 import me.zavdav.zcore.data.OfflinePlayers
 import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.data.Warps
@@ -60,9 +60,9 @@ class ZCore : JavaPlugin() {
             PersonalAccounts,
             BankAccounts,
             BankMembers,
-            MuteEntries,
-            BanEntries,
-            IpBanEntries,
+            Mutes,
+            Bans,
+            IpBans,
             Homes,
             Warps,
             Kits,

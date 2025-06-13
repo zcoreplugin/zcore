@@ -11,6 +11,8 @@ import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.PersonalAccount
 import me.zavdav.zcore.location.Home
 import me.zavdav.zcore.permission.ValuePermissions
+import me.zavdav.zcore.punishment.BanList
+import me.zavdav.zcore.punishment.MuteList
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -118,8 +120,14 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     var deaths: Long by OfflinePlayers.deaths
         internal set
 
-    /** Returns `true` if this player is online. */
+    /** @return `true` if this player is online */
     val isOnline: Boolean get() = ZCore.getPlayer(uuid) != null
+
+    /** @return `true` if this player is banned */
+    val isBanned: Boolean get() = BanList.getActiveBan(this) != null
+
+    /** @return `true` if this player is muted */
+    val isMuted: Boolean get() = MuteList.getActiveMute(this) != null
 
     /** Gets the value of a [permission], or [default] if it is not set. */
     fun getPermissionValue(permission: String, default: Int): Int =
