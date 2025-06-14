@@ -14,11 +14,8 @@ class PersonalAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id),
 
     companion object : UUIDEntityClass<PersonalAccount>(PersonalAccounts)
 
-    private var _owner by OfflinePlayer referencedOn PersonalAccounts.owner
-
-    override var owner: OfflinePlayer
-        get() = _owner
-        set(value) = throw UnsupportedOperationException()
+    override var owner by OfflinePlayer referencedOn PersonalAccounts.owner
+        internal set
 
     private var _balance: BigDecimal by PersonalAccounts.balance
 

@@ -8,7 +8,7 @@ import java.math.RoundingMode
 sealed interface Account {
 
     /** The owner of this account. */
-    var owner: OfflinePlayer
+    val owner: OfflinePlayer
 
     /** This account's current balance. */
     var balance: BigDecimal
