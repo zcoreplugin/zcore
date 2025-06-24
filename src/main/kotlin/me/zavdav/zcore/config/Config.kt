@@ -72,4 +72,7 @@ object Config {
     val chatRadius: Int get() = getInt("chat-radius", def = 0)
     val defaultGiveAmount: Int get() = getInt("default-give-amount", 1, 64)
 
+    val defaultBanReason: String get() = getString("default-ban-reason", "The ban hammer has spoken!")
+    val defaultMuteReason: String get() = getString("default-mute-reason", "A mysterious force leaves you speechless!")
+
 }

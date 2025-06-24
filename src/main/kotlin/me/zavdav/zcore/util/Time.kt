@@ -9,14 +9,14 @@ private const val SECONDS_PER_DAY = 86400
 private const val SECONDS_PER_HOUR = 3600
 private const val SECONDS_PER_MINUTE = 60
 
-private val DURATION_PATTERN = Pattern.compile(
-    "(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" +
-    "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" +
-    "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" +
-    "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" +
-    "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" +
-    "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" +
-    "(?:([0-9]+)\\s*(?:s[a-z]*)?)?",
+internal val DURATION_PATTERN = Pattern.compile(
+    "(?:(\\d+)\\s?y\\s?)?" +
+    "(?:(\\d+)\\s?mo\\s?)?" +
+    "(?:(\\d+)\\s?w\\s?)?" +
+    "(?:(\\d+)\\s?d\\s?)?" +
+    "(?:(\\d+)\\s?h\\s?)?" +
+    "(?:(\\d+)\\s?m\\s?)?" +
+    "(?:(\\d+)\\s?s)?",
     Pattern.CASE_INSENSITIVE
 )
 

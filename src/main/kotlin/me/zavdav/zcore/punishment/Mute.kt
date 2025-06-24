@@ -15,7 +15,7 @@ class Mute internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Punishment
     override var target by OfflinePlayer referencedOn Mutes.target
         internal set
 
-    override var issuer by OfflinePlayer referencedOn Mutes.issuer
+    override var issuer by OfflinePlayer optionalReferencedOn Mutes.issuer
         internal set
 
     override var timeIssued: Long by Mutes.timeIssued

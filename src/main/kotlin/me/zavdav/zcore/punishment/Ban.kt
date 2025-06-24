@@ -15,7 +15,7 @@ class Ban internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Punishment<
     override var target by OfflinePlayer referencedOn Bans.target
         internal set
 
-    override var issuer by OfflinePlayer referencedOn Bans.issuer
+    override var issuer by OfflinePlayer optionalReferencedOn Bans.issuer
         internal set
 
     override var timeIssued: Long by Bans.timeIssued

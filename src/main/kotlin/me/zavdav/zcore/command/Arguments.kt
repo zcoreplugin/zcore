@@ -12,6 +12,8 @@ import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.IpAddressRange
+import me.zavdav.zcore.util.DURATION_PATTERN
+import me.zavdav.zcore.util.parseDuration
 import me.zavdav.zcore.util.tl
 import org.bukkit.Bukkit
 import java.math.BigDecimal
@@ -71,6 +73,25 @@ internal inline fun <S> ArgumentBuilder<S, *>.bigDecimalArgument(
     name: String,
     action: RequiredArgumentBuilder<S, BigDecimal>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, BigDecimalArgument, action)
+
+internal object DurationArgument : ArgumentType<Long> {
+    override fun parse(reader: StringReader): Long {
+        val matcher = DURATION_PATTERN.matcher(reader.remaining)
+        var end = 0
+
+        while (matcher.find() && matcher.start() == end)
+            end = matcher.end()
+
+        val duration = reader.remaining.substring(0, end).trimEnd()
+        reader.cursor += duration.length
+        return parseDuration(duration)!!
+    }
+}
+
+internal inline fun <S> ArgumentBuilder<S, *>.durationArgument(
+    name: String,
+    action: RequiredArgumentBuilder<S, Long>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, DurationArgument, action)
 
 internal object IpAddressRangeArgument : ArgumentType<IpAddressRange> {
     override fun parse(reader: StringReader): IpAddressRange = IpAddressRange.parse(reader.readArgument())

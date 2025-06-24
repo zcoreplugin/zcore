@@ -17,6 +17,7 @@ import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.data.Warps
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.event.ActivityListener
+import me.zavdav.zcore.event.ChatListener
 import me.zavdav.zcore.event.JoinQuitListener
 import me.zavdav.zcore.event.StatisticsListener
 import me.zavdav.zcore.kit.Kit
@@ -74,6 +75,7 @@ class ZCore : JavaPlugin() {
         val commands = mutableListOf(
             afkCommand,
             balanceCommand,
+            banCommand,
             bankCommand,
             broadcastCommand,
             clearmailCommand,
@@ -85,6 +87,7 @@ class ZCore : JavaPlugin() {
             mailCommand,
             motdCommand,
             msgCommand,
+            muteCommand,
             payCommand,
             rCommand,
             seenCommand,
@@ -92,6 +95,8 @@ class ZCore : JavaPlugin() {
             sethomeCommand,
             setwarpCommand,
             statsCommand,
+            unbanCommand,
+            unmuteCommand,
             warpCommand,
             warpsCommand
         )
@@ -99,6 +104,7 @@ class ZCore : JavaPlugin() {
         commands.forEach { it.register() }
 
         server.pluginManager.registerEvents(ActivityListener(), this)
+        server.pluginManager.registerEvents(ChatListener(), this)
         server.pluginManager.registerEvents(JoinQuitListener(), this)
         server.pluginManager.registerEvents(StatisticsListener(), this)
     }
@@ -116,11 +122,6 @@ class ZCore : JavaPlugin() {
         @JvmStatic
         lateinit var INSTANCE: ZCore
             private set
-
-        /** An intermediary player for actions that aren't directly performed by a player. */
-        @JvmStatic
-        val SYSTEM_PLAYER: OfflinePlayer
-            get() = TODO("Not yet implemented")
 
         /** The current version of ZCore. */
         @JvmStatic

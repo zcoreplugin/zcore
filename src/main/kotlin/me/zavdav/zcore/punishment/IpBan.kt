@@ -15,7 +15,7 @@ class IpBan internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Punishmen
     override var target: IpAddressRange by IpBans.target
         internal set
 
-    override var issuer by OfflinePlayer referencedOn IpBans.issuer
+    override var issuer by OfflinePlayer optionalReferencedOn IpBans.issuer
         internal set
 
     override var timeIssued: Long by IpBans.timeIssued

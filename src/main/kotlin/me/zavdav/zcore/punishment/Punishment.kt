@@ -8,8 +8,11 @@ sealed interface Punishment<T> {
     /** The target of this punishment. */
     val target: T
 
-    /** The player that issued this punishment. */
-    val issuer: OfflinePlayer
+    /**
+     * The player that issued this punishment.
+     * This can be `null`, which means the console issued this punishment.
+     */
+    val issuer: OfflinePlayer?
 
     /** The timestamp of when this punishment was issued. */
     val timeIssued: Long

@@ -66,3 +66,6 @@ afk:
 teleport-delay: 3
 chat-radius: 0
 default-give-amount: 64
+
+default-ban-reason: "The ban hammer has spoken!"
+default-mute-reason: "A mysterious force leaves you speechless!"

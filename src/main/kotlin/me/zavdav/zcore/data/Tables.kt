@@ -49,7 +49,7 @@ internal object BankMembers : CompositeIdTable("bank_members") {
 
 internal object Mutes : UUIDTable("mutes") {
     val target = reference("target", OfflinePlayers, CASCADE, CASCADE)
-    val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE)
+    val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE).nullable()
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")
@@ -58,7 +58,7 @@ internal object Mutes : UUIDTable("mutes") {
 
 internal object Bans : UUIDTable("bans") {
     val target = reference("target", OfflinePlayers, CASCADE, CASCADE)
-    val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE)
+    val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE).nullable()
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")
@@ -67,7 +67,7 @@ internal object Bans : UUIDTable("bans") {
 
 internal object IpBans : UUIDTable("ip_bans") {
     val target = ipAddressRange("target")
-    val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE)
+    val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE).nullable()
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")

@@ -12,13 +12,13 @@ object MuteList {
      * Mutes a player.
      *
      * @param target the target of the mute
-     * @param issuer the player that issued the mute
+     * @param issuer the player that issued the mute (`null` means issued by console)
      * @param duration the duration of the mute (permanent if `null`)
      * @param reason the reason for the mute
      * @return the [Mute] that was created
      */
     @JvmStatic
-    fun addMute(target: OfflinePlayer, issuer: OfflinePlayer, duration: Long?, reason: String): Mute {
+    fun addMute(target: OfflinePlayer, issuer: OfflinePlayer?, duration: Long?, reason: String): Mute {
         pardonMute(target)
         return Mute.new {
             this.target = target

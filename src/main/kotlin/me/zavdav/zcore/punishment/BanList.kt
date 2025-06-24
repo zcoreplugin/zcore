@@ -12,13 +12,13 @@ object BanList {
      * Bans a player.
      *
      * @param target the target of the ban
-     * @param issuer the player that issued the ban
+     * @param issuer the player that issued the ban (`null` means issued by console)
      * @param duration the duration of the ban (permanent if `null`)
      * @param reason the reason for the ban
      * @return the [Ban] that was created
      */
     @JvmStatic
-    fun addBan(target: OfflinePlayer, issuer: OfflinePlayer, duration: Long?, reason: String): Ban {
+    fun addBan(target: OfflinePlayer, issuer: OfflinePlayer?, duration: Long?, reason: String): Ban {
         pardonBan(target)
         return Ban.new {
             this.target = target

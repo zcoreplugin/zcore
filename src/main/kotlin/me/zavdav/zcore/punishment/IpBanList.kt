@@ -12,13 +12,13 @@ object IpBanList {
      * Bans a range of IP addresses.
      *
      * @param target the target of the ban
-     * @param issuer the player that issued the ban
+     * @param issuer the player that issued the ban (`null` means issued by console)
      * @param duration the duration of the ban (permanent if `null`)
      * @param reason the reason for the ban
      * @return the [IpBan] that was created
      */
     @JvmStatic
-    fun addIpBan(target: IpAddressRange, issuer: OfflinePlayer, duration: Long?, reason: String): IpBan {
+    fun addIpBan(target: IpAddressRange, issuer: OfflinePlayer?, duration: Long?, reason: String): IpBan {
         pardonIpBan(target)
         return IpBan.new {
             this.target = target
