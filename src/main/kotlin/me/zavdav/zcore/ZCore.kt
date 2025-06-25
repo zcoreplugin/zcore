@@ -84,6 +84,8 @@ class ZCore : JavaPlugin() {
             ecoCommand,
             homeCommand,
             homesCommand,
+            kickCommand,
+            kickallCommand,
             mailCommand,
             motdCommand,
             msgCommand,
