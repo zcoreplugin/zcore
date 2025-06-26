@@ -16,8 +16,8 @@ import me.zavdav.zcore.data.OfflinePlayers
 import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.data.Warps
 import me.zavdav.zcore.economy.BankAccount
+import me.zavdav.zcore.event.ActionListener
 import me.zavdav.zcore.event.ActivityListener
-import me.zavdav.zcore.event.ChatListener
 import me.zavdav.zcore.event.JoinQuitListener
 import me.zavdav.zcore.event.StatisticsListener
 import me.zavdav.zcore.kit.Kit
@@ -82,6 +82,7 @@ class ZCore : JavaPlugin() {
             delhomeCommand,
             delwarpCommand,
             ecoCommand,
+            godCommand,
             homeCommand,
             homesCommand,
             kickCommand,
@@ -99,14 +100,15 @@ class ZCore : JavaPlugin() {
             statsCommand,
             unbanCommand,
             unmuteCommand,
+            vanishCommand,
             warpCommand,
             warpsCommand
         )
 
         commands.forEach { it.register() }
 
+        server.pluginManager.registerEvents(ActionListener(), this)
         server.pluginManager.registerEvents(ActivityListener(), this)
-        server.pluginManager.registerEvents(ChatListener(), this)
         server.pluginManager.registerEvents(JoinQuitListener(), this)
         server.pluginManager.registerEvents(StatisticsListener(), this)
     }

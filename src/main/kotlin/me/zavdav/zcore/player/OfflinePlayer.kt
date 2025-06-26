@@ -13,6 +13,7 @@ import me.zavdav.zcore.location.Home
 import me.zavdav.zcore.permission.ValuePermissions
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.MuteList
+import org.bukkit.Bukkit
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -67,10 +68,27 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     val ignoredPlayers by OfflinePlayer.via(Ignores.player, Ignores.target)
 
     /** Determines if this player is invincible. */
-    var invincible: Boolean by OfflinePlayers.invincible
+    var isInvincible: Boolean by OfflinePlayers.isInvincible
+
+    private var _isVanished: Boolean by OfflinePlayers.isVanished
 
     /** Determines if this player is vanished. */
-    var vanished: Boolean by OfflinePlayers.vanished
+    var isVanished: Boolean
+        get() = _isVanished
+        set(value) {
+            _isVanished = value
+            if (!isOnline) return
+
+            for (pl in Bukkit.getOnlinePlayers()) {
+                if (pl.core().data.isVanished) {
+                    Bukkit.getOnlinePlayers()
+                        .filter { !it.isOp && !it.hasPermission("zcore.vanish.bypass") }
+                        .forEach { it.hidePlayer(pl) }
+                } else {
+                    Bukkit.getOnlinePlayers().forEach { it.showPlayer(pl) }
+                }
+            }
+        }
 
     /** Determines if this player can see chat messages. */
     var chatEnabled: Boolean by OfflinePlayers.chatEnabled
