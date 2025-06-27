@@ -13,9 +13,12 @@ import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.IpAddressRange
 import me.zavdav.zcore.util.DURATION_PATTERN
+import me.zavdav.zcore.util.MaterialData
+import me.zavdav.zcore.util.Materials
 import me.zavdav.zcore.util.parseDuration
 import me.zavdav.zcore.util.tl
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import java.math.BigDecimal
 
 internal object PlayerNotOnlineExceptionType : CommandExceptionType {
@@ -26,8 +29,13 @@ internal object PlayerUnknownExceptionType : CommandExceptionType {
     fun create() = CommandSyntaxException(this, LiteralMessage(tl("command.playerUnknown")))
 }
 
+internal object MaterialUnknownExceptionType : CommandExceptionType {
+    fun create() = CommandSyntaxException(this, LiteralMessage(tl("command.materialUnknown")))
+}
+
 private val PLAYER_NOT_ONLINE = PlayerNotOnlineExceptionType
 private val PLAYER_UNKNOWN = PlayerUnknownExceptionType
+private val MATERIAL_UNKNOWN = MaterialUnknownExceptionType
 
 internal object StringArgument : ArgumentType<String> {
     override fun parse(reader: StringReader): String = reader.readArgument()
@@ -121,6 +129,31 @@ internal inline fun <S> ArgumentBuilder<S, *>.offlinePlayerArgument(
     name: String,
     action: RequiredArgumentBuilder<S, OfflinePlayer>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, OfflinePlayerArgument, action)
+
+internal object MaterialArgument : ArgumentType<MaterialData> {
+    override fun parse(reader: StringReader): MaterialData {
+        val string = reader.readArgument()
+        var material = Materials.getByName(string)
+
+        try {
+            if (material == null) {
+                val components = string.split(":", limit = 2)
+                val type = Material.getMaterial(components[0].toInt().coerceAtLeast(1))!!
+                val data = components.getOrNull(1)?.toShort()?.coerceAtLeast(0) ?: 0
+                material = MaterialData(type, data)
+            }
+        } catch (_: Exception) {
+            throw MATERIAL_UNKNOWN.create()
+        }
+
+        return material
+    }
+}
+
+internal inline fun <S> ArgumentBuilder<S, *>.materialArgument(
+    name: String,
+    action: RequiredArgumentBuilder<S, MaterialData>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, MaterialArgument, action)
 
 internal fun StringReader.readArgument(): String {
     val start = cursor

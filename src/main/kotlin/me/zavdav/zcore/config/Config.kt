@@ -70,7 +70,7 @@ object Config {
 
     val teleportDelay: Int get() = getInt("teleport-delay", def = 3)
     val chatRadius: Int get() = getInt("chat-radius", def = 0)
-    val defaultGiveAmount: Int get() = getInt("default-give-amount", 1, 64)
+    val defaultGiveAmount: Int get() = getInt("default-give-amount", 1, 1)
 
     val defaultKickReason: String get() = getString("default-kick-reason", "Kicked from server")
     val defaultBanReason: String get() = getString("default-ban-reason", "The ban hammer has spoken!")

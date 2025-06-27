@@ -65,7 +65,7 @@ afk:
 
 teleport-delay: 3
 chat-radius: 0
-default-give-amount: 64
+default-give-amount: 1
 
 default-kick-reason: "Kicked from server"
 default-ban-reason: "The ban hammer has spoken!"

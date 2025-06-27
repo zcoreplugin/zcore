@@ -27,6 +27,7 @@ import me.zavdav.zcore.permission.ValuePermissions
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
+import me.zavdav.zcore.util.Materials
 import me.zavdav.zcore.version.ZCoreVersion
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -52,6 +53,7 @@ class ZCore : JavaPlugin() {
     override fun onEnable() {
         INSTANCE = this
         Config.load()
+        Materials.load()
         ValuePermissions.load()
         Database.connect("jdbc:h2:${dataFolder.absolutePath}/db/zcore", "org.h2.Driver")
         transaction = TransactionManager.currentOrNew(Connection.TRANSACTION_REPEATABLE_READ)
@@ -78,14 +80,17 @@ class ZCore : JavaPlugin() {
             banCommand,
             bankCommand,
             broadcastCommand,
+            clearCommand,
             clearmailCommand,
             delhomeCommand,
             delwarpCommand,
             ecoCommand,
+            giveCommand,
             godCommand,
             healCommand,
             homeCommand,
             homesCommand,
+            itemCommand,
             kickCommand,
             kickallCommand,
             killCommand,
