@@ -11,6 +11,7 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
         } catch (e: CommandSyntaxException) {
             when (e.type) {
                 is PlayerNotOnlineExceptionType -> throw TranslatableException("command.playerNotOnline")
+                is AmbiguousNameExceptionType -> throw TranslatableException("command.ambiguousName")
                 is PlayerUnknownExceptionType -> throw TranslatableException("command.playerUnknown")
                 is MaterialUnknownExceptionType -> throw TranslatableException("command.materialUnknown")
                 else -> throw TranslatableException("command.syntaxError")

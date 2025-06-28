@@ -10,19 +10,21 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.IpAddressRange
 import me.zavdav.zcore.util.DURATION_PATTERN
 import me.zavdav.zcore.util.MaterialData
 import me.zavdav.zcore.util.Materials
 import me.zavdav.zcore.util.parseDuration
 import me.zavdav.zcore.util.tl
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import java.math.BigDecimal
 
 internal object PlayerNotOnlineExceptionType : CommandExceptionType {
     fun create() = CommandSyntaxException(this, LiteralMessage(tl("command.playerNotOnline")))
+}
+
+internal object AmbiguousNameExceptionType : CommandExceptionType {
+    fun create() = CommandSyntaxException(this, LiteralMessage(tl("command.ambiguousName")))
 }
 
 internal object PlayerUnknownExceptionType : CommandExceptionType {
@@ -34,6 +36,7 @@ internal object MaterialUnknownExceptionType : CommandExceptionType {
 }
 
 private val PLAYER_NOT_ONLINE = PlayerNotOnlineExceptionType
+private val AMBIGUOUS_NAME = AmbiguousNameExceptionType
 private val PLAYER_UNKNOWN = PlayerUnknownExceptionType
 private val MATERIAL_UNKNOWN = MaterialUnknownExceptionType
 
@@ -111,8 +114,14 @@ internal inline fun <S> ArgumentBuilder<S, *>.ipAddressRangeArgument(
 ): ArgumentBuilder<S, *> = argument(name, IpAddressRangeArgument, action)
 
 internal object PlayerArgument : ArgumentType<CorePlayer> {
-    override fun parse(reader: StringReader): CorePlayer =
-        Bukkit.getPlayer(reader.readArgument())?.core() ?: throw PLAYER_NOT_ONLINE.create()
+    override fun parse(reader: StringReader): CorePlayer {
+        val matches = ZCore.matchPlayer(reader.readArgument())
+        return when (matches.size) {
+            0 -> throw PLAYER_NOT_ONLINE.create()
+            1 -> matches.first()
+            else -> throw AMBIGUOUS_NAME.create()
+        }
+    }
 }
 
 internal inline fun <S> ArgumentBuilder<S, *>.playerArgument(
