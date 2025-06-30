@@ -25,6 +25,7 @@ object ZCoreConfig {
         put("command.kick.default-reason", "Kicked from server")
         put("command.motd.lines", listOf("&6Welcome, {NAME}!", "&7-------------------------", "&eOnline players: &b{PLAYERCOUNT}/{MAXPLAYERS}"))
         put("command.mute.default-reason", "A mysterious force leaves you speechless!")
+        put("command.rules.lines", listOf("&7=> &bRules &7<==============================", "1. Placeholder text", "2. Placeholder text", "3. Placeholder text"))
 
         yaml.save()
     }

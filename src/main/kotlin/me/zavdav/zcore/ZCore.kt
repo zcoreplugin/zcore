@@ -100,6 +100,7 @@ class ZCore : JavaPlugin() {
             muteCommand,
             payCommand,
             rCommand,
+            rulesCommand,
             seenCommand,
             sendmailCommand,
             sethomeCommand,
