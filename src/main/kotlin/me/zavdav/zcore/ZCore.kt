@@ -105,11 +105,13 @@ class ZCore : JavaPlugin() {
             sethomeCommand,
             setwarpCommand,
             statsCommand,
+            timeCommand,
             unbanCommand,
             unmuteCommand,
             vanishCommand,
             warpCommand,
-            warpsCommand
+            warpsCommand,
+            weatherCommand
         )
 
         commands.forEach { it.register() }
