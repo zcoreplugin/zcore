@@ -1,7 +1,7 @@
 package me.zavdav.zcore.player
 
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.config.Config
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.util.getSafe
 import me.zavdav.zcore.util.syncRepeatingTask
 import me.zavdav.zcore.util.tl
@@ -66,11 +66,11 @@ class CorePlayer(val base: Player) : Player by base {
         if (!isOnline) return
         val inactiveTime = System.currentTimeMillis() - data.lastActivity
 
-        if (!isAfk && inactiveTime >= Config.afkTime * 1000)
+        if (!isAfk && inactiveTime >= ZCoreConfig.getInt("command.afk.auto.time") * 1000)
             setInactive()
 
-        if (!Config.afkKickEnabled) return
-        if (isAfk && inactiveTime >= Config.afkKickTime * 1000 &&
+        if (!ZCoreConfig.getBoolean("command.afk.auto.kick.enabled")) return
+        if (isAfk && inactiveTime >= ZCoreConfig.getInt("command.afk.auto.kick.time") * 1000 &&
             !isOp && !hasPermission("zcore.exempt.afk.kick"))
             kickPlayer(tl("afk.kickReason"))
     }
@@ -105,7 +105,7 @@ class CorePlayer(val base: Player) : Player by base {
         }
 
         private fun checkAfkPlayers() {
-            if (!Config.afkEnabled) return
+            if (!ZCoreConfig.getBoolean("command.afk.auto.enabled")) return
             synchronized(players) {
                 players.forEach { (_, player) -> player.checkAfk() }
             }

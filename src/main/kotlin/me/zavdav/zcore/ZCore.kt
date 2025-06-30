@@ -1,7 +1,7 @@
 package me.zavdav.zcore
 
 import me.zavdav.zcore.command.*
-import me.zavdav.zcore.config.Config
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.data.BankAccounts
 import me.zavdav.zcore.data.BankMembers
 import me.zavdav.zcore.data.Bans
@@ -52,7 +52,7 @@ class ZCore : JavaPlugin() {
 
     override fun onEnable() {
         INSTANCE = this
-        Config.load()
+        ZCoreConfig.load()
         Materials.load()
         ValuePermissions.load()
         Database.connect("jdbc:h2:${dataFolder.absolutePath}/db/zcore", "org.h2.Driver")
@@ -319,7 +319,7 @@ class ZCore : JavaPlugin() {
             currencyFormat.minimumFractionDigits = 0
             currencyFormat.maximumFractionDigits = roundedAmount.scale()
 
-            return "${Config.currency}${currencyFormat.format(roundedAmount)}"
+            return "${ZCoreConfig.getString("general.currency")}${currencyFormat.format(roundedAmount)}"
         }
 
     }

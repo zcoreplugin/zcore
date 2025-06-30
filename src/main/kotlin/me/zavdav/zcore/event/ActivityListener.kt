@@ -1,6 +1,6 @@
 package me.zavdav.zcore.event
 
-import me.zavdav.zcore.config.Config
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.getSafe
 import org.bukkit.entity.Player
@@ -24,7 +24,7 @@ internal class ActivityListener : Listener {
         val from = event.from
         val to = event.to
 
-        if (!player.isAfk || !Config.afkProtection) {
+        if (!player.isAfk || !ZCoreConfig.getBoolean("command.afk.protect")) {
             player.updateActivity()
             return
         }

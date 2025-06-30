@@ -1,7 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.config.Config
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.MaterialData
@@ -20,7 +20,7 @@ internal val giveCommand = command(
             runs {
                 val target: CorePlayer by this
                 val material: MaterialData by this
-                doGive(target, material, Config.defaultGiveAmount)
+                doGive(target, material, ZCoreConfig.getInt("command.give.default-amount"))
             }
             intArgument("amount") {
                 runs {

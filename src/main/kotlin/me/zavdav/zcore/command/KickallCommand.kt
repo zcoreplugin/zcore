@@ -1,7 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.config.Config
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.util.tl
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -14,7 +14,7 @@ internal val kickallCommand = command(
     "zcore.kickall"
 ) {
     runs {
-        doKickall(Config.defaultKickReason)
+        doKickall(ZCoreConfig.getString("command.kick.default-reason"))
     }
     textArgument("reason") {
         runs {

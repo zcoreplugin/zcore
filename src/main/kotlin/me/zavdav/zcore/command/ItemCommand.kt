@@ -1,7 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.config.Config
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.util.MaterialData
 import me.zavdav.zcore.util.tl
 import org.bukkit.command.CommandSender
@@ -16,7 +16,7 @@ internal val itemCommand = command(
     materialArgument("material") {
         runs {
             val material: MaterialData by this
-            doItem(material, Config.defaultGiveAmount)
+            doItem(material, ZCoreConfig.getInt("command.give.default-amount"))
         }
         intArgument("amount") {
             runs {

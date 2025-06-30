@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.config.Config
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.BanList
@@ -20,13 +20,13 @@ internal val banCommand = command(
     offlinePlayerArgument("target") {
         runs {
             val target: OfflinePlayer by this
-            doBan(target, null, Config.defaultBanReason)
+            doBan(target, null, ZCoreConfig.getString("command.ban.default-reason"))
         }
         durationArgument("duration") {
             runs {
                 val target: OfflinePlayer by this
                 val duration: Long by this
-                doBan(target, duration, Config.defaultBanReason)
+                doBan(target, duration, ZCoreConfig.getString("command.ban.default-reason"))
             }
             textArgument("reason") {
                 runs {

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "me.zavdav.zcore"
-version = "0.15.1"
+version = "0.15.2"
 
 repositories {
     mavenCentral()

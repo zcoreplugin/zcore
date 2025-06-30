@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.config.Config
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.MuteList
@@ -20,13 +20,13 @@ internal val muteCommand = command(
     offlinePlayerArgument("target") {
         runs {
             val target: OfflinePlayer by this
-            doMute(target, null, Config.defaultMuteReason)
+            doMute(target, null, ZCoreConfig.getString("command.mute.default-reason"))
         }
         durationArgument("duration") {
             runs {
                 val target: OfflinePlayer by this
                 val duration: Long by this
-                doMute(target, duration, Config.defaultMuteReason)
+                doMute(target, duration, ZCoreConfig.getString("command.mute.default-reason"))
             }
             textArgument("reason") {
                 runs {
