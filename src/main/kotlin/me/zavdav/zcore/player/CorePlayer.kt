@@ -2,6 +2,7 @@ package me.zavdav.zcore.player
 
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.config.ZCoreConfig
+import me.zavdav.zcore.util.colored
 import me.zavdav.zcore.util.getSafe
 import me.zavdav.zcore.util.syncRepeatingTask
 import me.zavdav.zcore.util.tl
@@ -30,6 +31,14 @@ class CorePlayer(val base: Player) : Player by base {
     override fun isOnline(): Boolean =
         server.onlinePlayers.any { it.uniqueId == uniqueId }
 
+    override fun getDisplayName(): String {
+        val nickname = data.nickname
+        return if (nickname != null)
+            "§f${ZCoreConfig.getString("general.nick-prefix").colored()}$nickname§f"
+        else
+            name
+    }
+
     override fun kickPlayer(message: String) =
         base.kickPlayer(if (message.length <= 100) message else message.substring(0, 100))
 
@@ -55,6 +64,7 @@ class CorePlayer(val base: Player) : Player by base {
     fun updateActivity() {
         if (!isOnline) return
         data.lastActivity = System.currentTimeMillis()
+        base.displayName = displayName
 
         if (isAfk) {
             isAfk = false

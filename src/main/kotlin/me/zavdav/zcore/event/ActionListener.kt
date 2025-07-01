@@ -1,7 +1,10 @@
 package me.zavdav.zcore.event
 
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.MuteList
+import me.zavdav.zcore.util.colored
+import me.zavdav.zcore.util.fmt
 import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.tl
 import org.bukkit.entity.Player
@@ -19,14 +22,25 @@ internal class ActionListener : Listener {
     @EventHandler(priority = Event.Priority.Low, ignoreCancelled = true)
     fun onPlayerChat(event: PlayerChatEvent) {
         val player = event.player.core()
-        val mute = MuteList.getActiveMute(player.data) ?: return
-        val duration = mute.expiration?.let { it - System.currentTimeMillis() }
+        val mute = MuteList.getActiveMute(player.data)
 
-        event.isCancelled = true
-        if (duration != null)
-            player.sendMessage(tl("command.mute.temporary.message", formatDuration(duration), mute.reason))
-        else
-            player.sendMessage(tl("command.mute.permanent.message", mute.reason))
+        if (mute != null) {
+            val duration = mute.expiration?.let { it - System.currentTimeMillis() }
+            if (duration != null)
+                player.sendMessage(tl("command.mute.temporary.message", formatDuration(duration), mute.reason))
+            else
+                player.sendMessage(tl("command.mute.permanent.message", mute.reason))
+
+            event.isCancelled = true
+            return
+        }
+
+        if (player.isOp || player.hasPermission("zcore.chat.color"))
+            event.message = event.message.colored()
+
+        event.format = fmt(ZCoreConfig.getString("general.chat-format"),
+            "player" to "%1\$s", "message" to "%2\$s"
+        )
     }
 
     @EventHandler(priority = Event.Priority.Lowest, ignoreCancelled = true)
