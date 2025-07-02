@@ -2,6 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.CorePlayer
+import me.zavdav.zcore.util.tl
 import org.bukkit.command.CommandSender
 
 internal val msgCommand = command(
@@ -24,5 +25,11 @@ internal val msgCommand = command(
 
 private fun CommandContext<CommandSender>.doMsg(target: CorePlayer, message: String) {
     val source = requirePlayer()
-    source.privateMessage(target, message)
+    source.replyingTo = target
+    source.sendMessage(tl("command.msg.toPlayer", target.displayName, message))
+    if (target.data.ignores(source.data) && !source.isOp && !source.hasPermission("zcore.ignore.bypass"))
+        return
+
+    target.replyingTo = source
+    target.sendMessage(tl("command.msg.fromPlayer", source.displayName, message))
 }

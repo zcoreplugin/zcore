@@ -85,14 +85,6 @@ class CorePlayer(val base: Player) : Player by base {
             kickPlayer(tl("afk.kickReason"))
     }
 
-    /** Sends a private [message] to a [target] player. */
-    fun privateMessage(target: CorePlayer, message: String) {
-        replyingTo = target
-        target.replyingTo = this
-        sendMessage(tl("command.msg.toPlayer", target.displayName, message))
-        target.sendMessage(tl("command.msg.fromPlayer", displayName, message))
-    }
-
     internal companion object {
         private val players = mutableMapOf<UUID, CorePlayer>()
 

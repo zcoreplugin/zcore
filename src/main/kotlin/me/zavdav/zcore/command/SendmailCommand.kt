@@ -24,6 +24,9 @@ internal val sendmailCommand = command(
 
 private fun CommandContext<CommandSender>.doSendmail(target: OfflinePlayer, message: String) {
     val source = requirePlayer()
-    source.data.sendMail(target, message)
     source.sendMessage(tl("command.sendmail.success", target.name))
+    if (target.ignores(source.data) && !source.isOp && !source.hasPermission("zcore.ignore.bypass"))
+        return
+
+    source.data.sendMail(target, message)
 }

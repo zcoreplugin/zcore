@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.util.tl
 import org.bukkit.command.CommandSender
 
 internal val rCommand = command(
@@ -20,10 +21,16 @@ internal val rCommand = command(
 
 private fun CommandContext<CommandSender>.doR(message: String) {
     val source = requirePlayer()
-    val replyingTo = source.replyingTo
-    if (replyingTo == null || !replyingTo.isOnline) {
+    val target = source.replyingTo
+    if (target == null || !target.isOnline) {
         throw TranslatableException("command.r.noOne")
     }
 
-    source.privateMessage(replyingTo, message)
+    source.replyingTo = target
+    source.sendMessage(tl("command.msg.toPlayer", target.displayName, message))
+    if (target.data.ignores(source.data) && !source.isOp && !source.hasPermission("zcore.ignore.bypass"))
+        return
+
+    target.replyingTo = source
+    target.sendMessage(tl("command.msg.fromPlayer", source.displayName, message))
 }

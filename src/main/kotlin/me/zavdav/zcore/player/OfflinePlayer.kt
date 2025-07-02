@@ -216,11 +216,19 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     /**
+     * Returns `true` if this player ignores a player.
+     *
+     * @param player the other player
+     * @return `true` if this player ignores the player
+     */
+    fun ignores(player: OfflinePlayer) = player in ignoredPlayers
+
+    /**
      * Makes this player ignore a [player].
      * Returns `true` on success, `false` if that player is already ignored.
      */
     fun addIgnore(player: OfflinePlayer): Boolean {
-        val notIgnored = player !in ignoredPlayers
+        val notIgnored = !ignores(player)
         if (notIgnored) {
             Ignores.insert {
                 it[this.player] = this@OfflinePlayer.id
@@ -235,7 +243,7 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
      * Returns `true` on success, `false` if that player is not ignored.
      */
     fun removeIgnore(player: OfflinePlayer): Boolean {
-        val ignored = player in ignoredPlayers
+        val ignored = ignores(player)
         if (ignored) {
             Ignores.deleteWhere { (Ignores.player eq this@OfflinePlayer.id) and (Ignores.target eq player.id) }
         }

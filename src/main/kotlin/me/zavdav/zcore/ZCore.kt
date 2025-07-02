@@ -90,6 +90,8 @@ class ZCore : JavaPlugin() {
             healCommand,
             homeCommand,
             homesCommand,
+            ignoreCommand,
+            ignoredCommand,
             itemCommand,
             kickCommand,
             kickallCommand,

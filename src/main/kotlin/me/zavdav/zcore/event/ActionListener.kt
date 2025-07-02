@@ -41,6 +41,10 @@ internal class ActionListener : Listener {
         event.format = fmt(ZCoreConfig.getString("general.chat-format"),
             "player" to "%1\$s", "message" to "%2\$s"
         )
+
+        event.recipients.removeIf {
+            it.core().data.ignores(player.data) && !player.isOp && !player.hasPermission("zcore.ignore.bypass")
+        }
     }
 
     @EventHandler(priority = Event.Priority.Lowest, ignoreCancelled = true)
