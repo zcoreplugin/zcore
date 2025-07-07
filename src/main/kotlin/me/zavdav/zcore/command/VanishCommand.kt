@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -34,18 +34,10 @@ private fun CommandContext<CommandSender>.doVanish(target: CorePlayer) {
     target.data.isVanished = isVanished
 
     if (isVanished) {
-        if (self) {
-            source.sendMessage(tl("command.vanish.enabled"))
-        } else {
-            source.sendMessage(tl("command.vanish.enabled.other", target.name))
-            target.sendMessage(tl("command.vanish.enabled"))
-        }
+        source.sendMessage(local("command.vanish.enabled", target.name))
+        if (!self) target.sendMessage(local("command.vanish.enabled", target.name))
     } else {
-        if (self) {
-            source.sendMessage(tl("command.vanish.disabled"))
-        } else {
-            source.sendMessage(tl("command.vanish.disabled.other", target.name))
-            target.sendMessage(tl("command.vanish.disabled"))
-        }
+        source.sendMessage(local("command.vanish.disabled", target.name))
+        if (!self) target.sendMessage(local("command.vanish.disabled", target.name))
     }
 }

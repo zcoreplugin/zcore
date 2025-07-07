@@ -3,9 +3,10 @@ package me.zavdav.zcore.player
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.util.colored
+import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.getSafe
+import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.syncRepeatingTask
-import me.zavdav.zcore.util.tl
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.craftbukkit.entity.CraftPlayer
@@ -58,7 +59,7 @@ class CorePlayer(val base: Player) : Player by base {
     fun setInactive() {
         if (!isOnline || isAfk) return
         isAfk = true
-        Bukkit.broadcastMessage(tl("afk.nowAfk", name))
+        Bukkit.broadcastMessage(local("command.afk.enabled", name))
     }
 
     fun updateActivity() {
@@ -68,21 +69,22 @@ class CorePlayer(val base: Player) : Player by base {
 
         if (isAfk) {
             isAfk = false
-            Bukkit.broadcastMessage(tl("afk.noLongerAfk", name))
+            Bukkit.broadcastMessage(local("command.afk.disabled", name))
         }
     }
 
-    private fun checkAfk() {
+    private fun checkActivity() {
         if (!isOnline) return
         val inactiveTime = System.currentTimeMillis() - data.lastActivity
 
-        if (!isAfk && inactiveTime >= ZCoreConfig.getInt("command.afk.auto.time") * 1000)
+        val autoAfkTime = ZCoreConfig.getInt("command.afk.auto.time") * 1000L
+        if (!isAfk && inactiveTime >= autoAfkTime)
             setInactive()
 
         if (!ZCoreConfig.getBoolean("command.afk.auto.kick.enabled")) return
-        if (isAfk && inactiveTime >= ZCoreConfig.getInt("command.afk.auto.kick.time") * 1000 &&
-            !isOp && !hasPermission("zcore.exempt.afk.kick"))
-            kickPlayer(tl("afk.kickReason"))
+        val autoKickTime = ZCoreConfig.getInt("command.afk.auto.kick.time") * 1000L
+        if (isAfk && inactiveTime >= autoKickTime && !isOp && !hasPermission("zcore.afk.kick.exempt"))
+            kickPlayer(local("command.afk.kick.message", formatDuration(autoKickTime)))
     }
 
     internal companion object {
@@ -90,7 +92,7 @@ class CorePlayer(val base: Player) : Player by base {
 
         init {
             syncRepeatingTask(0, 20) {
-                checkAfkPlayers()
+                checkPlayerActivity()
                 clearOfflinePlayers()
             }
         }
@@ -106,10 +108,10 @@ class CorePlayer(val base: Player) : Player by base {
             }
         }
 
-        private fun checkAfkPlayers() {
+        private fun checkPlayerActivity() {
             if (!ZCoreConfig.getBoolean("command.afk.auto.enabled")) return
             synchronized(players) {
-                players.forEach { (_, player) -> player.checkAfk() }
+                players.forEach { (_, player) -> player.checkActivity() }
             }
         }
 

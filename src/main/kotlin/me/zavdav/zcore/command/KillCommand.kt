@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -31,8 +31,5 @@ private fun CommandContext<CommandSender>.doKill(target: CorePlayer) {
     if (!self) require("zcore.kill.other")
 
     target.health = 0
-    if (self)
-        source.sendMessage(tl("command.kill"))
-    else
-        source.sendMessage(tl("command.kill.other", target.name))
+    source.sendMessage(local("command.kill", target.name))
 }

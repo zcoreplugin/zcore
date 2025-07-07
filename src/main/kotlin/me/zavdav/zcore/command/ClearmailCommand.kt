@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -31,15 +31,8 @@ private fun CommandContext<CommandSender>.doClearmail(target: OfflinePlayer) {
     if (!self) require("zcore.clearmail.other")
 
     if (target.clearMail()) {
-        if (self)
-            source.sendMessage(tl("command.clearmail.success"))
-        else
-            source.sendMessage(tl("command.clearmail.success.other", target.name))
+        source.sendMessage(local("command.clearmail", target.name))
     } else {
-        if (self)
-            throw TranslatableException("command.clearmail.noMail")
-        else
-            throw TranslatableException("command.clearmail.noMail.other")
+        throw TranslatableException("command.clearmail.none", target.name)
     }
-
 }

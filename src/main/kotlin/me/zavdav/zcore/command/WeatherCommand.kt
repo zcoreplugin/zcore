@@ -1,7 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
@@ -34,7 +34,7 @@ private fun CommandContext<CommandSender>.doWeatherClear() {
         world.isThundering = false
         world.weatherDuration = 1
     }
-    source.sendMessage(tl("command.weather.clear"))
+    source.sendMessage(local("command.weather.clear"))
 }
 
 private fun CommandContext<CommandSender>.doWeatherRain() {
@@ -43,7 +43,7 @@ private fun CommandContext<CommandSender>.doWeatherRain() {
         world.weatherDuration = 1
     }
     world.isThundering = false
-    source.sendMessage(tl("command.weather.rain"))
+    source.sendMessage(local("command.weather.rain"))
 }
 
 private fun CommandContext<CommandSender>.doWeatherThunder() {
@@ -52,5 +52,5 @@ private fun CommandContext<CommandSender>.doWeatherThunder() {
         world.weatherDuration = 1
     }
     world.isThundering = true
-    source.sendMessage(tl("command.weather.thunder"))
+    source.sendMessage(local("command.weather.thunder"))
 }

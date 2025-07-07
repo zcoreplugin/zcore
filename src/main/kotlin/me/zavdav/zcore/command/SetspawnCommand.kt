@@ -1,7 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
@@ -20,6 +20,7 @@ private fun CommandContext<CommandSender>.doSetspawn() {
     val source = requirePlayer()
     val world = Bukkit.getWorlds()[0]
     val location = source.location
+
     world.setSpawnLocation(location.blockX, location.blockY, location.blockZ)
-    source.sendMessage(tl("command.setspawn", location.blockX, location.blockY, location.blockZ))
+    source.sendMessage(local("command.setspawn", location.blockX, location.blockY, location.blockZ))
 }

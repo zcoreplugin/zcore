@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.punishment.MuteList
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
 internal val unmuteCommand = command(
@@ -21,8 +21,9 @@ internal val unmuteCommand = command(
 }
 
 private fun CommandContext<CommandSender>.doUnmute(target: OfflinePlayer) {
-    if (MuteList.pardonMute(target))
-        source.sendMessage(tl("command.unmute", target.name))
-    else
-        throw TranslatableException("command.unmute.notMuted")
+    if (MuteList.pardonMute(target)) {
+        source.sendMessage(local("command.unmute", target.name))
+    } else {
+        throw TranslatableException("command.unmute.notMuted", target.name)
+    }
 }

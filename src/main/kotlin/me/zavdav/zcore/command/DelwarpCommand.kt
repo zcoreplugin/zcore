@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
 internal val delwarpCommand = command(
@@ -20,6 +20,10 @@ internal val delwarpCommand = command(
 }
 
 fun CommandContext<CommandSender>.doDelwarp(warpName: String) {
-    val existingWarp = ZCore.deleteWarp(warpName) ?: throw TranslatableException("command.delwarp.doesNotExist")
-    source.sendMessage(tl("command.delwarp.success", existingWarp.name))
+    val existingWarp = ZCore.deleteWarp(warpName)
+    if (existingWarp != null) {
+        source.sendMessage(local("command.delwarp", existingWarp.name))
+    } else {
+        throw TranslatableException("command.delwarp.unknown", warpName)
+    }
 }

@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
 internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<CommandSender>() {
@@ -10,18 +11,20 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
             return super.execute(input, source)
         } catch (e: CommandSyntaxException) {
             when (e.type) {
-                is PlayerNotOnlineExceptionType -> throw TranslatableException("command.playerNotOnline")
-                is AmbiguousNameExceptionType -> throw TranslatableException("command.ambiguousName")
-                is PlayerUnknownExceptionType -> throw TranslatableException("command.playerUnknown")
-                is MaterialUnknownExceptionType -> throw TranslatableException("command.materialUnknown")
-                else -> throw TranslatableException("command.syntaxError")
+                is NameNoMatchesExceptionType,
+                is NameMultipleMatchesExceptionType,
+                is UnknownPlayerExceptionType,
+                is UnknownMaterialExceptionType -> source.sendMessage(e.rawMessage.string)
+                else -> source.sendMessage(local("command.syntaxError"))
             }
         } catch (e: TranslatableException) {
-            throw e
+            source.sendMessage(local(e.key, *e.args))
         } catch (e: Throwable) {
             e.printStackTrace()
-            throw TranslatableException("command.genericError")
+            source.sendMessage(local("command.genericError"))
         }
+
+        return 0
     }
 
 }

@@ -2,8 +2,8 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.normalizedDirection
-import me.zavdav.zcore.util.tl
 import org.bukkit.command.CommandSender
 
 internal val warpCommand = command(
@@ -22,9 +22,14 @@ internal val warpCommand = command(
 
 private fun CommandContext<CommandSender>.doWarp(warpName: String) {
     val source = requirePlayer()
-    val warp = ZCore.getWarp(warpName) ?: throw TranslatableException("command.warp.doesNotExist")
+    val warp = ZCore.getWarp(warpName)
+    if (warp == null)
+        throw TranslatableException("command.warp.unknown", warpName)
 
     val location = warp.toBukkitLocation().normalizedDirection()
-    if (!source.safelyTeleport(location)) throw TranslatableException("command.warp.unsafeLocation")
-    source.sendMessage(tl("command.warp.success", warp.name))
+    if (source.safelyTeleport(location)) {
+        source.sendMessage(local("command.warp", warp.name))
+    } else {
+        throw TranslatableException("command.warp.unsafe")
+    }
 }

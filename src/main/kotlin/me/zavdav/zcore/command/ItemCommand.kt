@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.util.MaterialData
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
 internal val itemCommand = command(
@@ -33,6 +33,6 @@ private fun CommandContext<CommandSender>.doItem(material: MaterialData, amount:
     val finalAmount = amount.coerceAtLeast(1)
     val itemStack = material.toItemStack(finalAmount)
 
-    source.sendMessage(tl("command.item", itemStack.amount, material.displayName))
+    source.sendMessage(local("command.item", itemStack.amount, material.displayName, source.name))
     source.inventory.addItem(itemStack)
 }

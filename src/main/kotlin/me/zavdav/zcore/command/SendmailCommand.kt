@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
 internal val sendmailCommand = command(
@@ -24,7 +24,7 @@ internal val sendmailCommand = command(
 
 private fun CommandContext<CommandSender>.doSendmail(target: OfflinePlayer, message: String) {
     val source = requirePlayer()
-    source.sendMessage(tl("command.sendmail.success", target.name))
+    source.sendMessage(local("command.sendmail", target.name))
     if (target.ignores(source.data) && !source.isOp && !source.hasPermission("zcore.ignore.bypass"))
         return
 

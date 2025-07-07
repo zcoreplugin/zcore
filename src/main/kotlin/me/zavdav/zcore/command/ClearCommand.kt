@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import net.minecraft.server.ContainerPlayer
 import net.minecraft.server.ItemStack
 import org.bukkit.command.CommandSender
@@ -46,8 +46,5 @@ private fun CommandContext<CommandSender>.doClear(target: CorePlayer) {
         craftInventory.setItem(i, null)
     }
 
-    if (self)
-        source.sendMessage(tl("command.clear"))
-    else
-        source.sendMessage(tl("command.clear.other", target.name))
+    source.sendMessage(local("command.clear", target.name))
 }

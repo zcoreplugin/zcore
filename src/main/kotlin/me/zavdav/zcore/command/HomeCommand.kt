@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
 internal val homeCommand = command(
@@ -35,12 +35,14 @@ private fun CommandContext<CommandSender>.doHome(target: OfflinePlayer, homeName
     val self = source.data.uuid == target.uuid
     if (!self) require("zcore.home.other")
 
-    val home = target.getHome(homeName) ?: throw TranslatableException("command.home.doesNotExist")
-    val location = home.toBukkitLocation()
-    if (!source.safelyTeleport(location)) throw TranslatableException("command.home.unsafeLocation")
+    val home = target.getHome(homeName)
+    if (home == null)
+        throw TranslatableException("command.home.unknown", target.name, homeName)
 
-    if (self)
-        source.sendMessage(tl("command.home.success", home.name))
-    else
-        source.sendMessage(tl("command.home.success.other", target.name, home.name))
+    val location = home.toBukkitLocation()
+    if (source.safelyTeleport(location)) {
+        source.sendMessage(local("command.home", target.name, home.name))
+    } else {
+        throw TranslatableException("command.home.unsafe")
+    }
 }

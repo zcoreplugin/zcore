@@ -1,27 +1,31 @@
 package me.zavdav.zcore.util
 
 import me.zavdav.zcore.config.ZCoreConfig
+import org.bukkit.ChatColor
 import java.util.ResourceBundle
 
-private val bundle = ResourceBundle.getBundle("messages")
+fun String.colored() = replace("&([0-9a-f])".toRegex(), "§$1")
 
-internal fun getMessage(key: String): String =
-    bundle.getString(key).replace("<prefix>", ZCoreConfig.getString("general.command-prefix"))
+fun line(color: ChatColor): String =
+    "$color-----------------------------------------------------"
 
-internal fun String.colored() = replace("&([0-9a-f])".toRegex(), "§$1")
+fun local(key: String, vararg replacements: Any): String {
+    var message = ResourceBundle.getBundle("lang").getString(key)
+        .replaceFirst("<prefix>", ZCoreConfig.getString("general.command-prefix") + "&f")
+        .colored()
 
-internal fun tl(key: String, vararg args: Any): String {
-    var message = getMessage(key).colored()
-    for (i in args.indices) {
-        message = message.replace("{$i}", args[i].toString())
+    for (i in replacements.indices) {
+        message = message.replace("{$i}", replacements[i].toString())
     }
+
     return message
 }
 
-internal fun fmt(message: String, vararg pairs: Pair<String, Any>): String {
+fun formatted(message: String, vararg replacements: Pair<String, Any>): String {
     var message = message.colored()
-    for (pair in pairs) {
-        message = message.replace("{${pair.first.uppercase()}}", pair.second.toString())
+    for (repl in replacements) {
+        message = message.replace("{${repl.first.uppercase()}}", repl.second.toString())
     }
+
     return message
 }

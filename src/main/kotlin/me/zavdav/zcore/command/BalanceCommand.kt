@@ -4,7 +4,7 @@ import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.math.RoundingMode
@@ -34,5 +34,5 @@ private fun CommandContext<CommandSender>.doBalance(target: OfflinePlayer) {
     if (!self) require("zcore.balance.other")
 
     val balance = target.account.balance.setScale(2, RoundingMode.DOWN)
-    source.sendMessage(tl("command.balance.success", ZCore.formatCurrency(balance)))
+    source.sendMessage(local("command.balance", target.name, ZCore.formatCurrency(balance)))
 }

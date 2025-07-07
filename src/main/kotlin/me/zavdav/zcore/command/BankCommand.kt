@@ -5,8 +5,11 @@ import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.PageBuilder
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.PagedList
+import me.zavdav.zcore.util.PagedTable
+import me.zavdav.zcore.util.line
+import me.zavdav.zcore.util.local
+import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.math.BigDecimal
@@ -78,101 +81,105 @@ internal val bankCommand = command(
     }
 }
 
+private fun CommandContext<CommandSender>.doBankInfo(bankName: String) {
+    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.unknown", bankName)
+
+    source.sendMessage(local("command.bank.info", bank.name))
+    source.sendMessage(line(ChatColor.GRAY))
+
+    val info = listOf(
+        local("command.bank.info.owner") to bank.owner.name,
+        local("command.bank.info.balance") to ZCore.formatCurrency(bank.balance),
+        local("command.bank.info.maxOverdraw") to ZCore.formatCurrency(bank.overdrawLimit),
+        local("command.bank.info.members") to ""
+    )
+
+    val table = PagedTable(info) { _, (key, value) ->
+        arrayOf(key to 1, "${ChatColor.GREEN}$value" to 1)
+    }
+
+    table.print(0, source)
+    source.sendMessage(line(ChatColor.GRAY))
+
+    val members = bank.members.map { it.name }
+    val list = PagedList(members, Int.MAX_VALUE, 4)
+    if (list.pages() == 0) return
+    list.print(0, source, ChatColor.GREEN)
+}
+
 private fun CommandContext<CommandSender>.doBankCreate(bankName: String) {
     val source = requirePlayer()
-    if (ZCore.createBank(bankName, source.data) != null)
-        source.sendMessage(tl("command.bank.create", bankName))
-    else
-        throw TranslatableException("command.bank.create.alreadyExists")
+    if (ZCore.createBank(bankName, source.data) != null) {
+        source.sendMessage(local("command.bank.create", bankName))
+    } else {
+        throw TranslatableException("command.bank.create.exists", bankName)
+    }
 }
 
 private fun CommandContext<CommandSender>.doBankDelete(bankName: String) {
-    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.doesNotExist")
+    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.unknown", bankName)
     authorizeOwner(bank, source)
     bank.transfer(bank.balance, bank.owner.account)
     bank.delete()
-    source.sendMessage(tl("command.bank.delete", bank.name))
-}
-
-private fun CommandContext<CommandSender>.doBankInfo(bankName: String) {
-    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.doesNotExist")
-
-    val builder = PageBuilder {
-        header(tl("command.bank.info.header", bank.name))
-        row {
-            cell(1, tl("command.bank.info.owner"))
-            cell(1, bank.owner.name)
-        }
-        row {
-            cell(1, tl("command.bank.info.balance"))
-            cell(1, ZCore.formatCurrency(bank.balance))
-        }
-        if (!bank.members.empty()) {
-            row {
-                cell(1, tl("command.bank.info.members"))
-            }
-            list(5, bank.members.map { it.name })
-        }
-    }
-
-    val page = builder.create()
-    page.print(source)
+    source.sendMessage(local("command.bank.delete", bank.name))
 }
 
 private fun CommandContext<CommandSender>.doBankDeposit(bankName: String, amount: BigDecimal) {
     val source = requirePlayer()
-    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.doesNotExist")
+    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.unknown", bankName)
     val roundedAmount = amount.setScale(2, RoundingMode.DOWN)
 
     if (roundedAmount <= BigDecimal.ZERO)
-        throw TranslatableException("command.invalidAmount")
+        throw TranslatableException("command.invalidAmount", roundedAmount)
 
-    if (source.data.account.transfer(roundedAmount, bank))
-        source.sendMessage(tl("command.bank.deposit", ZCore.formatCurrency(roundedAmount), bank.name))
-    else
-        throw TranslatableException("command.bank.insufficientFunds")
+    if (source.data.account.transfer(roundedAmount, bank)) {
+        source.sendMessage(local("command.bank.deposit", ZCore.formatCurrency(roundedAmount), bank.name))
+    } else {
+        throw TranslatableException("command.bank.overdraw", ZCore.formatCurrency(bank.overdrawLimit))
+    }
 }
 
 private fun CommandContext<CommandSender>.doBankWithdraw(bankName: String, amount: BigDecimal) {
     val source = requirePlayer()
-    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.doesNotExist")
+    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.unknown", bankName)
     val roundedAmount = amount.setScale(2, RoundingMode.DOWN)
     authorizeMember(bank, source)
 
     if (roundedAmount <= BigDecimal.ZERO)
-        throw TranslatableException("command.invalidAmount")
+        throw TranslatableException("command.invalidAmount", roundedAmount)
 
-    if (bank.transfer(roundedAmount, source.data.account))
-        source.sendMessage(tl("command.bank.withdraw", ZCore.formatCurrency(roundedAmount), bank.name))
-    else
-        throw TranslatableException("command.bank.insufficientFunds")
+    if (bank.transfer(roundedAmount, source.data.account)) {
+        source.sendMessage(local("command.bank.withdraw", ZCore.formatCurrency(roundedAmount), bank.name))
+    } else {
+        throw TranslatableException("command.bank.overdraw", ZCore.formatCurrency(bank.overdrawLimit))
+    }
 }
 
 private fun CommandContext<CommandSender>.doBankAdd(bankName: String, target: OfflinePlayer) {
-    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.doesNotExist")
+    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.unknown", bankName)
     authorizeOwner(bank, source)
     if (bank.addPlayer(target)) {
-        source.sendMessage(tl("command.bank.add", target.name, bank.name))
+        source.sendMessage(local("command.bank.add", target.name, bank.name))
         val player = ZCore.getPlayer(target.uuid)
-        player?.sendMessage(tl("bank.nowMember", bank.name))
+        player?.sendMessage(local("command.bank.add", target.name, bank.name))
     } else {
-        throw TranslatableException("command.bank.add.alreadyMember")
+        throw TranslatableException("command.bank.add.alreadyMember", target.name, bank.name)
     }
 }
 
 private fun CommandContext<CommandSender>.doBankRemove(bankName: String, target: OfflinePlayer) {
-    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.doesNotExist")
+    val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.unknown", bankName)
     authorizeOwner(bank, source)
 
     if (target == bank.owner)
-        throw TranslatableException("command.bank.remove.cannotRemoveOwner")
+        throw TranslatableException("command.bank.remove.owner", bank.name)
 
     if (bank.removePlayer(target)) {
-        source.sendMessage(tl("command.bank.remove", target.name, bank.name))
+        source.sendMessage(local("command.bank.remove", target.name, bank.name))
         val player = ZCore.getPlayer(target.uuid)
-        player?.sendMessage(tl("bank.noLongerMember", bank.name))
+        player?.sendMessage(local("command.bank.remove", target.name, bank.name))
     } else {
-        throw TranslatableException("command.bank.remove.notMember")
+        throw TranslatableException("command.bank.remove.notMember", target.name, bank.name)
     }
 }
 
@@ -182,7 +189,7 @@ private fun authorizeMember(bank: BankAccount, source: CommandSender) {
 
     val player = source.core()
     if (player.data !in bank.members && player.data != bank.owner)
-        throw TranslatableException("command.bank.notMember")
+        throw TranslatableException("command.bank.action.member", bank.name)
 }
 
 private fun authorizeOwner(bank: BankAccount, source: CommandSender) {
@@ -191,5 +198,5 @@ private fun authorizeOwner(bank: BankAccount, source: CommandSender) {
 
     val player = source.core()
     if (player.data != bank.owner)
-        throw TranslatableException("command.bank.notOwner")
+        throw TranslatableException("command.bank.action.owner", bank.name)
 }

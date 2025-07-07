@@ -5,8 +5,7 @@ import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
-import com.mojang.brigadier.exceptions.CommandExceptionType
-import com.mojang.brigadier.exceptions.CommandSyntaxException
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
@@ -14,31 +13,26 @@ import me.zavdav.zcore.punishment.IpAddressRange
 import me.zavdav.zcore.util.DURATION_PATTERN
 import me.zavdav.zcore.util.MaterialData
 import me.zavdav.zcore.util.Materials
+import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.parseDuration
-import me.zavdav.zcore.util.tl
 import org.bukkit.Material
 import java.math.BigDecimal
 
-internal object PlayerNotOnlineExceptionType : CommandExceptionType {
-    fun create() = CommandSyntaxException(this, LiteralMessage(tl("command.playerNotOnline")))
-}
+internal object NameNoMatchesExceptionType : DynamicCommandExceptionType({
+    input -> LiteralMessage(local("command.nameNoMatches", input))
+})
 
-internal object AmbiguousNameExceptionType : CommandExceptionType {
-    fun create() = CommandSyntaxException(this, LiteralMessage(tl("command.ambiguousName")))
-}
+internal object NameMultipleMatchesExceptionType : DynamicCommandExceptionType({
+    input -> LiteralMessage(local("command.nameMultipleMatches", input))
+})
 
-internal object PlayerUnknownExceptionType : CommandExceptionType {
-    fun create() = CommandSyntaxException(this, LiteralMessage(tl("command.playerUnknown")))
-}
+internal object UnknownPlayerExceptionType : DynamicCommandExceptionType({
+    input -> LiteralMessage(local("command.unknownPlayer", input))
+})
 
-internal object MaterialUnknownExceptionType : CommandExceptionType {
-    fun create() = CommandSyntaxException(this, LiteralMessage(tl("command.materialUnknown")))
-}
-
-private val PLAYER_NOT_ONLINE = PlayerNotOnlineExceptionType
-private val AMBIGUOUS_NAME = AmbiguousNameExceptionType
-private val PLAYER_UNKNOWN = PlayerUnknownExceptionType
-private val MATERIAL_UNKNOWN = MaterialUnknownExceptionType
+internal object UnknownMaterialExceptionType : DynamicCommandExceptionType({
+    input -> LiteralMessage(local("command.unknownMaterial", input))
+})
 
 internal object StringArgument : ArgumentType<String> {
     override fun parse(reader: StringReader): String = reader.readArgument()
@@ -115,11 +109,12 @@ internal inline fun <S> ArgumentBuilder<S, *>.ipAddressRangeArgument(
 
 internal object PlayerArgument : ArgumentType<CorePlayer> {
     override fun parse(reader: StringReader): CorePlayer {
-        val matches = ZCore.matchPlayer(reader.readArgument())
+        val name = reader.readArgument()
+        val matches = ZCore.matchPlayer(name)
         return when (matches.size) {
-            0 -> throw PLAYER_NOT_ONLINE.create()
+            0 -> throw NameNoMatchesExceptionType.create(name)
             1 -> matches.first()
-            else -> throw AMBIGUOUS_NAME.create()
+            else -> throw NameMultipleMatchesExceptionType.create(name)
         }
     }
 }
@@ -130,8 +125,10 @@ internal inline fun <S> ArgumentBuilder<S, *>.playerArgument(
 ): ArgumentBuilder<S, *> = argument(name, PlayerArgument, action)
 
 internal object OfflinePlayerArgument : ArgumentType<OfflinePlayer> {
-    override fun parse(reader: StringReader): OfflinePlayer =
-        ZCore.getOfflinePlayer(reader.readArgument()) ?: throw PLAYER_UNKNOWN.create()
+    override fun parse(reader: StringReader): OfflinePlayer {
+        val name = reader.readArgument()
+        return ZCore.getOfflinePlayer(name) ?: throw UnknownPlayerExceptionType.create(name)
+    }
 }
 
 internal inline fun <S> ArgumentBuilder<S, *>.offlinePlayerArgument(
@@ -152,7 +149,7 @@ internal object MaterialArgument : ArgumentType<MaterialData> {
                 material = MaterialData(type, data)
             }
         } catch (_: Exception) {
-            throw MATERIAL_UNKNOWN.create()
+            throw UnknownMaterialExceptionType.create(string)
         }
 
         return material

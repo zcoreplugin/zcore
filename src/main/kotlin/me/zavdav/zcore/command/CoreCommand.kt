@@ -1,7 +1,7 @@
 package me.zavdav.zcore.command
 
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
@@ -25,15 +25,12 @@ internal class CoreCommand(
     }
 
     override fun execute(sender: CommandSender, label: String, args: Array<String>): Boolean {
-        try {
-            if (!sender.isOp && !sender.hasPermission(permission))
-                throw TranslatableException("command.noPermission")
-            val parsedArgs = if (args.isEmpty()) "" else " " + args.joinToString(" ").trim()
-            CommandDispatcher.execute(name + parsedArgs, sender)
-        } catch (e: TranslatableException) {
-            sender.sendMessage(tl(e.key, *e.args))
+        if (!sender.isOp && !sender.hasPermission(permission)) {
+            sender.sendMessage(local("command.noPermission"))
+            return true
         }
-
+        val parsedArgs = if (args.isEmpty()) "" else " " + args.joinToString(" ").trim()
+        CommandDispatcher.execute(name + parsedArgs, sender)
         return true
     }
 

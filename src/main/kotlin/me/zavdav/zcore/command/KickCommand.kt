@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.CorePlayer
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
 internal val kickCommand = command(
@@ -28,6 +28,6 @@ internal val kickCommand = command(
 }
 
 private fun CommandContext<CommandSender>.doKick(target: CorePlayer, reason: String) {
-    target.kickPlayer(tl("command.kick.message", reason))
-    source.sendMessage(tl("command.kick", target.name, reason))
+    target.kickPlayer(local("command.kick.message", reason))
+    source.sendMessage(local("command.kick", target.name, reason))
 }

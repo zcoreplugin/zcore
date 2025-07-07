@@ -4,7 +4,7 @@ import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.colored
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -41,12 +41,8 @@ private fun CommandContext<CommandSender>.doNick(target: CorePlayer, nickname: S
 
     if (nickname.equals("reset", true) || nickname == target.name) {
         target.data.nickname = null
-        if (self) {
-            source.sendMessage(tl("command.nick.reset"))
-        } else {
-            source.sendMessage(tl("command.nick.reset.other", target.name))
-            target.sendMessage(tl("command.nick.reset"))
-        }
+        source.sendMessage(local("command.nick.reset", target.name))
+        if (!self) target.sendMessage(local("command.nick.reset", target.name))
         return
     }
 
@@ -55,13 +51,9 @@ private fun CommandContext<CommandSender>.doNick(target: CorePlayer, nickname: S
         finalNickname = finalNickname.colored()
 
     if (ChatColor.stripColor(finalNickname).isEmpty())
-        throw TranslatableException("command.nick.cannotBeEmpty")
+        throw TranslatableException("command.nick.empty")
 
     target.data.nickname = finalNickname
-    if (self) {
-        source.sendMessage(tl("command.nick", target.displayName))
-    } else {
-        source.sendMessage(tl("command.nick.other", target.name, target.displayName))
-        target.sendMessage(tl("command.nick", target.displayName))
-    }
+    source.sendMessage(local("command.nick", target.name, target.displayName))
+    if (!self) target.sendMessage(local("command.nick", target.name, target.displayName))
 }

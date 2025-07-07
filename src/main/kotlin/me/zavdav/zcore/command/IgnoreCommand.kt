@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
 internal val ignoreCommand = command(
@@ -26,9 +26,9 @@ private fun CommandContext<CommandSender>.doIgnore(target: OfflinePlayer) {
 
     if (!source.data.ignores(target)) {
         source.data.addIgnore(target)
-        source.sendMessage(tl("command.ignore.add", target.name))
+        source.sendMessage(local("command.ignore.add", target.name))
     } else {
         source.data.removeIgnore(target)
-        source.sendMessage(tl("command.ignore.remove", target.name))
+        source.sendMessage(local("command.ignore.remove", target.name))
     }
 }

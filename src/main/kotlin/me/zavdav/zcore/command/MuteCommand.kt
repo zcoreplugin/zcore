@@ -7,7 +7,7 @@ import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.MuteList
 import me.zavdav.zcore.util.formatDuration
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -52,15 +52,15 @@ private fun CommandContext<CommandSender>.doMute(target: OfflinePlayer, duration
     val issuer = (source as? Player)?.core()?.data
 
     if (target.isMuted)
-        throw TranslatableException("command.mute.alreadyMuted")
+        throw TranslatableException("command.mute.alreadyMuted", target.name)
 
     MuteList.addMute(target, issuer, duration, reason)
     val player = ZCore.getPlayer(target.uuid)
     if (duration != null) {
-        player?.sendMessage(tl("command.mute.temporary.message", formatDuration(duration), reason))
-        source.sendMessage(tl("command.mute.temporary", target.name, formatDuration(duration), reason))
+        player?.sendMessage(local("command.mute.temporary.message", formatDuration(duration), reason))
+        source.sendMessage(local("command.mute.temporary", target.name, formatDuration(duration), reason))
     } else {
-        player?.sendMessage(tl("command.mute.permanent.message", reason))
-        source.sendMessage(tl("command.mute.permanent", target.name, reason))
+        player?.sendMessage(local("command.mute.permanent.message", reason))
+        source.sendMessage(local("command.mute.permanent", target.name, reason))
     }
 }

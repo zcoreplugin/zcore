@@ -3,8 +3,10 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.GridPage
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.PagedList
+import me.zavdav.zcore.util.line
+import me.zavdav.zcore.util.local
+import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -46,32 +48,13 @@ private fun CommandContext<CommandSender>.doHomes(target: OfflinePlayer, page: I
     val self = source is Player && source.core().data.uuid == target.uuid
     if (!self) require("zcore.homes.other")
 
-    val pages = getPages(target)
-    if (pages.isEmpty()) {
-        if (self)
-            throw TranslatableException("command.homes.noHomes")
-        else
-            throw TranslatableException("command.homes.noHomes.other")
-    }
+    val homes = target.homes.map { it.name }.sorted()
+    val list = PagedList(homes, 5, 5)
+    if (list.pages() == 0)
+        throw TranslatableException("command.homes.none", target.name)
 
-    val pageNumber = page.coerceIn(1..pages.size)
-    val chatPage = pages[pageNumber - 1]
-    chatPage.header = tl("command.homes.header", pageNumber, pages.size)
-    chatPage.print(source)
-}
-
-private fun getPages(player: OfflinePlayer): List<GridPage> {
-    val homes = player.homes.map { it.name }.sorted()
-    val pages = mutableListOf<GridPage>()
-    if (homes.isEmpty()) return pages
-
-    var currentPage = GridPage(10, 5)
-    pages.add(currentPage)
-    for (home in homes) {
-        if (currentPage.add(home)) continue
-        currentPage = GridPage(10, 5)
-        pages.add(currentPage)
-    }
-
-    return pages
+    val pageNumber = page.coerceIn(1..list.pages())
+    source.sendMessage(local("command.homes", target.name, pageNumber, list.pages()))
+    source.sendMessage(line(ChatColor.GRAY))
+    list.print(pageNumber - 1, source, ChatColor.GREEN)
 }

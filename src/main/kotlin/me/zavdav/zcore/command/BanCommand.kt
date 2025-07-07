@@ -7,7 +7,7 @@ import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.util.formatDuration
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -52,15 +52,15 @@ private fun CommandContext<CommandSender>.doBan(target: OfflinePlayer, duration:
     val issuer = (source as? Player)?.core()?.data
 
     if (target.isBanned)
-        throw TranslatableException("command.ban.alreadyBanned")
+        throw TranslatableException("command.ban.alreadyBanned", target.name)
 
     BanList.addBan(target, issuer, duration, reason)
     val player = ZCore.getPlayer(target.uuid)
     if (duration != null) {
-        player?.kickPlayer(tl("command.ban.temporary.message", formatDuration(duration), reason))
-        source.sendMessage(tl("command.ban.temporary", target.name, formatDuration(duration), reason))
+        player?.kickPlayer(local("command.ban.temporary.message", formatDuration(duration), reason))
+        source.sendMessage(local("command.ban.temporary", target.name, formatDuration(duration), reason))
     } else {
-        player?.kickPlayer(tl("command.ban.permanent.message", reason))
-        source.sendMessage(tl("command.ban.permanent", target.name, reason))
+        player?.kickPlayer(local("command.ban.permanent.message", reason))
+        source.sendMessage(local("command.ban.permanent", target.name, reason))
     }
 }

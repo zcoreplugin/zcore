@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
 internal val sethomeCommand = command(
@@ -35,30 +35,17 @@ private fun CommandContext<CommandSender>.doSethome(target: OfflinePlayer, homeN
     val self = source.data.uuid == target.uuid
     if (!self) require("zcore.sethome.other")
 
-    if (target.getPermissionValue("zcore.sethome.allowed", 1) < target.homes.count() + 1) {
-        if (self)
-            throw TranslatableException("command.sethome.limitReached")
-        else
-            throw TranslatableException("command.sethome.limitReached.other")
-    }
+    val allowedHomes = target.getPermissionValue("zcore.sethome.allowed", 1)
+    if (allowedHomes < target.homes.count() + 1)
+        throw TranslatableException("command.sethome.limit", target.name, allowedHomes)
 
-    if (!homeName.matches(Regex("[a-zA-Z0-9_-]+"))) {
-        throw TranslatableException("command.sethome.illegalName")
-    }
+    if (!homeName.matches(Regex("[a-zA-Z0-9_-]+")))
+        throw TranslatableException("command.sethome.illegal", homeName)
 
-    val location = source.location
-    val existingHome = target.setHome(homeName, location)
-
+    val existingHome = target.setHome(homeName, source.location)
     if (existingHome == null) {
-        if (self)
-            source.sendMessage(tl("command.sethome.success",
-                homeName, location.world.name, location.blockX, location.blockY, location.blockZ
-            ))
-        else
-            source.sendMessage(tl("command.sethome.success.other",
-                target.name, homeName, location.world.name, location.blockX, location.blockY, location.blockZ
-            ))
+        source.sendMessage(local("command.sethome", target.name, homeName))
     } else {
-        throw TranslatableException("command.sethome.alreadyExists", existingHome.name)
+        throw TranslatableException("command.sethome.exists", target.name, existingHome.name)
     }
 }

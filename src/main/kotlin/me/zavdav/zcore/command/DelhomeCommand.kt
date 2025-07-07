@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -37,10 +37,10 @@ private fun CommandContext<CommandSender>.doDelhome(target: OfflinePlayer, homeN
     val self = source is Player && source.core().data.uuid == target.uuid
     if (!self) require("zcore.delhome.other")
 
-    val existingHome = target.deleteHome(homeName) ?: throw TranslatableException("command.delhome.doesNotExist")
-    if (self)
-        source.sendMessage(tl("command.delhome.success", existingHome.name))
-    else
-        source.sendMessage(tl("command.delhome.success.other", target.name, existingHome.name))
-
+    val existingHome = target.deleteHome(homeName)
+    if (existingHome != null) {
+        source.sendMessage(local("command.delhome", target.name, existingHome.name))
+    } else {
+        throw TranslatableException("command.delhome.unknown", target.name, homeName)
+    }
 }

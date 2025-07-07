@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
 internal val setwarpCommand = command(
@@ -21,18 +21,13 @@ internal val setwarpCommand = command(
 
 private fun CommandContext<CommandSender>.doSetwarp(warpName: String) {
     val source = requirePlayer()
+    if (!warpName.matches(Regex("[a-zA-Z0-9_-]+")))
+        throw TranslatableException("command.setwarp.illegal", warpName)
 
-    if (!warpName.matches(Regex("[a-zA-Z0-9_-]+"))) {
-        throw TranslatableException("command.setwarp.illegalName")
-    }
-
-    val location = source.location
-    val existingWarp = ZCore.setWarp(warpName, location)
+    val existingWarp = ZCore.setWarp(warpName, source.location)
     if (existingWarp == null) {
-        source.sendMessage(tl("command.setwarp.success",
-            warpName, location.world.name, location.blockX, location.blockY, location.blockZ
-        ))
+        source.sendMessage(local("command.setwarp", warpName))
     } else {
-        throw TranslatableException("command.setwarp.alreadyExists", existingWarp.name)
+        throw TranslatableException("command.setwarp.exists", existingWarp.name)
     }
 }

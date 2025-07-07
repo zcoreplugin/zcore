@@ -6,7 +6,7 @@ import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.util.formatDuration
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
@@ -25,9 +25,9 @@ internal class JoinQuitListener : Listener {
         val duration = ban.expiration?.let { it - System.currentTimeMillis() }
 
         if (duration != null)
-            event.disallow(Result.KICK_BANNED, tl("command.ban.temporary.message", formatDuration(duration), ban.reason))
+            event.disallow(Result.KICK_BANNED, local("command.ban.temporary.message", formatDuration(duration), ban.reason))
         else
-            event.disallow(Result.KICK_BANNED, tl("command.ban.permanent.message", ban.reason))
+            event.disallow(Result.KICK_BANNED, local("command.ban.permanent.message", ban.reason))
     }
 
     @EventHandler(priority = Event.Priority.Lowest)

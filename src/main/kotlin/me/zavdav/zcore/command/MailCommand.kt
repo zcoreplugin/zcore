@@ -3,8 +3,10 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.GridPage
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.PagedList
+import me.zavdav.zcore.util.line
+import me.zavdav.zcore.util.local
+import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -45,33 +47,15 @@ private fun CommandContext<CommandSender>.doMail(target: OfflinePlayer, page: In
     val self = source is Player && source.core().data.uuid == target.uuid
     if (!self) require("zcore.mail.other")
 
-    val pages = getPages(target)
-    if (pages.isEmpty()) {
-        if (self)
-            throw TranslatableException("command.mail.noMail")
-        else
-            throw TranslatableException("command.mail.noMail.other")
+    val mail = target.mail.reversed().map {
+        local("command.mail.message", it.sender.name, it.message)
     }
+    val list = PagedList(mail, 5, 1)
+    if (list.pages() == 0)
+        throw TranslatableException("command.mail.none", target.name)
 
-    val pageNumber = page.coerceIn(1..pages.size)
-    val chatPage = pages[pageNumber - 1]
-    chatPage.header = tl("command.mail.header", pageNumber, pages.size)
-    chatPage.print(source)
-}
-
-private fun getPages(player: OfflinePlayer): List<GridPage> {
-    val allMail = player.mail.reversed()
-    val pages = mutableListOf<GridPage>()
-    if (allMail.isEmpty()) return pages
-
-    var currentPage = GridPage(10, 1)
-    pages.add(currentPage)
-    for (mail in allMail) {
-        val message = tl("command.mail.message", mail.sender.name, mail.message)
-        if (currentPage.add(message)) continue
-        currentPage = GridPage(10, 1)
-        pages.add(currentPage)
-    }
-
-    return pages
+    val pageNumber = page.coerceIn(1..list.pages())
+    source.sendMessage(local("command.mail", target.name, pageNumber, list.pages()))
+    source.sendMessage(line(ChatColor.GRAY))
+    list.print(pageNumber - 1, source)
 }

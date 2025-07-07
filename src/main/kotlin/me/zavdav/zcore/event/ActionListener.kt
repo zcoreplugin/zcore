@@ -4,9 +4,9 @@ import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.MuteList
 import me.zavdav.zcore.util.colored
-import me.zavdav.zcore.util.fmt
 import me.zavdav.zcore.util.formatDuration
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.formatted
+import me.zavdav.zcore.util.local
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
@@ -27,9 +27,9 @@ internal class ActionListener : Listener {
         if (mute != null) {
             val duration = mute.expiration?.let { it - System.currentTimeMillis() }
             if (duration != null)
-                player.sendMessage(tl("command.mute.temporary.message", formatDuration(duration), mute.reason))
+                player.sendMessage(local("command.mute.temporary.message", formatDuration(duration), mute.reason))
             else
-                player.sendMessage(tl("command.mute.permanent.message", mute.reason))
+                player.sendMessage(local("command.mute.permanent.message", mute.reason))
 
             event.isCancelled = true
             return
@@ -38,7 +38,7 @@ internal class ActionListener : Listener {
         if (player.isOp || player.hasPermission("zcore.chat.color"))
             event.message = event.message.colored()
 
-        event.format = fmt(ZCoreConfig.getString("general.chat-format"),
+        event.format = formatted(ZCoreConfig.getString("general.chat-format"),
             "player" to "%1\$s", "message" to "%2\$s"
         )
 

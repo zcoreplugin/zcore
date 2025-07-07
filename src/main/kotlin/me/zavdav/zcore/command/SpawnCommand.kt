@@ -1,7 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
@@ -19,8 +19,9 @@ internal val spawnCommand = command(
 private fun CommandContext<CommandSender>.doSpawn() {
     val source = requirePlayer()
     val world = Bukkit.getWorlds()[0]
-    if (!source.safelyTeleport(world.spawnLocation))
-        throw TranslatableException("command.spawn.unsafeLocation")
-
-    source.sendMessage(tl("command.spawn"))
+    if (source.safelyTeleport(world.spawnLocation)) {
+        source.sendMessage(local("command.spawn"))
+    } else {
+        throw TranslatableException("command.spawn.unsafe")
+    }
 }

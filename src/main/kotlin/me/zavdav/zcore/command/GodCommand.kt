@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -35,18 +35,10 @@ private fun CommandContext<CommandSender>.doGod(target: CorePlayer) {
     target.data.isInvincible = isInvincible
 
     if (isInvincible) {
-        if (self) {
-            source.sendMessage(tl("command.god.enabled"))
-        } else {
-            source.sendMessage(tl("command.god.enabled.other", target.name))
-            target.sendMessage(tl("command.god.enabled"))
-        }
+        source.sendMessage(local("command.god.enabled", target.name))
+        if (!self) target.sendMessage(local("command.god.enabled", target.name))
     } else {
-        if (self) {
-            source.sendMessage(tl("command.god.disabled"))
-        } else {
-            source.sendMessage(tl("command.god.disabled.other", target.name))
-            target.sendMessage(tl("command.god.disabled"))
-        }
+        source.sendMessage(local("command.god.disabled", target.name))
+        if (!self) target.sendMessage(local("command.god.disabled", target.name))
     }
 }

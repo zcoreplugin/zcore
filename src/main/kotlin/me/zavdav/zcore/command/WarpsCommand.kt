@@ -2,8 +2,10 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.util.GridPage
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.PagedList
+import me.zavdav.zcore.util.line
+import me.zavdav.zcore.util.local
+import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 
 internal val warpsCommand = command(
@@ -24,27 +26,13 @@ internal val warpsCommand = command(
 }
 
 private fun CommandContext<CommandSender>.doWarps(page: Int) {
-    val pages = getPages()
-    if (pages.isEmpty()) throw TranslatableException("command.warps.noWarps")
-
-    val pageNumber = page.coerceIn(1..pages.size)
-    val chatPage = pages[pageNumber - 1]
-    chatPage.header = tl("command.warps.header", pageNumber, pages.size)
-    chatPage.print(source)
-}
-
-private fun getPages(): List<GridPage> {
     val warps = ZCore.warps.map { it.name }.sorted()
-    val pages = mutableListOf<GridPage>()
-    if (warps.isEmpty()) return pages
+    val list = PagedList(warps, 5, 5)
+    if (list.pages() == 0)
+        throw TranslatableException("command.warps.none")
 
-    var currentPage = GridPage(10, 5)
-    pages.add(currentPage)
-    for (warp in warps) {
-        if (currentPage.add(warp)) continue
-        currentPage = GridPage(10, 5)
-        pages.add(currentPage)
-    }
-
-    return pages
+    val pageNumber = page.coerceIn(1..list.pages())
+    source.sendMessage(local("command.warps", pageNumber, list.pages()))
+    source.sendMessage(line(ChatColor.GRAY))
+    list.print(pageNumber - 1, source, ChatColor.GREEN)
 }

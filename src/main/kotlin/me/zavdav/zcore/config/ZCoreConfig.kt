@@ -12,7 +12,7 @@ object ZCoreConfig {
     fun load() {
         yaml.load()
 
-        put("general.command-prefix", "&7>> ")
+        put("general.command-prefix", "&7>>")
         put("general.chat-format", "{PLAYER}: {MESSAGE}")
         put("general.nick-prefix", "~")
         put("general.currency", "$")

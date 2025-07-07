@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
@@ -29,7 +29,7 @@ private fun CommandContext<CommandSender>.doRealname(nickname: String) {
     }
 
     if (matches.isEmpty())
-        throw TranslatableException("command.realname.none")
+        throw TranslatableException("command.realname.none", nickname)
 
-    matches.forEach { source.sendMessage(tl("command.realname", it.core().displayName, it.name)) }
+    matches.forEach { source.sendMessage(local("command.realname", it.core().displayName, it.name)) }
 }

@@ -1,7 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
@@ -68,12 +68,12 @@ private fun CommandContext<CommandSender>.doTimeSet(ticks: Int) {
     val world = Bukkit.getWorlds()[0]
     val finalTicks = ticks.coerceAtLeast(0) % 24000L
     world.time = finalTicks
-    source.sendMessage(tl("command.time.set", finalTicks))
+    source.sendMessage(local("command.time.set", finalTicks))
 }
 
 private fun CommandContext<CommandSender>.doTimeAdd(ticks: Int) {
     val world = Bukkit.getWorlds()[0]
     val finalTicks = ticks.coerceAtLeast(0) % 24000L
     world.time += finalTicks
-    source.sendMessage(tl("command.time.add", finalTicks))
+    source.sendMessage(local("command.time.add", finalTicks))
 }

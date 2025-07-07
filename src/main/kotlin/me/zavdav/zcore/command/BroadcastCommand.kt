@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.util.colored
-import me.zavdav.zcore.util.tl
+import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
@@ -27,5 +27,5 @@ private fun CommandContext<CommandSender>.doBroadcast(message: String) {
     if (source.isOp || source.hasPermission("zcore.broadcast.color"))
         broadcast = broadcast.colored()
 
-    Bukkit.broadcastMessage(tl("command.broadcast", broadcast))
+    Bukkit.broadcastMessage(local("command.broadcast", broadcast))
 }
