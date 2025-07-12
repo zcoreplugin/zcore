@@ -77,6 +77,7 @@ class ZCore : JavaPlugin() {
         val commands = mutableListOf(
             afkCommand,
             balanceCommand,
+            baltopCommand,
             banCommand,
             bankCommand,
             broadcastCommand,
@@ -96,6 +97,7 @@ class ZCore : JavaPlugin() {
             kickCommand,
             kickallCommand,
             killCommand,
+            leaderboardCommand,
             mailCommand,
             motdCommand,
             msgCommand,

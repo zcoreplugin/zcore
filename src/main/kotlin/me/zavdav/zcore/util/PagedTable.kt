@@ -21,8 +21,10 @@ class PagedTable<T>(
             for (i in elements.indices) {
                 val row = transform(i, elements[i])
                 if (page.add(row)) continue
+
                 page = Page(rows)
                 pages.add(page)
+                page.add(row)
             }
         }
     }
