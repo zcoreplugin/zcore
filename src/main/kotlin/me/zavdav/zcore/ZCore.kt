@@ -115,6 +115,8 @@ class ZCore : JavaPlugin() {
             spawnCommand,
             statsCommand,
             timeCommand,
+            tpCommand,
+            tphereCommand,
             unbanCommand,
             unmuteCommand,
             vanishCommand,

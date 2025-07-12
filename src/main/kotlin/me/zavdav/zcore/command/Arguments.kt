@@ -61,15 +61,6 @@ internal inline fun <S> ArgumentBuilder<S, *>.intArgument(
     action: RequiredArgumentBuilder<S, Int>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, IntArgument, action)
 
-internal object DoubleArgument : ArgumentType<Double> {
-    override fun parse(reader: StringReader): Double = reader.readArgument().toDouble()
-}
-
-internal inline fun <S> ArgumentBuilder<S, *>.doubleArgument(
-    name: String,
-    action: RequiredArgumentBuilder<S, Double>.() -> Unit
-): ArgumentBuilder<S, *> = argument(name, DoubleArgument, action)
-
 internal object BigDecimalArgument : ArgumentType<BigDecimal> {
     override fun parse(reader: StringReader): BigDecimal = reader.readArgument().toBigDecimal()
 }
