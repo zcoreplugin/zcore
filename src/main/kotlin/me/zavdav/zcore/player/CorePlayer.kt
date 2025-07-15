@@ -11,6 +11,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Player
+import java.util.LinkedList
 import java.util.UUID
 
 /** Returns the [CorePlayer] associated with this player. */
@@ -28,6 +29,9 @@ class CorePlayer(val base: Player) : Player by base {
 
     /** The player this player is replying to with /r. */
     var replyingTo: CorePlayer? = null
+
+    /** This player's incoming teleport requests. */
+    val teleportRequests = LinkedList<TeleportRequest>()
 
     override fun isOnline(): Boolean =
         server.onlinePlayers.any { it.uniqueId == uniqueId }

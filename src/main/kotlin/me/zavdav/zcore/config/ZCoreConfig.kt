@@ -29,6 +29,8 @@ object ZCoreConfig {
         put("command.mute.default-reason", "A mysterious force leaves you speechless!")
         put("command.rules.lines", listOf("&7=> &bRules &7<==============================", "1. Placeholder text", "2. Placeholder text", "3. Placeholder text"))
         put("command.tp.max-radius", 100000, 1)
+        put("command.tpa.expire-after", 30, 1)
+        put("command.tpahere.expire-after", 30, 1)
 
         yaml.save()
     }
