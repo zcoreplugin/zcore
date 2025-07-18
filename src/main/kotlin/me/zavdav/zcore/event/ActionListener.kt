@@ -4,9 +4,11 @@ import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.MuteList
 import me.zavdav.zcore.util.colored
+import me.zavdav.zcore.util.displayName
 import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.formatted
 import me.zavdav.zcore.util.local
+import org.bukkit.block.CreatureSpawner
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
@@ -15,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityTargetEvent
 import org.bukkit.event.player.PlayerChatEvent
 import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerPickupItemEvent
 
 internal class ActionListener : Listener {
@@ -45,6 +48,22 @@ internal class ActionListener : Listener {
         event.recipients.removeIf {
             it.core().data.ignores(player.data) && !player.isOp && !player.hasPermission("zcore.ignore.bypass")
         }
+    }
+
+    @EventHandler(priority = Event.Priority.Low)
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        val player = event.player.core()
+        val creature = player.spawnerType ?: return
+        val blockState = event.clickedBlock?.state ?: return
+
+        player.spawnerType = null
+        if (blockState !is CreatureSpawner) {
+            player.sendMessage(local("command.spawner.cancelled"))
+            return
+        }
+
+        blockState.creatureType = creature
+        player.sendMessage(local("command.spawner", creature.displayName))
     }
 
     @EventHandler(priority = Event.Priority.Lowest, ignoreCancelled = true)

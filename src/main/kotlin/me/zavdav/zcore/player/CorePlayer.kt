@@ -10,6 +10,7 @@ import me.zavdav.zcore.util.syncRepeatingTask
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.craftbukkit.entity.CraftPlayer
+import org.bukkit.entity.CreatureType
 import org.bukkit.entity.Player
 import java.util.LinkedList
 import java.util.UUID
@@ -32,6 +33,8 @@ class CorePlayer(val base: Player) : Player by base {
 
     /** This player's incoming teleport requests. */
     val teleportRequests = LinkedList<TeleportRequest>()
+
+    internal var spawnerType: CreatureType? = null
 
     override fun isOnline(): Boolean =
         server.onlinePlayers.any { it.uniqueId == uniqueId }
