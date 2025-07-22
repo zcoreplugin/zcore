@@ -90,11 +90,8 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
             }
         }
 
-    /** Determines if this player can see chat messages. */
-    var chatEnabled: Boolean by OfflinePlayers.chatEnabled
-
-    /** Determines if this player can see social interactions by others. */
-    var socialspy: Boolean by OfflinePlayers.socialspy
+    /** Determines if this player sees messages sent by others through /msg or /mail. */
+    var isSocialSpy: Boolean by OfflinePlayers.isSocialSpy
 
     internal var _playtime: Long by OfflinePlayers.playtime
 

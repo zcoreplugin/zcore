@@ -113,6 +113,7 @@ class ZCore : JavaPlugin() {
             setspawnCommand,
             setwarpCommand,
             smiteCommand,
+            socialspyCommand,
             spawnCommand,
             spawnerCommand,
             statsCommand,
