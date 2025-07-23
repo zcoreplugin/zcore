@@ -98,6 +98,7 @@ class ZCore : JavaPlugin() {
             kickallCommand,
             killCommand,
             leaderboardCommand,
+            listCommand,
             mailCommand,
             motdCommand,
             msgCommand,
