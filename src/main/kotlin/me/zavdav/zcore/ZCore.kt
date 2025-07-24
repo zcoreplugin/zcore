@@ -28,10 +28,13 @@ import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.Materials
+import me.zavdav.zcore.util.getField
 import me.zavdav.zcore.version.ZCoreVersion
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.event.Event
 import org.bukkit.inventory.ItemStack
+import org.bukkit.plugin.RegisteredListener
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -43,6 +46,7 @@ import java.math.RoundingMode
 import java.sql.Connection
 import java.text.NumberFormat
 import java.util.Locale
+import java.util.SortedSet
 import java.util.UUID
 
 /** The main class of the ZCore plugin. */
@@ -52,9 +56,13 @@ class ZCore : JavaPlugin() {
 
     override fun onEnable() {
         INSTANCE = this
+
+        server.logger.info("[ZCore] Loading configuration...")
         ZCoreConfig.load()
         Materials.load()
         ValuePermissions.load()
+
+        server.logger.info("[ZCore] Establishing database connection...")
         Database.connect("jdbc:h2:${dataFolder.absolutePath}/db/zcore", "org.h2.Driver")
         transaction = TransactionManager.currentOrNew(Connection.TRANSACTION_REPEATABLE_READ)
 
@@ -74,77 +82,32 @@ class ZCore : JavaPlugin() {
             Ignores
         )
 
-        val commands = mutableListOf(
-            afkCommand,
-            balanceCommand,
-            baltopCommand,
-            banCommand,
-            bankCommand,
-            broadcastCommand,
-            clearCommand,
-            clearmailCommand,
-            delhomeCommand,
-            delwarpCommand,
-            ecoCommand,
-            giveCommand,
-            godCommand,
-            healCommand,
-            homeCommand,
-            homesCommand,
-            ignoreCommand,
-            ignoredCommand,
-            itemCommand,
-            kickCommand,
-            kickallCommand,
-            killCommand,
-            leaderboardCommand,
-            listCommand,
-            mailCommand,
-            motdCommand,
-            msgCommand,
-            muteCommand,
-            nickCommand,
-            payCommand,
-            rCommand,
-            realnameCommand,
-            rulesCommand,
-            seenCommand,
-            sendmailCommand,
-            sethomeCommand,
-            setspawnCommand,
-            setwarpCommand,
-            smiteCommand,
-            socialspyCommand,
-            spawnCommand,
-            spawnerCommand,
-            statsCommand,
-            summonCommand,
-            timeCommand,
-            tpCommand,
-            tpaCommand,
-            tpacceptCommand,
-            tpahereCommand,
-            tpdenyCommand,
-            tphereCommand,
-            unbanCommand,
-            unmuteCommand,
-            vanishCommand,
-            warpCommand,
-            warpsCommand,
-            weatherCommand
-        )
+        server.logger.info("[ZCore] Registering commands...")
+        CommandDispatcher.registerAll()
 
-        commands.forEach { it.register() }
-
+        server.logger.info("[ZCore] Registering event listeners...")
         server.pluginManager.registerEvents(ActionListener(), this)
         server.pluginManager.registerEvents(ActivityListener(), this)
         server.pluginManager.registerEvents(JoinQuitListener(), this)
         server.pluginManager.registerEvents(StatisticsListener(), this)
+
+        server.logger.info("[ZCore] Running version $version")
     }
 
     override fun onDisable() {
+        server.logger.info("[ZCore] Unregistering commands...")
+        CommandDispatcher.unregisterAll()
+
+        server.logger.info("[ZCore] Unregistering event listeners...")
+        val listeners = getField<MutableMap<Event.Type, SortedSet<RegisteredListener>>>(
+            server.pluginManager, "listeners")
+        listeners.entries.forEach { (_, set) -> set.removeIf { it.plugin is ZCore } }
+
+        server.logger.info("[ZCore] Terminating database connection...")
         transaction.commit()
         transaction.close()
+
+        server.logger.info("[ZCore] Saving configuration...")
         ValuePermissions.save()
     }
 
