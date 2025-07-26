@@ -96,6 +96,15 @@ internal object Warps : UUIDTable("warps") {
     val yaw = float("yaw")
 }
 
+internal object PowerTools : UUIDTable("power_tools") {
+    val player = reference("player", OfflinePlayers, CASCADE, CASCADE)
+    val material = enumeration<Material>("material")
+    val data = short("data")
+    val command = text("command")
+
+    init { uniqueIndex(player, material, data) }
+}
+
 internal object Kits : UUIDTable("kits") {
     val name = varchar("name", 255).uniqueIndex()
     val cost = decimal("cost", 100000, 10).default(BigDecimal.ZERO)

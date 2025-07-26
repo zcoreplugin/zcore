@@ -35,6 +35,7 @@ class CorePlayer(val base: Player) : Player by base {
     val teleportRequests = LinkedList<TeleportRequest>()
 
     internal var spawnerType: CreatureType? = null
+    internal var lastPowerToolUse: Long = 0
 
     override fun isOnline(): Boolean =
         server.onlinePlayers.any { it.uniqueId == uniqueId }

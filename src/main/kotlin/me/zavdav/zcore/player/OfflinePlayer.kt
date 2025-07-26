@@ -7,6 +7,7 @@ import me.zavdav.zcore.data.Ignores
 import me.zavdav.zcore.data.Mails
 import me.zavdav.zcore.data.OfflinePlayers
 import me.zavdav.zcore.data.PersonalAccounts
+import me.zavdav.zcore.data.PowerTools
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.PersonalAccount
 import me.zavdav.zcore.location.Home
@@ -14,6 +15,7 @@ import me.zavdav.zcore.permission.ValuePermissions
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.MuteList
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -66,6 +68,9 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 
     /** The players that this player is ignoring. */
     val ignoredPlayers by OfflinePlayer.via(Ignores.player, Ignores.target)
+
+    /** This player's power tools. */
+    val powerTools by PowerTool referrersOn PowerTools.player
 
     /** Determines if this player is invincible. */
     var isInvincible: Boolean by OfflinePlayers.isInvincible
@@ -245,6 +250,46 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
             Ignores.deleteWhere { (Ignores.player eq this@OfflinePlayer.id) and (Ignores.target eq player.id) }
         }
         return ignored
+    }
+
+    /**
+     * Gets a power tool by its material and data.
+     *
+     * @param material the item material
+     * @param data the item data
+     * @return the power tool, or `null` if it does not exist
+     */
+    fun getPowerTool(material: Material, data: Short): PowerTool? =
+        powerTools.firstOrNull { it.material == material && it.data == data }
+
+    /**
+     * Sets a new power tool.
+     *
+     * @param material the item material
+     * @param data the item data
+     * @param command the command that will be executed by the power tool
+     */
+    fun setPowerTool(material: Material, data: Short, command: String) {
+        deletePowerTool(material, data)
+        PowerTool.new {
+            this.player = this@OfflinePlayer
+            this.material = material
+            this.data = data
+            this.command = command
+        }
+    }
+
+    /**
+     * Deletes a power tool.
+     *
+     * @param material the item material
+     * @param data the item data
+     * @return the power tool if it was deleted, `null` if it was not found
+     */
+    fun deletePowerTool(material: Material, data: Short): PowerTool? {
+        val powerTool = getPowerTool(material, data)
+        powerTool?.delete()
+        return powerTool
     }
 
 }

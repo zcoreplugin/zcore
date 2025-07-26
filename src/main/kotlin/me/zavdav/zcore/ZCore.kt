@@ -14,6 +14,7 @@ import me.zavdav.zcore.data.Mails
 import me.zavdav.zcore.data.Mutes
 import me.zavdav.zcore.data.OfflinePlayers
 import me.zavdav.zcore.data.PersonalAccounts
+import me.zavdav.zcore.data.PowerTools
 import me.zavdav.zcore.data.Warps
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.event.ActionListener
@@ -76,6 +77,7 @@ class ZCore : JavaPlugin() {
             IpBans,
             Homes,
             Warps,
+            PowerTools,
             Kits,
             KitItems,
             Mails,
