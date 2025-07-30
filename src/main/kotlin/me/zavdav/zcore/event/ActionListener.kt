@@ -8,6 +8,7 @@ import me.zavdav.zcore.util.displayName
 import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.formatted
 import me.zavdav.zcore.util.local
+import net.minecraft.server.Packet102WindowClick
 import org.bukkit.Material
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.entity.Player
@@ -17,6 +18,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityTargetEvent
+import org.bukkit.event.packet.PacketReceivedEvent
 import org.bukkit.event.player.PlayerAnimationEvent
 import org.bukkit.event.player.PlayerChatEvent
 import org.bukkit.event.player.PlayerDropItemEvent
@@ -126,6 +128,17 @@ internal class ActionListener : Listener {
     fun onPlayerPickupItem(event: PlayerPickupItemEvent) {
         val player = event.player.core().data
         if (player.isVanished) event.isCancelled = true
+    }
+
+    @EventHandler(priority = Event.Priority.Low)
+    fun onPacketReceived(event: PacketReceivedEvent) {
+        val player = event.player.core()
+        if (player.isDead) return
+        val packet = event.packet as? Packet102WindowClick ?: return
+
+        val view = player.inventoryView ?: return
+        event.isCancelled = true
+        view.handleClick(packet)
     }
 
 }

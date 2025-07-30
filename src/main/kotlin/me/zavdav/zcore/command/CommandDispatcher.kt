@@ -30,6 +30,7 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
         homesCommand,
         ignoreCommand,
         ignoredCommand,
+        invseeCommand,
         itemCommand,
         kickCommand,
         kickallCommand,

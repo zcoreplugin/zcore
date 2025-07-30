@@ -2,6 +2,7 @@ package me.zavdav.zcore.player
 
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.config.ZCoreConfig
+import me.zavdav.zcore.inventory.InventoryView
 import me.zavdav.zcore.util.colored
 import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.getSafe
@@ -34,6 +35,7 @@ class CorePlayer(val base: Player) : Player by base {
     /** This player's incoming teleport requests. */
     val teleportRequests = LinkedList<TeleportRequest>()
 
+    internal var inventoryView: InventoryView? = null
     internal var spawnerType: CreatureType? = null
     internal var lastPowerToolUse: Long = 0
 
