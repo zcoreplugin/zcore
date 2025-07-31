@@ -5,14 +5,15 @@ import me.zavdav.zcore.player.OfflinePlayer
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import java.net.Inet4Address
 import java.util.UUID
 
-/** Represents a ban targeting a range of IP addresses. */
-class IpBan internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Punishment<IpAddressRange> {
+/** Represents a ban targeting an IP address. */
+class IpBan internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Punishment<Inet4Address> {
 
     companion object : UUIDEntityClass<IpBan>(IpBans)
 
-    override var target: IpAddressRange by IpBans.target
+    override var target: Inet4Address by IpBans.target
         internal set
 
     override var issuer by OfflinePlayer optionalReferencedOn IpBans.issuer

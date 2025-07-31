@@ -7,6 +7,7 @@ import me.zavdav.zcore.data.BankMembers
 import me.zavdav.zcore.data.Bans
 import me.zavdav.zcore.data.Homes
 import me.zavdav.zcore.data.Ignores
+import me.zavdav.zcore.data.IpAddresses
 import me.zavdav.zcore.data.IpBans
 import me.zavdav.zcore.data.KitItems
 import me.zavdav.zcore.data.Kits
@@ -75,6 +76,7 @@ class ZCore : JavaPlugin() {
             Mutes,
             Bans,
             IpBans,
+            IpAddresses,
             Homes,
             Warps,
             PowerTools,

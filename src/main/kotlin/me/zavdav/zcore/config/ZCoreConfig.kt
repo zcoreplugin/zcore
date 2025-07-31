@@ -23,6 +23,7 @@ object ZCoreConfig {
         put("command.afk.auto.kick.time", 1800, 1)
         put("command.afk.protect", false)
         put("command.ban.default-reason", "The ban hammer has spoken!")
+        put("command.banip.default-reason", "The ban hammer has spoken!")
         put("command.give.default-amount", 1, 1)
         put("command.kick.default-reason", "Kicked from server")
         put("command.motd.lines", listOf("&6Welcome, {NAME}!", "&7-------------------------", "&eOnline players: &b{PLAYERCOUNT}/{MAXPLAYERS}"))

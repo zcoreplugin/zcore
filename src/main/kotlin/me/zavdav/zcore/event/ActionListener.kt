@@ -34,10 +34,11 @@ internal class ActionListener : Listener {
 
         if (mute != null) {
             val duration = mute.expiration?.let { it - System.currentTimeMillis() }
-            if (duration != null)
-                player.sendMessage(local("command.mute.temporary.message", formatDuration(duration), mute.reason))
-            else
-                player.sendMessage(local("command.mute.permanent.message", mute.reason))
+            if (duration != null) {
+                player.sendMessage(local("command.mute.temporary.notify", formatDuration(duration), mute.reason))
+            } else {
+                player.sendMessage(local("command.mute.permanent.notify", mute.reason))
+            }
 
             event.isCancelled = true
             return

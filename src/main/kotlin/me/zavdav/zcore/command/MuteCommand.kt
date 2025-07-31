@@ -51,16 +51,13 @@ private fun CommandContext<CommandSender>.doMute(target: OfflinePlayer, duration
     val source = this.source
     val issuer = (source as? Player)?.core()?.data
 
-    if (target.isMuted)
-        throw TranslatableException("command.mute.alreadyMuted", target.name)
-
     MuteList.addMute(target, issuer, duration, reason)
     val player = ZCore.getPlayer(target.uuid)
     if (duration != null) {
-        player?.sendMessage(local("command.mute.temporary.message", formatDuration(duration), reason))
+        player?.sendMessage(local("command.mute.temporary.notify", formatDuration(duration), reason))
         source.sendMessage(local("command.mute.temporary", target.name, formatDuration(duration), reason))
     } else {
-        player?.sendMessage(local("command.mute.permanent.message", reason))
+        player?.sendMessage(local("command.mute.permanent.notify", reason))
         source.sendMessage(local("command.mute.permanent", target.name, reason))
     }
 }

@@ -65,12 +65,19 @@ internal object Bans : UUIDTable("bans") {
 }
 
 internal object IpBans : UUIDTable("ip_bans") {
-    val target = ipAddressRange("target")
+    val target = inet4Address("target")
     val issuer = reference("issuer", OfflinePlayers, CASCADE, CASCADE).nullable()
     val timeIssued = long("time_issued")
     val duration = long("duration").nullable()
     val reason = text("reason")
     val pardoned = bool("pardoned").default(false)
+}
+
+internal object IpAddresses : CompositeIdTable("ip_addresses") {
+    val player = reference("player", OfflinePlayers, CASCADE, CASCADE)
+    val ipAddress = inet4Address("ip_address")
+
+    override val primaryKey = PrimaryKey(player, ipAddress)
 }
 
 internal object Homes : UUIDTable("homes") {

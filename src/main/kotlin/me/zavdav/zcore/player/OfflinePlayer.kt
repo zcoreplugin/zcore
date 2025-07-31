@@ -4,6 +4,7 @@ import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.data.BankAccounts
 import me.zavdav.zcore.data.Homes
 import me.zavdav.zcore.data.Ignores
+import me.zavdav.zcore.data.IpAddresses
 import me.zavdav.zcore.data.Mails
 import me.zavdav.zcore.data.OfflinePlayers
 import me.zavdav.zcore.data.PersonalAccounts
@@ -25,6 +26,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.lowerCase
 import java.math.BigDecimal
+import java.net.Inet4Address
 import java.util.UUID
 
 /** Represents an offline player that has played before. */
@@ -148,6 +150,12 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 
     /** @return `true` if this player is muted */
     val isMuted: Boolean get() = MuteList.getActiveMute(this) != null
+
+    /** All previous IP addresses of this player. */
+    val ipAddresses: List<Inet4Address>
+        get() = IpAddresses.select(IpAddresses.ipAddress)
+            .where { IpAddresses.player eq this@OfflinePlayer.id }
+            .map { it[IpAddresses.ipAddress] }
 
     /** Gets the value of a [permission], or [default] if it is not set. */
     fun getPermissionValue(permission: String, default: Int): Int =

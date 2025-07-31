@@ -9,7 +9,8 @@ object BanList {
     val entries: Iterable<Ban> get() = Ban.all().sortedBy { it.timeIssued }
 
     /**
-     * Bans a player.
+     * Adds a new ban targeting a player.
+     * If the player is already banned, the current ban will be overwritten.
      *
      * @param target the target of the ban
      * @param issuer the player that issued the ban (`null` means issued by console)
@@ -19,7 +20,7 @@ object BanList {
      */
     @JvmStatic
     fun addBan(target: OfflinePlayer, issuer: OfflinePlayer?, duration: Long?, reason: String): Ban {
-        pardonBan(target)
+        getActiveBan(target)?.delete()
         return Ban.new {
             this.target = target
             this.issuer = issuer

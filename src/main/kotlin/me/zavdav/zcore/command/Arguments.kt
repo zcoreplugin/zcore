@@ -9,15 +9,16 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.punishment.IpAddressRange
 import me.zavdav.zcore.util.DURATION_PATTERN
 import me.zavdav.zcore.util.MaterialData
 import me.zavdav.zcore.util.Materials
 import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.parseDuration
+import me.zavdav.zcore.util.parseInetAddress
 import org.bukkit.Material
 import org.bukkit.entity.CreatureType
 import java.math.BigDecimal
+import java.net.Inet4Address
 
 internal object NameNoMatchesExceptionType : DynamicCommandExceptionType({
     input -> LiteralMessage(local("command.nameNoMatches", input))
@@ -37,6 +38,10 @@ internal object UnknownCreatureExceptionType : DynamicCommandExceptionType({
 
 internal object UnknownMaterialExceptionType : DynamicCommandExceptionType({
     input -> LiteralMessage(local("command.unknownMaterial", input))
+})
+
+internal object InvalidIpAddressExceptionType : DynamicCommandExceptionType({
+    input -> LiteralMessage(local("command.invalidIpAddress", input))
 })
 
 internal object StringArgument : ArgumentType<String> {
@@ -94,14 +99,21 @@ internal inline fun <S> ArgumentBuilder<S, *>.durationArgument(
     action: RequiredArgumentBuilder<S, Long>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, DurationArgument, action)
 
-internal object IpAddressRangeArgument : ArgumentType<IpAddressRange> {
-    override fun parse(reader: StringReader): IpAddressRange = IpAddressRange.parse(reader.readArgument())
+internal object Inet4AddressArgument : ArgumentType<Inet4Address> {
+    override fun parse(reader: StringReader): Inet4Address {
+        val address = reader.readArgument()
+        try {
+            return parseInetAddress(address)
+        } catch (_: Exception) {
+            throw InvalidIpAddressExceptionType.create(address)
+        }
+    }
 }
 
-internal inline fun <S> ArgumentBuilder<S, *>.ipAddressRangeArgument(
+internal inline fun <S> ArgumentBuilder<S, *>.inet4AddressArgument(
     name: String,
-    action: RequiredArgumentBuilder<S, IpAddressRange>.() -> Unit
-): ArgumentBuilder<S, *> = argument(name, IpAddressRangeArgument, action)
+    action: RequiredArgumentBuilder<S, Inet4Address>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, Inet4AddressArgument, action)
 
 internal object PlayerArgument : ArgumentType<CorePlayer> {
     override fun parse(reader: StringReader): CorePlayer {

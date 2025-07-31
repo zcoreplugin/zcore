@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender
 
 internal val unbanCommand = command(
     "unban",
+    arrayOf("pardon"),
     "Unbans a player.",
     "/unban <player>",
     "zcore.unban"

@@ -9,7 +9,8 @@ object MuteList {
     val entries: Iterable<Mute> get() = Mute.all().sortedBy { it.timeIssued }
 
     /**
-     * Mutes a player.
+     * Adds a new mute targeting a player.
+     * If the player is already muted, the current mute will be overwritten.
      *
      * @param target the target of the mute
      * @param issuer the player that issued the mute (`null` means issued by console)
@@ -19,7 +20,7 @@ object MuteList {
      */
     @JvmStatic
     fun addMute(target: OfflinePlayer, issuer: OfflinePlayer?, duration: Long?, reason: String): Mute {
-        pardonMute(target)
+        getActiveMute(target)?.delete()
         return Mute.new {
             this.target = target
             this.issuer = issuer
