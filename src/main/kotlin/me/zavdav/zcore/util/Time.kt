@@ -1,5 +1,8 @@
 package me.zavdav.zcore.util
 
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 
 private const val SECONDS_PER_YEAR = 31_536_000
@@ -70,4 +73,10 @@ internal fun parseDuration(duration: String): Long? {
         minutes * SECONDS_PER_MINUTE +
         seconds
     ) * 1000
+}
+
+internal fun formatTimestamp(millis: Long): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    val dateTime = Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).toLocalDateTime()
+    return formatter.format(dateTime) + " UTC"
 }
