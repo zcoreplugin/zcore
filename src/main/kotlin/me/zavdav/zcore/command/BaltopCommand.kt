@@ -2,7 +2,8 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.util.PagedTable
+import me.zavdav.zcore.util.PagingList
+import me.zavdav.zcore.util.alignText
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
@@ -26,19 +27,20 @@ internal val baltopCommand = command(
 }
 
 private fun CommandContext<CommandSender>.doBaltop(page: Int) {
-    val source = this.source
     val players = ZCore.players.sortedByDescending { it.account.balance }
-    val top = PagedTable(players, 10) { i, player -> arrayOf(
-        local("command.baltop.rank", i + 1, player.name) to 1,
-        local("command.baltop.amount", ZCore.formatCurrency(player.account.balance)) to 1
-    ) }
+    val list = PagingList(players, 10)
+    if (list.isEmpty()) return
 
-    if (top.pages() == 0) return
-    val pageNumber = page.coerceIn(1..top.pages())
-
-    source.sendMessage(local("command.baltop", pageNumber, top.pages()))
+    val index = page.coerceIn(1..list.pages()) - 1
+    source.sendMessage(local("command.baltop", index + 1, list.pages()))
     source.sendMessage(line(ChatColor.GRAY))
-    top.print(pageNumber - 1, source)
+    list.page(index).forEachIndexed { i, it ->
+        val position = index * 10 + i + 1
+        source.sendMessage(alignText(
+            local("command.baltop.rank", position, it.name) to 1,
+            local("command.baltop.amount", ZCore.formatCurrency(it.account.balance)) to 1
+        ))
+    }
 
     val total = players.sumOf { it.account.balance }
     source.sendMessage(line(ChatColor.GRAY))

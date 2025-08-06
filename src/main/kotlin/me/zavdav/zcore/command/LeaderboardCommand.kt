@@ -3,7 +3,8 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.util.PagedTable
+import me.zavdav.zcore.util.PagingList
+import me.zavdav.zcore.util.alignText
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
@@ -191,17 +192,18 @@ private fun <V : Comparable<V>> CommandContext<CommandSender>.printLeaderboard(
     selector: (OfflinePlayer) -> V,
     transform: (V) -> Any = { it -> it }
 ) {
-    val source = this.source
     val players = ZCore.players.sortedByDescending(selector)
-    val leaderboard = PagedTable(players, 10) { i, player -> arrayOf(
-        local("command.leaderboard.rank", i + 1, player.name) to 1,
-        local("command.leaderboard.amount", transform(selector(player))) to 1
-    ) }
+    val list = PagingList(players, 10)
+    if (list.isEmpty()) return
 
-    if (leaderboard.pages() == 0) return
-    val pageNumber = page.coerceIn(1..leaderboard.pages())
-
-    source.sendMessage(local(langKey, pageNumber, leaderboard.pages()))
+    val index = page.coerceIn(1..list.pages()) - 1
+    source.sendMessage(local(langKey, index + 1, list.pages()))
     source.sendMessage(line(ChatColor.GRAY))
-    leaderboard.print(pageNumber - 1, source)
+    list.page(index).forEachIndexed { i, it ->
+        val position = index * 10 + i + 1
+        source.sendMessage(alignText(
+            local("command.leaderboard.rank", position, it.name) to 1,
+            local("command.leaderboard.amount", transform(selector(it))) to 1
+        ))
+    }
 }

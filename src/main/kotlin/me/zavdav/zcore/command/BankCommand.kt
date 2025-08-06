@@ -5,8 +5,7 @@ import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.PagedList
-import me.zavdav.zcore.util.PagedTable
+import me.zavdav.zcore.util.alignText
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
@@ -83,28 +82,24 @@ internal val bankCommand = command(
 
 private fun CommandContext<CommandSender>.doBankInfo(bankName: String) {
     val bank = ZCore.getBank(bankName) ?: throw TranslatableException("command.bank.unknown", bankName)
-
     source.sendMessage(local("command.bank.info", bank.name))
     source.sendMessage(line(ChatColor.GRAY))
 
     val info = listOf(
         local("command.bank.info.owner") to bank.owner.name,
         local("command.bank.info.balance") to ZCore.formatCurrency(bank.balance),
-        local("command.bank.info.maxOverdraw") to ZCore.formatCurrency(bank.overdrawLimit),
-        local("command.bank.info.members") to ""
+        local("command.bank.info.maxOverdraw") to ZCore.formatCurrency(bank.overdrawLimit)
     )
 
-    val table = PagedTable(info) { _, (key, value) ->
-        arrayOf(key to 1, "${ChatColor.GREEN}$value" to 1)
+    info.forEach { (key, value) ->
+        source.sendMessage(alignText(key to 1, "${ChatColor.GREEN}$value" to 1))
     }
 
-    table.print(0, source)
+    source.sendMessage(local("command.bank.info.members"))
     source.sendMessage(line(ChatColor.GRAY))
-
-    val members = bank.members.map { it.name }
-    val list = PagedList(members, Int.MAX_VALUE, 4)
-    if (list.pages() == 0) return
-    list.print(0, source, ChatColor.GREEN)
+    val list = bank.members.sortedWith { p1, p2 -> p1.name.compareTo(p2.name, true) }
+    if (list.isEmpty()) return
+    list.forEach { source.sendMessage(local("command.bank.info.members.line", it.name)) }
 }
 
 private fun CommandContext<CommandSender>.doBankCreate(bankName: String) {

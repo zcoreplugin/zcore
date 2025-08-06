@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.PagedList
+import me.zavdav.zcore.util.PagingList
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
@@ -47,15 +47,15 @@ private fun CommandContext<CommandSender>.doMail(target: OfflinePlayer, page: In
     val self = source is Player && source.core().data.uuid == target.uuid
     if (!self) require("zcore.mail.other")
 
-    val mail = target.mail.reversed().map {
-        local("command.mail.message", it.sender.name, it.message)
-    }
-    val list = PagedList(mail, 5, 1)
-    if (list.pages() == 0)
+    val mail = target.mail.reversed()
+    val list = PagingList(mail, 5)
+    if (list.isEmpty())
         throw TranslatableException("command.mail.none", target.name)
 
-    val pageNumber = page.coerceIn(1..list.pages())
-    source.sendMessage(local("command.mail", target.name, pageNumber, list.pages()))
+    val index = page.coerceIn(1..list.pages()) - 1
+    source.sendMessage(local("command.mail", target.name, index + 1, list.pages()))
     source.sendMessage(line(ChatColor.GRAY))
-    list.print(pageNumber - 1, source)
+    list.page(index).forEach {
+        source.sendMessage(local("command.mail.line", it.sender.name, it.message))
+    }
 }

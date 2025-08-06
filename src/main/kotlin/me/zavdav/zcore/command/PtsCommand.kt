@@ -4,7 +4,7 @@ import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.MaterialData
-import me.zavdav.zcore.util.PagedTable
+import me.zavdav.zcore.util.PagingList
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
@@ -48,17 +48,20 @@ private fun CommandContext<CommandSender>.doPts(target: OfflinePlayer, page: Int
     val self = source is Player && source.core().data.uuid == target.uuid
     if (!self) require("zcore.pts.other")
 
-    val powerTools = target.powerTools.toList()
-    val table = PagedTable(powerTools, 10) { _, it ->
-        val materialData = MaterialData(it.material, it.data)
-        arrayOf("&a${materialData.displayName} &7- &f/${it.command}" to 1)
+    val powerTools = target.powerTools.sortedWith { p1, p2 ->
+        val m1 = MaterialData(p1.material, p1.data)
+        val m2 = MaterialData(p2.material, p2.data)
+        m1.displayName.compareTo(m2.displayName, true)
     }
-
-    if (table.pages() == 0)
+    val list = PagingList(powerTools, 10)
+    if (list.isEmpty())
         throw TranslatableException("command.pts.none", target.name)
 
-    val pageNumber = page.coerceIn(1..table.pages())
-    source.sendMessage(local("command.pts", target.name, pageNumber, table.pages()))
+    val index = page.coerceIn(1..list.pages()) - 1
+    source.sendMessage(local("command.pts", target.name, index + 1, list.pages()))
     source.sendMessage(line(ChatColor.GRAY))
-    table.print(pageNumber - 1, source)
+    list.page(index).forEach {
+        val materialData = MaterialData(it.material, it.data)
+        source.sendMessage(local("command.pts.line", materialData.displayName, it.command))
+    }
 }

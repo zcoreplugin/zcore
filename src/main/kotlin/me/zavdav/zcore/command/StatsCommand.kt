@@ -3,7 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.util.PagedTable
+import me.zavdav.zcore.util.alignText
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
@@ -50,11 +50,9 @@ private fun CommandContext<CommandSender>.doStats(target: OfflinePlayer) {
 
     source.sendMessage(local("command.stats", target.name))
     source.sendMessage(line(ChatColor.GRAY))
-    val table = PagedTable(statistics) { _, (key, value) ->
-        arrayOf(key to 1, "${ChatColor.GREEN}$value" to 1)
+    statistics.forEach { (key, value) ->
+        source.sendMessage(alignText(key to 1, "${ChatColor.GREEN}$value" to 1))
     }
-
-    table.print(0, source)
 }
 
 private fun formatPlaytime(playtime: Long): String =

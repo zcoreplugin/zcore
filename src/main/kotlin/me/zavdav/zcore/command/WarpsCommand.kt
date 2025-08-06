@@ -2,11 +2,12 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
-import me.zavdav.zcore.util.PagedList
+import me.zavdav.zcore.util.PagingList
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
+import kotlin.math.floor
 
 internal val warpsCommand = command(
     "warps",
@@ -26,13 +27,16 @@ internal val warpsCommand = command(
 }
 
 private fun CommandContext<CommandSender>.doWarps(page: Int) {
-    val warps = ZCore.warps.map { it.name }.sorted()
-    val list = PagedList(warps, 5, 5)
-    if (list.pages() == 0)
+    val warps = ZCore.warps.sortedWith { w1, w2 -> w1.name.compareTo(w2.name, true) }
+    val list = PagingList(warps, 10)
+    if (list.isEmpty())
         throw TranslatableException("command.warps.none")
 
-    val pageNumber = page.coerceIn(1..list.pages())
-    source.sendMessage(local("command.warps", pageNumber, list.pages()))
+    val index = page.coerceIn(1..list.pages()) - 1
+    source.sendMessage(local("command.warps", index + 1, list.pages()))
     source.sendMessage(line(ChatColor.GRAY))
-    list.print(pageNumber - 1, source, ChatColor.GREEN)
+    list.page(index).forEach {
+        source.sendMessage(local("command.warps.line",
+            it.name, it.world, floor(it.x).toInt(), floor(it.y).toInt(), floor(it.z).toInt()))
+    }
 }

@@ -1,7 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.util.PagedList
+import me.zavdav.zcore.util.PagingList
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
@@ -29,14 +29,14 @@ internal val listCommand = command(
 private fun CommandContext<CommandSender>.doList(page: Int) {
     val players = Bukkit.getOnlinePlayers()
         .sortedWith { p1, p2 -> p1.name.compareTo(p2.name, true)}
-        .map { it.displayName }
-
-    val list = PagedList(players, 10, 2)
+    val list = PagingList(players, 10)
     val pages = list.pages().coerceAtLeast(1)
-    val pageNumber = page.coerceIn(1..pages)
+    val index = page.coerceIn(1..pages) - 1
 
-    source.sendMessage(local("command.list", players.size, pageNumber, pages))
+    source.sendMessage(local("command.list", players.size, index + 1, pages))
     source.sendMessage(line(ChatColor.GRAY))
-    if (list.pages() == 0) return
-    list.print(pageNumber - 1, source)
+    if (list.isEmpty()) return
+    list.page(index).forEach {
+        source.sendMessage(local("command.list.line", it.displayName))
+    }
 }
