@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.ReferenceOption.CASCADE
 import java.math.BigDecimal
 
 internal object OfflinePlayers : UUIDTable("offline_players") {
-    val name = varchar("name", 16).uniqueIndex()
+    val name = varchar("name", 16)
     val nickname = varchar("nickname", 255).nullable().default(null)
     val firstJoin = long("first_join")
     val lastJoin = long("last_join")

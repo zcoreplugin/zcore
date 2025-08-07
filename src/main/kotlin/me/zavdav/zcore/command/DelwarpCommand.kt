@@ -19,7 +19,7 @@ internal val delwarpCommand = command(
     }
 }
 
-fun CommandContext<CommandSender>.doDelwarp(warpName: String) {
+private fun CommandContext<CommandSender>.doDelwarp(warpName: String) {
     val existingWarp = ZCore.deleteWarp(warpName)
     if (existingWarp != null) {
         source.sendMessage(local("command.delwarp", existingWarp.name))

@@ -25,7 +25,7 @@ internal val smiteCommand = command(
 
 private fun CommandContext<CommandSender>.doSmite() {
     val source = requirePlayer()
-    val location = source.getTargetBlock(null, 120).location
+    val location = source.getTargetBlock(hashSetOf(0, 8, 9), 120).location
     location.world.strikeLightning(location)
     source.sendMessage(local("command.smite"))
 }

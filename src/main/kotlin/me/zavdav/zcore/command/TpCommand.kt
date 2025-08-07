@@ -6,6 +6,7 @@ import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.util.local
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -80,7 +81,7 @@ private fun CommandContext<CommandSender>.doTpLocation(
     finalZ = finalZ.setScale(6, RoundingMode.DOWN)
 
     val location = Location(
-        player.world,
+        (source as? Player)?.world ?: player.world,
         finalX.toDouble(), finalY.toDouble(), finalZ.toDouble(),
         player.location.yaw, player.location.pitch
     )

@@ -1,5 +1,6 @@
 package me.zavdav.zcore.event
 
+import me.zavdav.zcore.command.afkCommand
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.getSafe
@@ -10,6 +11,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerChatEvent
+import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -61,6 +63,15 @@ internal class ActivityListener : Listener {
     @EventHandler(priority = Event.Priority.Lowest)
     fun onPlayerChat(event: PlayerChatEvent) {
         val player = event.player.core()
+        player.updateActivity()
+    }
+
+    @EventHandler(priority = Event.Priority.Lowest)
+    fun onPlayerCommandPreprocess(event: PlayerCommandPreprocessEvent) {
+        val player = event.player.core()
+        val command = event.message.trimEnd()
+        if (command.equals("/${afkCommand.name}", true))
+            return
         player.updateActivity()
     }
 

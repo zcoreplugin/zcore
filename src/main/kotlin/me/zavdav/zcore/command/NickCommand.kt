@@ -54,6 +54,7 @@ private fun CommandContext<CommandSender>.doNick(target: CorePlayer, nickname: S
         throw TranslatableException("command.nick.empty")
 
     target.data.nickname = finalNickname
+    target.base.displayName = target.displayName
     source.sendMessage(local("command.nick", target.name, target.displayName))
     if (!self) target.sendMessage(local("command.nick", target.name, target.displayName))
 }

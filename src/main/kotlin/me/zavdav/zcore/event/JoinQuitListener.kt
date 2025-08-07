@@ -72,6 +72,7 @@ internal class JoinQuitListener : Listener {
             }
         }
 
+        player.name = event.player.name
         player.lastJoin = now
         player.lastActivity = now
 
