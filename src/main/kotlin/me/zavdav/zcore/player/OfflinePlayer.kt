@@ -197,6 +197,26 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     /**
+     * Moves a home to a new location.
+     *
+     * @param name the home name
+     * @param location the new location
+     * @return the home if it was moved, `null` if no home with this name was found
+     */
+    fun moveHome(name: String, location: org.bukkit.Location): Home? {
+        val home = getHome(name)
+        if (home != null) {
+            home.world = location.world.name
+            home.x = location.x
+            home.y = location.y
+            home.z = location.z
+            home.pitch = location.pitch
+            home.yaw = location.yaw
+        }
+        return home
+    }
+
+    /**
      * Deletes the home with the specified [name].
      * Returns the home that was deleted, or `null` if no home with this name exists.
      */
