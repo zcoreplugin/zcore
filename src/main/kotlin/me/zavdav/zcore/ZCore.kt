@@ -29,6 +29,7 @@ import me.zavdav.zcore.permission.ValuePermissions
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
+import me.zavdav.zcore.statistic.Statistic
 import me.zavdav.zcore.util.Materials
 import me.zavdav.zcore.util.getField
 import me.zavdav.zcore.version.ZCoreVersion
@@ -95,6 +96,9 @@ class ZCore : JavaPlugin() {
         server.pluginManager.registerEvents(JoinQuitListener(), this)
         server.pluginManager.registerEvents(StatisticsListener(), this)
 
+        server.logger.info("[ZCore] Registering statistics...")
+        Statistic.registerDefaults()
+
         server.logger.info("[ZCore] Running version $version")
     }
 
@@ -106,6 +110,9 @@ class ZCore : JavaPlugin() {
         val listeners = getField<MutableMap<Event.Type, SortedSet<RegisteredListener>>>(
             server.pluginManager, "listeners")
         listeners.entries.forEach { (_, set) -> set.removeIf { it.plugin is ZCore } }
+
+        server.logger.info("[ZCore] Unregistering statistics...")
+        Statistic.unregisterDefaults()
 
         server.logger.info("[ZCore] Terminating database connection...")
         transaction.commit()

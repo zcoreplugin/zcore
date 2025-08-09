@@ -86,10 +86,11 @@ internal class StatisticsListener : Listener {
             }
 
             val player = damager?.core()?.data ?: return
-            if (isPlayer)
+            if (isPlayer) {
                 player.playersKilled++
-            else
+            } else {
                 player.mobsKilled++
+            }
         }
     }
 
