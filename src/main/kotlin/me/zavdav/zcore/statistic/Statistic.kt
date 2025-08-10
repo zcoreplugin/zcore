@@ -1,5 +1,6 @@
 package me.zavdav.zcore.statistic
 
+import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.OfflinePlayer
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -26,6 +27,19 @@ class Statistic<V : Comparable<V>> private constructor(
      * @return the player's score formatted
      */
     fun getFormattedScore(player: OfflinePlayer): String = formatFunction(getScore(player))
+
+    /**
+     * Gets a player's rank on the leaderboard for this statistic.
+     *
+     * @param player the player
+     * @return the player's rank
+     */
+    fun getRank(player: OfflinePlayer): Int {
+        val players = ZCore.players.sortedWith(
+            compareByDescending<OfflinePlayer> { getScore(it) }
+                .then { p1, p2 -> p1.name.compareTo(p2.name, true) })
+        return players.indexOf(player) + 1
+    }
 
     companion object {
         private val statistics = mutableListOf<Statistic<*>>()
