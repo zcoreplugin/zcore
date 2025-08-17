@@ -9,14 +9,13 @@ import org.bukkit.entity.CreatureType
 internal val summonCommand = command(
     "summon",
     arrayOf("spawnmob"),
-    "Spawns a creature at your location.",
-    "/summon <creature>",
+    "Spawns a mob at your location",
     "zcore.summon"
 ) {
-    creatureArgument("type") {
+    creatureArgument("mobType") {
         runs {
-            val type: CreatureType by this
-            doSummon(type)
+            val mobType: CreatureType by this
+            doSummon(mobType)
         }
     }
 }

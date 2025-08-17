@@ -8,8 +8,7 @@ import org.bukkit.command.CommandSender
 
 internal val motdCommand = command(
     "motd",
-    "Shows the message of the day.",
-    "/motd",
+    "Shows the message of the day",
     "zcore.motd"
 ) {
     runs {

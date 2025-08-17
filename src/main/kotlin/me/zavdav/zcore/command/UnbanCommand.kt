@@ -9,14 +9,13 @@ import org.bukkit.command.CommandSender
 internal val unbanCommand = command(
     "unban",
     arrayOf("pardon"),
-    "Unbans a player.",
-    "/unban <player>",
+    "Unbans a player",
     "zcore.unban"
 ) {
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         runs {
-            val target: OfflinePlayer by this
-            doUnban(target)
+            val player: OfflinePlayer by this
+            doUnban(player)
         }
     }
 }

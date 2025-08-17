@@ -9,16 +9,15 @@ import org.bukkit.command.CommandSender
 
 internal val sendmailCommand = command(
     "sendmail",
-    "Sends mail to a player.",
-    "/sendmail <player> <message>",
+    "Sends mail to a player",
     "zcore.sendmail"
 ) {
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         textArgument("message") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val message: String by this
-                doSendmail(target, message)
+                doSendmail(player, message)
             }
         }
     }
@@ -35,7 +34,7 @@ private fun CommandContext<CommandSender>.doSendmail(target: OfflinePlayer, mess
                 source.displayName, target.name, message))
         }
 
-    if (target.ignores(source.data) && !source.isOp && !source.hasPermission("zcore.ignore.bypass"))
+    if (target.ignores(source.data) && !source.hasPermission("zcore.ignore.bypass"))
         return
 
     source.data.sendMail(target, message)

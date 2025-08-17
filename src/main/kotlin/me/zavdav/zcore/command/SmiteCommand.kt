@@ -8,17 +8,16 @@ import org.bukkit.command.CommandSender
 internal val smiteCommand = command(
     "smite",
     arrayOf("lightning"),
-    "Strikes lightning at the aimed block or at a player.",
-    "/smite [<player>]",
+    "Strikes lightning at the aimed block or at a player",
     "zcore.smite"
 ) {
     runs {
         doSmite()
     }
-    playerArgument("target") {
+    playerArgument("player") {
         runs {
-            val target: CorePlayer by this
-            doSmite(target)
+            val player: CorePlayer by this
+            doSmite(player)
         }
     }
 }

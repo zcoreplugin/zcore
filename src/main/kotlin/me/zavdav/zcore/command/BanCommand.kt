@@ -13,35 +13,34 @@ import org.bukkit.entity.Player
 
 internal val banCommand = command(
     "ban",
-    "Bans a player.",
-    "/ban <player> [<duration>] [<reason>]",
+    "Bans a player",
     "zcore.ban"
 ) {
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         runs {
-            val target: OfflinePlayer by this
-            doBan(target, null, ZCoreConfig.getString("command.ban.default-reason"))
+            val player: OfflinePlayer by this
+            doBan(player, null, ZCoreConfig.getString("command.ban.default-reason"))
         }
         durationArgument("duration") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val duration: Long by this
-                doBan(target, duration, ZCoreConfig.getString("command.ban.default-reason"))
+                doBan(player, duration, ZCoreConfig.getString("command.ban.default-reason"))
             }
             textArgument("reason") {
                 runs {
-                    val target: OfflinePlayer by this
+                    val player: OfflinePlayer by this
                     val duration: Long by this
                     val reason: String by this
-                    doBan(target, duration, reason)
+                    doBan(player, duration, reason)
                 }
             }
         }
         textArgument("reason") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val reason: String by this
-                doBan(target, null, reason)
+                doBan(player, null, reason)
             }
         }
     }

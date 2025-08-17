@@ -28,6 +28,7 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
         giveCommand,
         godCommand,
         healCommand,
+        helpCommand,
         homeCommand,
         homesCommand,
         ignoreCommand,
@@ -85,7 +86,7 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
     private val bukkitKnownCommands = getField<MutableMap<String, Command>>(bukkitCommandMap, "knownCommands")
 
     init {
-        commands.forEach { register(it.builder) }
+        commands.forEach { root.addChild(it.node) }
     }
 
     internal fun registerAll() {
@@ -95,6 +96,13 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
     internal fun unregisterAll() {
         bukkitKnownCommands.entries.removeIf { it.value is CoreCommand }
     }
+
+    internal fun getCommands(): List<Command> =
+        bukkitKnownCommands.values
+            .distinct()
+            .sortedWith { c1, c2 -> c1.name.compareTo(c2.name, true) }
+
+    internal fun getCommand(name: String): Command? = bukkitKnownCommands[name.lowercase()]
 
     override fun execute(input: String, source: CommandSender): Int {
         try {

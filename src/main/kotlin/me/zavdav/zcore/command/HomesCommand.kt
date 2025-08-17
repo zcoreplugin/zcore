@@ -2,20 +2,17 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.PagingList
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import kotlin.math.floor
 
 internal val homesCommand = command(
     "homes",
     arrayOf("hl"),
-    "Shows a list of your homes.",
-    "/homes [<page>]",
+    "Shows a player's homes",
     "zcore.homes"
 ) {
     runs {
@@ -29,26 +26,23 @@ internal val homesCommand = command(
             doHomes(source.data, page)
         }
     }
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
+        requiresPermission("zcore.homes.other")
         runs {
-            val target: OfflinePlayer by this
-            doHomes(target, 1)
+            val player: OfflinePlayer by this
+            doHomes(player, 1)
         }
         intArgument("page") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val page: Int by this
-                doHomes(target, page)
+                doHomes(player, page)
             }
         }
     }
 }
 
 private fun CommandContext<CommandSender>.doHomes(target: OfflinePlayer, page: Int) {
-    val source = this.source
-    val self = source is Player && source.core().data.uuid == target.uuid
-    if (!self) require("zcore.homes.other")
-
     val homes = target.homes.sortedWith { h1, h2 -> h1.name.compareTo(h2.name, true) }
     val list = PagingList(homes, 10)
     if (list.isEmpty())

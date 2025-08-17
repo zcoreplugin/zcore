@@ -91,7 +91,7 @@ internal class JoinQuitListener : Listener {
         for (pl in Bukkit.getOnlinePlayers()) {
             if (pl.core().data.isVanished) {
                 Bukkit.getOnlinePlayers()
-                    .filter { !it.isOp && !it.hasPermission("zcore.vanish.bypass") }
+                    .filter { !it.hasPermission("zcore.vanish.bypass") }
                     .forEach { it.hidePlayer(pl) }
             } else {
                 Bukkit.getOnlinePlayers().forEach { it.showPlayer(pl) }

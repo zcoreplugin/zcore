@@ -10,16 +10,15 @@ import org.bukkit.command.CommandSender
 internal val msgCommand = command(
     "msg",
     arrayOf("tell", "whisper"),
-    "Sends a private message to a player.",
-    "/msg <player> <message>",
+    "Sends a private message to a player",
     "zcore.msg"
 ) {
-    playerArgument("target") {
+    playerArgument("player") {
         textArgument("message") {
             runs {
-                val target: CorePlayer by this
+                val player: CorePlayer by this
                 val message: String by this
-                doMsg(target, message)
+                doMsg(player, message)
             }
         }
     }
@@ -37,7 +36,7 @@ private fun CommandContext<CommandSender>.doMsg(target: CorePlayer, message: Str
                 source.displayName, target.displayName, message))
         }
 
-    if (target.data.ignores(source.data) && !source.isOp && !source.hasPermission("zcore.ignore.bypass"))
+    if (target.data.ignores(source.data) && !source.hasPermission("zcore.ignore.bypass"))
         return
 
     target.replyingTo = source

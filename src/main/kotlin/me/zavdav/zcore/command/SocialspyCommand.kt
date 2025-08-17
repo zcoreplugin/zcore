@@ -9,18 +9,18 @@ import org.bukkit.entity.Player
 
 internal val socialspyCommand = command(
     "socialspy",
-    "Toggles a player's socialspy status.",
-    "/socialspy [<player>]",
+    "Toggles a player's socialspy status",
     "zcore.socialspy"
 ) {
     runs {
         val source = requirePlayer()
         doSocialspy(source)
     }
-    playerArgument("target") {
+    playerArgument("player") {
+        requiresPermission("zcore.socialspy.other")
         runs {
-            val target: CorePlayer by this
-            doSocialspy(target)
+            val player: CorePlayer by this
+            doSocialspy(player)
         }
     }
 }
@@ -28,8 +28,6 @@ internal val socialspyCommand = command(
 private fun CommandContext<CommandSender>.doSocialspy(target: CorePlayer) {
     val source = this.source
     val self = source is Player && source.core() == target
-    if (!self) require("zcore.socialspy.other")
-
     val isSocialSpy = !target.data.isSocialSpy
     target.data.isSocialSpy = isSocialSpy
 

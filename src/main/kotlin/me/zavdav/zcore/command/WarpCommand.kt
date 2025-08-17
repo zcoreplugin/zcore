@@ -8,14 +8,13 @@ import org.bukkit.command.CommandSender
 
 internal val warpCommand = command(
     "warp",
-    "Teleports you to a warp.",
-    "/warp <name>",
+    "Teleports you to a warp",
     "zcore.warp"
 ) {
-    stringArgument("warpName") {
+    stringArgument("warp") {
         runs {
-            val warpName: String by this
-            doWarp(warpName)
+            val warp: String by this
+            doWarp(warp)
         }
     }
 }

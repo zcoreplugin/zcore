@@ -11,39 +11,38 @@ import java.math.RoundingMode
 internal val ecoCommand = command(
     "eco",
     arrayOf("economy"),
-    "Modifies the balance of players.",
-    "/eco (set|give|take) <player> <amount>",
+    "Changes a player's balance",
     "zcore.eco"
 ) {
     literal("set") {
-        offlinePlayerArgument("target") {
+        offlinePlayerArgument("player") {
             bigDecimalArgument("amount") {
                 runs {
-                    val target: OfflinePlayer by this
+                    val player: OfflinePlayer by this
                     val amount: BigDecimal by this
-                    doEcoSet(target, amount)
+                    doEcoSet(player, amount)
                 }
             }
         }
     }
     literal("give") {
-        offlinePlayerArgument("target") {
+        offlinePlayerArgument("player") {
             bigDecimalArgument("amount") {
                 runs {
-                    val target: OfflinePlayer by this
+                    val player: OfflinePlayer by this
                     val amount: BigDecimal by this
-                    doEcoGive(target, amount)
+                    doEcoGive(player, amount)
                 }
             }
         }
     }
     literal("take") {
-        offlinePlayerArgument("target") {
+        offlinePlayerArgument("player") {
             bigDecimalArgument("amount") {
                 runs {
-                    val target: OfflinePlayer by this
+                    val player: OfflinePlayer by this
                     val amount: BigDecimal by this
-                    doEcoTake(target, amount)
+                    doEcoTake(player, amount)
                 }
             }
         }

@@ -11,33 +11,23 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import kotlin.reflect.KProperty
 
-internal class CommandBuilder(
-    val name: String,
-    val aliases: Array<String> = emptyArray(),
-    val description: String,
-    val usage: String,
-    val permission: String
-) : LiteralArgumentBuilder<CommandSender>(name)
-
 internal inline fun command(
     name: String,
     aliases: Array<String>,
     description: String,
-    usage: String,
     permission: String,
-    action: CommandBuilder.() -> Unit
+    action: LiteralArgumentBuilder<CommandSender>.() -> Unit
 ): CoreCommand {
-    val builder = CommandBuilder(name, aliases, description, usage, permission).apply { action() }
-    return CoreCommand(name, aliases, description, usage, permission, builder)
+    val builder = LiteralArgumentBuilder.literal<CommandSender>(name).apply { action() }
+    return CoreCommand(name, aliases, description, permission, builder)
 }
 
 internal inline fun command(
     name: String,
     description: String,
-    usage: String,
     permission: String,
-    action: CommandBuilder.() -> Unit
-): CoreCommand = command(name, emptyArray(), description, usage, permission, action)
+    action: LiteralArgumentBuilder<CommandSender>.() -> Unit
+): CoreCommand = command(name, emptyArray(), description, permission, action)
 
 internal inline fun <S> ArgumentBuilder<S, *>.literal(
     literal: String,
@@ -66,9 +56,11 @@ internal fun <S : CommandSender> ArgumentBuilder<S, *>.runs(
     return this
 }
 
-internal fun <S : CommandSender> CommandContext<S>.require(permission: String) {
-    if (!source.isOp && !source.hasPermission(permission))
-        throw TranslatableException("command.noPermission")
+internal fun <S : CommandSender> ArgumentBuilder<S, *>.requiresPermission(
+    permission: String
+): ArgumentBuilder<S, *> {
+    requires { it.hasPermission(permission) }
+    return this
 }
 
 internal fun <S : CommandSender> CommandContext<S>.requirePlayer(): CorePlayer {

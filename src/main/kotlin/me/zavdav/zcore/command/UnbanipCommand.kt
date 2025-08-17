@@ -11,8 +11,7 @@ import java.net.Inet4Address
 internal val unbanipCommand = command(
     "unbanip",
     arrayOf("pardonip"),
-    "Unbans an IP address or a player's previous IP addresses.",
-    "/unbanip (<address>|<player>)",
+    "Unbans an IP address or a player's previous IP addresses",
     "zcore.unbanip"
 ) {
     inet4AddressArgument("address") {
@@ -21,10 +20,10 @@ internal val unbanipCommand = command(
             doUnbanip(address)
         }
     }
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         runs {
-            val target: OfflinePlayer by this
-            doUnbanip(target)
+            val player: OfflinePlayer by this
+            doUnbanip(player)
         }
     }
 }

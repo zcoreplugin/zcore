@@ -9,8 +9,7 @@ import org.bukkit.command.CommandSender
 internal val rCommand = command(
     "r",
     arrayOf("reply"),
-    "A shorthand for /msg to reply to the last player.",
-    "/r <message>",
+    "Replies to the last private message",
     "zcore.r"
 ) {
     textArgument("message") {
@@ -37,7 +36,7 @@ private fun CommandContext<CommandSender>.doR(message: String) {
                 source.displayName, target.displayName, message))
         }
 
-    if (target.data.ignores(source.data) && !source.isOp && !source.hasPermission("zcore.ignore.bypass"))
+    if (target.data.ignores(source.data) && !source.hasPermission("zcore.ignore.bypass"))
         return
 
     target.replyingTo = source

@@ -2,36 +2,34 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 
 internal val renamehomeCommand = command(
     "renamehome",
     arrayOf("rh"),
-    "Renames a home.",
-    "/renamehome <home> <name>",
+    "Renames a player's home",
     "zcore.renamehome"
 ) {
-    stringArgument("oldName") {
+    stringArgument("home") {
         stringArgument("newName") {
             runs {
                 val source = requirePlayer()
-                val oldName: String by this
+                val home: String by this
                 val newName: String by this
-                doRenamehome(source.data, oldName, newName)
+                doRenamehome(source.data, home, newName)
             }
         }
     }
-    offlinePlayerArgument("target") {
-        stringArgument("oldName") {
+    offlinePlayerArgument("player") {
+        requiresPermission("zcore.renamehome.other")
+        stringArgument("home") {
             stringArgument("newName") {
                 runs {
-                    val target: OfflinePlayer by this
-                    val oldName: String by this
+                    val player: OfflinePlayer by this
+                    val home: String by this
                     val newName: String by this
-                    doRenamehome(target, oldName, newName)
+                    doRenamehome(player, home, newName)
                 }
             }
         }
@@ -41,10 +39,6 @@ internal val renamehomeCommand = command(
 private fun CommandContext<CommandSender>.doRenamehome(
     target: OfflinePlayer, oldName: String, newName: String
 ) {
-    val source = this.source
-    val self = source is Player && source.core().data.uuid == target.uuid
-    if (!self) require("zcore.renamehome.other")
-
     if (!newName.matches(Regex("[a-zA-Z0-9_-]+")))
         throw TranslatableException("command.renamehome.illegal", newName)
 

@@ -106,7 +106,7 @@ internal class InventoryView(val viewer: CorePlayer, target: CorePlayer) {
 
         val slot = packet.b
         val allow = if (slot in VIEW_ALL) {
-            (viewer.isOp || viewer.hasPermission("zcore.invsee.edit")) && slot !in VIEW_EMPTY
+            viewer.hasPermission("zcore.invsee.edit") && slot !in VIEW_EMPTY
         } else {
             !packet.f
         }

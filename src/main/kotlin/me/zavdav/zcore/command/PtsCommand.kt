@@ -2,19 +2,16 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.MaterialData
 import me.zavdav.zcore.util.PagingList
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 
 internal val ptsCommand = command(
     "pts",
-    "Shows a player's power tools.",
-    "/pts [<player>] [<page>]",
+    "Shows a player's power tools",
     "zcore.pts"
 ) {
     runs {
@@ -28,26 +25,23 @@ internal val ptsCommand = command(
             doPts(source.data, page)
         }
     }
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
+        requiresPermission("zcore.pts.other")
         runs {
-            val target: OfflinePlayer by this
-            doPts(target, 1)
+            val player: OfflinePlayer by this
+            doPts(player, 1)
         }
         intArgument("page") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val page: Int by this
-                doPts(target, page)
+                doPts(player, page)
             }
         }
     }
 }
 
 private fun CommandContext<CommandSender>.doPts(target: OfflinePlayer, page: Int) {
-    val source = this.source
-    val self = source is Player && source.core().data.uuid == target.uuid
-    if (!self) require("zcore.pts.other")
-
     val powerTools = target.powerTools.sortedWith { p1, p2 ->
         val m1 = MaterialData(p1.material, p1.data)
         val m2 = MaterialData(p2.material, p2.data)

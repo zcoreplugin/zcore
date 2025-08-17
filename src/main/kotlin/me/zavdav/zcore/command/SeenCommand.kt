@@ -8,18 +8,17 @@ import org.bukkit.command.CommandSender
 
 internal val seenCommand = command(
     "seen",
-    "Shows when a player was last online.",
-    "/seen [<player>]",
+    "Shows when a player was last online",
     "zcore.seen"
 ) {
     runs {
         val source = requirePlayer()
         doSeen(source.data)
     }
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         runs {
-            val target: OfflinePlayer by this
-            doSeen(target)
+            val player: OfflinePlayer by this
+            doSeen(player)
         }
     }
 }

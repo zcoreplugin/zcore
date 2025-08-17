@@ -8,17 +8,16 @@ import org.bukkit.command.CommandSender
 internal val tpacceptCommand = command(
     "tpaccept",
     arrayOf("tpyes"),
-    "Accepts a teleport request.",
-    "/tpaccept [<player>]",
+    "Accepts a teleport request",
     "zcore.tpaccept"
 ) {
     runs {
         doTpaccept()
     }
-    playerArgument("requester") {
+    playerArgument("player") {
         runs {
-            val requester: CorePlayer by this
-            doTpaccept(requester)
+            val player: CorePlayer by this
+            doTpaccept(player)
         }
     }
 }

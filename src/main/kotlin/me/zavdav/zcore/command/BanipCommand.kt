@@ -15,8 +15,7 @@ import java.net.Inet4Address
 
 internal val banipCommand = command(
     "banip",
-    "Bans an IP address or a player's previous IP addresses.",
-    "/banip (<address>|<player>) [<duration>] [<reason>]",
+    "Bans an IP address or a player's previous IP addresses",
     "zcore.banip"
 ) {
     inet4AddressArgument("address") {
@@ -47,31 +46,31 @@ internal val banipCommand = command(
             }
         }
     }
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         runs {
-            val target: OfflinePlayer by this
-            doBanip(target, null, ZCoreConfig.getString("command.banip.default-reason"))
+            val player: OfflinePlayer by this
+            doBanip(player, null, ZCoreConfig.getString("command.banip.default-reason"))
         }
         durationArgument("duration") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val duration: Long by this
-                doBanip(target, duration, ZCoreConfig.getString("command.banip.default-reason"))
+                doBanip(player, duration, ZCoreConfig.getString("command.banip.default-reason"))
             }
             textArgument("reason") {
                 runs {
-                    val target: OfflinePlayer by this
+                    val player: OfflinePlayer by this
                     val duration: Long by this
                     val reason: String by this
-                    doBanip(target, duration, reason)
+                    doBanip(player, duration, reason)
                 }
             }
         }
         textArgument("reason") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val reason: String by this
-                doBanip(target, null, reason)
+                doBanip(player, null, reason)
             }
         }
     }

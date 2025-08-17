@@ -8,23 +8,23 @@ import org.bukkit.command.CommandSender
 internal val sethomeCommand = command(
     "sethome",
     arrayOf("sh"),
-    "Sets a home at your current location.",
-    "/sethome <name>",
+    "Sets a home at your current location",
     "zcore.sethome"
 ) {
-    stringArgument("homeName") {
+    stringArgument("name") {
         runs {
             val source = requirePlayer()
-            val homeName: String by this
-            doSethome(source.data, homeName)
+            val name: String by this
+            doSethome(source.data, name)
         }
     }
-    offlinePlayerArgument("target") {
-        stringArgument("homeName") {
+    offlinePlayerArgument("player") {
+        requiresPermission("zcore.sethome.other")
+        stringArgument("name") {
             runs {
-                val target: OfflinePlayer by this
-                val homeName: String by this
-                doSethome(target, homeName)
+                val player: OfflinePlayer by this
+                val name: String by this
+                doSethome(player, name)
             }
         }
     }
@@ -32,9 +32,6 @@ internal val sethomeCommand = command(
 
 private fun CommandContext<CommandSender>.doSethome(target: OfflinePlayer, homeName: String) {
     val source = requirePlayer()
-    val self = source.data.uuid == target.uuid
-    if (!self) require("zcore.sethome.other")
-
     val allowedHomes = target.getPermissionValue("zcore.sethome.allowed", 1)
     if (allowedHomes < target.homes.count() + 1)
         throw TranslatableException("command.sethome.limit", target.name, allowedHomes)

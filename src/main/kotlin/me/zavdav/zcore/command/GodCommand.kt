@@ -10,18 +10,18 @@ import org.bukkit.entity.Player
 internal val godCommand = command(
     "god",
     arrayOf("godmode"),
-    "Makes you invincible.",
-    "/god",
+    "Toggles a player's invincibility",
     "zcore.god"
 ) {
     runs {
         val source = requirePlayer()
         doGod(source)
     }
-    playerArgument("target") {
+    playerArgument("player") {
+        requiresPermission("zcore.god.other")
         runs {
-            val target: CorePlayer by this
-            doGod(target)
+            val player: CorePlayer by this
+            doGod(player)
         }
     }
 }
@@ -29,8 +29,6 @@ internal val godCommand = command(
 private fun CommandContext<CommandSender>.doGod(target: CorePlayer) {
     val source = this.source
     val self = source is Player && source.core() == target
-    if (!self) require("zcore.god.other")
-
     val isInvincible = !target.data.isInvincible
     target.data.isInvincible = isInvincible
 

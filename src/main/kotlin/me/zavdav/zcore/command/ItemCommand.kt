@@ -9,9 +9,8 @@ import org.bukkit.command.CommandSender
 internal val itemCommand = command(
     "item",
     arrayOf("i"),
-    "Gives you an item.",
-    "/item <item> [<amount>]",
-    "zcore.give"
+    "Gives you an item",
+    "zcore.item"
 ) {
     materialArgument("material") {
         runs {

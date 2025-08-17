@@ -10,16 +10,15 @@ import java.math.RoundingMode
 
 internal val payCommand = command(
     "pay",
-    "Sends money to another player.",
-    "/pay <player> <amount>",
+    "Sends money to a player",
     "zcore.pay"
 ) {
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         bigDecimalArgument("amount") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val amount: BigDecimal by this
-                doPay(target, amount)
+                doPay(player, amount)
             }
         }
     }

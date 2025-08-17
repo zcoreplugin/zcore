@@ -11,8 +11,7 @@ import org.bukkit.command.CommandSender
 internal val listCommand = command(
     "list",
     arrayOf("online"),
-    "Shows all connected players.",
-    "/list [<page>]",
+    "Shows all online players",
     "zcore.list"
 ) {
     runs {

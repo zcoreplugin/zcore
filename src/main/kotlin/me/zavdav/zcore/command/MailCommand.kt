@@ -2,18 +2,15 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.PagingList
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 
 internal val mailCommand = command(
     "mail",
-    "Shows your pending mail.",
-    "/mail [<page>]",
+    "Shows a player's mail",
     "zcore.mail"
 ) {
     runs {
@@ -27,26 +24,23 @@ internal val mailCommand = command(
             doMail(source.data, page)
         }
     }
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
+        requiresPermission("zcore.mail.other")
         runs {
-            val target: OfflinePlayer by this
-            doMail(target, 1)
+            val player: OfflinePlayer by this
+            doMail(player, 1)
         }
         intArgument("page") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val page: Int by this
-                doMail(target, page)
+                doMail(player, page)
             }
         }
     }
 }
 
 private fun CommandContext<CommandSender>.doMail(target: OfflinePlayer, page: Int) {
-    val source = this.source
-    val self = source is Player && source.core().data.uuid == target.uuid
-    if (!self) require("zcore.mail.other")
-
     val mail = target.mail.reversed()
     val list = PagingList(mail, 5)
     if (list.isEmpty())

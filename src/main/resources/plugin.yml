@@ -1,5 +1,437 @@
 name: ZCore
-author: zavdav
-website: https://github.com/zcoreplugin/zcore
 version: ${version}
 main: me.zavdav.zcore.ZCore
+description: The all-in-one server plugin for b1.7.3
+author: zavdav
+website: https://github.com/zcoreplugin/zcore
+
+permissions:
+  zcore.afk:
+    default: op
+
+  zcore.afk.other:
+    default: op
+
+  zcore.afk.kick.exempt:
+    default: op
+
+  zcore.afk.*:
+    children:
+      zcore.afk: true
+      zcore.afk.other: true
+      zcore.afk.kick.exempt: true
+
+  zcore.balance:
+    default: op
+
+  zcore.balance.other:
+    default: op
+
+  zcore.balance.*:
+    children:
+      zcore.balance: true
+      zcore.balance.other: true
+
+  zcore.baltop:
+    default: op
+
+  zcore.ban:
+    default: op
+
+  zcore.banip:
+    default: op
+
+  zcore.bank:
+    default: op
+
+  zcore.bank.op:
+    default: op
+
+  zcore.bank.*:
+    children:
+      zcore.bank: true
+      zcore.bank.op: true
+
+  zcore.bans:
+    default: op
+
+  zcore.broadcast:
+    default: op
+
+  zcore.broadcast.color:
+    default: op
+
+  zcore.broadcast.*:
+    children:
+      zcore.broadcast: true
+      zcore.broadcast.color: true
+
+  zcore.chat.color:
+    default: op
+
+  zcore.clear:
+    default: op
+
+  zcore.clear.other:
+    default: op
+
+  zcore.clear.*:
+    children:
+      zcore.clear: true
+      zcore.clear.other: true
+
+  zcore.clearmail:
+    default: op
+
+  zcore.clearmail.other:
+    default: op
+
+  zcore.clearmail.*:
+    children:
+      zcore.clearmail: true
+      zcore.clearmail.other: true
+
+  zcore.delhome:
+    default: op
+
+  zcore.delhome.other:
+    default: op
+
+  zcore.delhome.*:
+    children:
+      zcore.delhome: true
+      zcore.delhome.other: true
+
+  zcore.delpt:
+    default: op
+
+  zcore.delpt.other:
+    default: op
+
+  zcore.delpt.*:
+    children:
+      zcore.delpt: true
+      zcore.delpt.other: true
+
+  zcore.delwarp:
+    default: op
+
+  zcore.eco:
+    default: op
+
+  zcore.give:
+    default: op
+
+  zcore.god:
+    default: op
+
+  zcore.god.other:
+    default: op
+
+  zcore.god.*:
+    children:
+      zcore.god: true
+      zcore.god.other: true
+
+  zcore.heal:
+    default: op
+
+  zcore.heal.other:
+    default: op
+
+  zcore.heal.*:
+    children:
+      zcore.heal: true
+      zcore.heal.other: true
+
+  zcore.help:
+    default: op
+
+  zcore.home:
+    default: op
+
+  zcore.home.other:
+    default: op
+
+  zcore.home.*:
+    children:
+      zcore.home: true
+      zcore.home.other: true
+
+  zcore.homes:
+    default: op
+
+  zcore.homes.other:
+    default: op
+
+  zcore.homes.*:
+    children:
+      zcore.homes: true
+      zcore.homes.other: true
+
+  zcore.ignore:
+    default: op
+
+  zcore.ignore.bypass:
+    default: op
+
+  zcore.ignore.*:
+    children:
+      zcore.ignore: true
+      zcore.ignore.bypass: true
+
+  zcore.ignored:
+    default: op
+
+  zcore.ignored.other:
+    default: op
+
+  zcore.ignored.*:
+    children:
+      zcore.ignored: true
+      zcore.ignored.other: true
+
+  zcore.invsee:
+    default: op
+
+  zcore.invsee.edit:
+    default: op
+
+  zcore.invsee.*:
+    children:
+      zcore.invsee: true
+      zcore.invsee.edit: true
+
+  zcore.item:
+    default: op
+
+  zcore.kick:
+    default: op
+
+  zcore.kickall:
+    default: op
+
+  zcore.kill:
+    default: op
+
+  zcore.kill.other:
+    default: op
+
+  zcore.kill.*:
+    children:
+      zcore.kill: true
+      zcore.kill.other: true
+
+  zcore.leaderboard:
+    default: op
+
+  zcore.list:
+    default: op
+
+  zcore.mail:
+    default: op
+
+  zcore.mail.other:
+    default: op
+
+  zcore.mail.*:
+    children:
+      zcore.mail: true
+      zcore.mail.other: true
+
+  zcore.motd:
+    default: op
+
+  zcore.movehome:
+    default: op
+
+  zcore.movehome.other:
+    default: op
+
+  zcore.movehome.*:
+    children:
+      zcore.movehome: true
+      zcore.movehome.other: true
+
+  zcore.msg:
+    default: op
+
+  zcore.mute:
+    default: op
+
+  zcore.mutes:
+    default: op
+
+  zcore.nick:
+    default: op
+
+  zcore.nick.other:
+    default: op
+
+  zcore.nick.color:
+    default: op
+
+  zcore.nick.*:
+    children:
+      zcore.nick: true
+      zcore.nick.other: true
+      zcore.nick.color: true
+
+  zcore.pay:
+    default: op
+
+  zcore.pts:
+    default: op
+
+  zcore.pts.other:
+    default: op
+
+  zcore.pts.*:
+    children:
+      zcore.pts: true
+      zcore.pts.other: true
+
+  zcore.r:
+    default: op
+
+  zcore.realname:
+    default: op
+
+  zcore.renamehome:
+    default: op
+
+  zcore.renamehome.other:
+    default: op
+
+  zcore.renamehome.*:
+    children:
+      zcore.renamehome: true
+      zcore.renamehome.other: true
+
+  zcore.rules:
+    default: op
+
+  zcore.seen:
+    default: op
+
+  zcore.sendmail:
+    default: op
+
+  zcore.sethome:
+    default: op
+
+  zcore.sethome.other:
+    default: op
+
+  zcore.sethome.*:
+    children:
+      zcore.sethome: true
+      zcore.sethome.other: true
+
+  zcore.setpt:
+    default: op
+
+  zcore.setspawn:
+    default: op
+
+  zcore.setwarp:
+    default: op
+
+  zcore.smite:
+    default: op
+
+  zcore.socialspy:
+    default: op
+
+  zcore.socialspy.other:
+    default: op
+
+  zcore.socialspy.*:
+    children:
+      zcore.socialspy: true
+      zcore.socialspy.other: true
+
+  zcore.spawn:
+    default: op
+
+  zcore.spawner:
+    default: op
+
+  zcore.stats:
+    default: op
+
+  zcore.stats.other:
+    default: op
+
+  zcore.stats.*:
+    children:
+      zcore.stats: true
+      zcore.stats.other: true
+
+  zcore.summon:
+    default: op
+
+  zcore.time:
+    default: op
+
+  zcore.tp:
+    default: op
+
+  zcore.tpa:
+    default: op
+
+  zcore.tpaccept:
+    default: op
+
+  zcore.tpahere:
+    default: op
+
+  zcore.tpdeny:
+    default: op
+
+  zcore.tphere:
+    default: op
+
+  zcore.unban:
+    default: op
+
+  zcore.unbanip:
+    default: op
+
+  zcore.unmute:
+    default: op
+
+  zcore.vanish:
+    default: op
+
+  zcore.vanish.other:
+    default: op
+
+  zcore.vanish.bypass:
+    default: op
+
+  zcore.vanish.*:
+    children:
+      zcore.vanish: true
+      zcore.vanish.other: true
+      zcore.vanish.bypass: true
+
+  zcore.warp:
+    default: op
+
+  zcore.warps:
+    default: op
+
+  zcore.weather:
+    default: op
+
+  zcore.zcore:
+    default: op
+
+  zcore.zcore.reload:
+    default: op
+
+  zcore.zcore.*:
+    children:
+      zcore.zcore: true
+      zcore.zcore.reload: true

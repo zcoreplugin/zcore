@@ -7,14 +7,13 @@ import org.bukkit.entity.CreatureType
 
 internal val spawnerCommand = command(
     "spawner",
-    "Changes the creature type of a mob spawner.",
-    "/spawner <creature>",
+    "Changes the mob type of a spawner",
     "zcore.spawner"
 ) {
-    creatureArgument("type") {
+    creatureArgument("mobType") {
         runs {
-            val type: CreatureType by this
-            doSpawner(type)
+            val mobType: CreatureType by this
+            doSpawner(mobType)
         }
     }
 }

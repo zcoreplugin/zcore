@@ -7,14 +7,13 @@ import org.bukkit.command.CommandSender
 
 internal val invseeCommand = command(
     "invsee",
-    "Views the inventory of a player.",
-    "/invsee <player>",
+    "Views a player's inventory",
     "zcore.invsee"
 ) {
-    playerArgument("target") {
+    playerArgument("player") {
         runs {
-            val target: CorePlayer by this
-            doInvsee(target)
+            val player: CorePlayer by this
+            doInvsee(player)
         }
     }
 }

@@ -2,34 +2,28 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 
 internal val clearmailCommand = command(
     "clearmail",
-    "Clears all of your mail.",
-    "/clearmail",
+    "Clears a player's mail",
     "zcore.clearmail"
 ) {
     runs {
         val source = requirePlayer()
         doClearmail(source.data)
     }
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
+        requiresPermission("zcore.clearmail.other")
         runs {
-            val target: OfflinePlayer by this
-            doClearmail(target)
+            val player: OfflinePlayer by this
+            doClearmail(player)
         }
     }
 }
 
 private fun CommandContext<CommandSender>.doClearmail(target: OfflinePlayer) {
-    val source = this.source
-    val self = source is Player && source.core().data.uuid == target.uuid
-    if (!self) require("zcore.clearmail.other")
-
     if (target.clearMail()) {
         source.sendMessage(local("command.clearmail", target.name))
     } else {

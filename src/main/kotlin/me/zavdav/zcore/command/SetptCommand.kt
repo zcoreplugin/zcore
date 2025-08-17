@@ -8,8 +8,7 @@ import org.bukkit.command.CommandSender
 
 internal val setptCommand = command(
     "setpt",
-    "Sets the item in your hand as a power tool.",
-    "/setpt <command>",
+    "Sets the item in your hand as a power tool",
     "zcore.setpt"
 ) {
     textArgument("command") {

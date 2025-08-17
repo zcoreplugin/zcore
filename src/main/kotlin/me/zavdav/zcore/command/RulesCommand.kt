@@ -7,8 +7,7 @@ import org.bukkit.command.CommandSender
 
 internal val rulesCommand = command(
     "rules",
-    "Shows the server rules.",
-    "/rules",
+    "Shows the server rules",
     "zcore.rules"
 ) {
     runs {

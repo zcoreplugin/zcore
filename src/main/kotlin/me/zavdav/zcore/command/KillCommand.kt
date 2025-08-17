@@ -2,34 +2,28 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.CorePlayer
-import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 
 internal val killCommand = command(
     "kill",
-    "Kills a player.",
-    "/kill [<player>]",
+    "Kills a player",
     "zcore.kill"
 ) {
     runs {
         val source = requirePlayer()
         doKill(source)
     }
-    playerArgument("target") {
+    playerArgument("player") {
+        requiresPermission("zcore.kill.other")
         runs {
-            val target: CorePlayer by this
-            doKill(target)
+            val player: CorePlayer by this
+            doKill(player)
         }
     }
 }
 
 private fun CommandContext<CommandSender>.doKill(target: CorePlayer) {
-    val source = this.source
-    val self = source is Player && source.core() == target
-    if (!self) require("zcore.kill.other")
-
     target.health = 0
     source.sendMessage(local("command.kill", target.name))
 }

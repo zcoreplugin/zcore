@@ -93,7 +93,7 @@ class CorePlayer(val base: Player) : Player by base {
 
         if (!ZCoreConfig.getBoolean("command.afk.auto.kick.enabled")) return
         val autoKickTime = ZCoreConfig.getInt("command.afk.auto.kick.time") * 1000L
-        if (isAfk && inactiveTime >= autoKickTime && !isOp && !hasPermission("zcore.afk.kick.exempt"))
+        if (isAfk && inactiveTime >= autoKickTime && !hasPermission("zcore.afk.kick.exempt"))
             kickPlayer(local("command.afk.kick.message", formatDuration(autoKickTime)))
     }
 

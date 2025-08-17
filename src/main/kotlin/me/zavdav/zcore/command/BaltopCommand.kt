@@ -11,8 +11,7 @@ import org.bukkit.command.CommandSender
 
 internal val baltopCommand = command(
     "baltop",
-    "Shows the players with the highest balances.",
-    "/baltop [<page>]",
+    "Shows the richest players",
     "zcore.baltop"
 ) {
     runs {

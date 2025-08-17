@@ -10,8 +10,7 @@ import org.bukkit.command.CommandSender
 internal val realnameCommand = command(
     "realname",
     arrayOf("whois"),
-    "Shows the name of a player with a nickname.",
-    "/realname <nickname>",
+    "Shows the name of a player with a nickname",
     "zcore.realname"
 ) {
     stringArgument("nickname") {

@@ -7,8 +7,7 @@ import org.bukkit.command.CommandSender
 
 internal val spawnCommand = command(
     "spawn",
-    "Teleports you to the spawn point.",
-    "/spawn",
+    "Teleports you to the spawn point",
     "zcore.spawn"
 ) {
     runs {

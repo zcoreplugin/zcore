@@ -8,17 +8,16 @@ import org.bukkit.command.CommandSender
 internal val tpdenyCommand = command(
     "tpdeny",
     arrayOf("tpno"),
-    "Denies a teleport request.",
-    "/tpdeny [<player>]",
+    "Denies a teleport request",
     "zcore.tpdeny"
 ) {
     runs {
         doTpdeny()
     }
-    playerArgument("requester") {
+    playerArgument("player") {
         runs {
-            val requester: CorePlayer by this
-            doTpdeny(requester)
+            val player: CorePlayer by this
+            doTpdeny(player)
         }
     }
 }

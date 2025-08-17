@@ -7,8 +7,7 @@ import org.bukkit.command.CommandSender
 
 internal val weatherCommand = command(
     "weather",
-    "Changes the weather.",
-    "/weather (clear|rain|thunder)",
+    "Changes the weather",
     "zcore.weather"
 ) {
     literal("clear") {

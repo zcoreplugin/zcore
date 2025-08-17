@@ -15,20 +15,19 @@ import java.net.Inet4Address
 
 internal val bansCommand = command(
     "bans",
-    "Shows previous bans of a player or an IP address.",
-    "/bans (<player>|<address>) [<page>]",
+    "Shows previous bans of a player or an IP address",
     "zcore.bans"
 ) {
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         runs {
-            val target: OfflinePlayer by this
-            doBans(target, 1)
+            val player: OfflinePlayer by this
+            doBans(player, 1)
         }
         intArgument("page") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val page: Int by this
-                doBans(target, page)
+                doBans(player, page)
             }
         }
     }

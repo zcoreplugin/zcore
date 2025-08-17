@@ -13,20 +13,19 @@ import org.bukkit.command.CommandSender
 
 internal val mutesCommand = command(
     "mutes",
-    "Shows previous mutes of a player.",
-    "/mutes <player> [<page>]",
+    "Shows previous mutes of a player",
     "zcore.mutes"
 ) {
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         runs {
-            val target: OfflinePlayer by this
-            doMutes(target, 1)
+            val player: OfflinePlayer by this
+            doMutes(player, 1)
         }
         intArgument("page") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val page: Int by this
-                doMutes(target, page)
+                doMutes(player, page)
             }
         }
     }

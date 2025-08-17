@@ -44,7 +44,7 @@ internal class ActionListener : Listener {
             return
         }
 
-        if (player.isOp || player.hasPermission("zcore.chat.color"))
+        if (player.hasPermission("zcore.chat.color"))
             event.message = event.message.colored()
 
         event.format = formatted(ZCoreConfig.getString("general.chat-format"),
@@ -52,7 +52,7 @@ internal class ActionListener : Listener {
         )
 
         event.recipients.removeIf {
-            it.core().data.ignores(player.data) && !player.isOp && !player.hasPermission("zcore.ignore.bypass")
+            it.core().data.ignores(player.data) && !player.hasPermission("zcore.ignore.bypass")
         }
     }
 

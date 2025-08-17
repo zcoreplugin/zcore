@@ -9,23 +9,22 @@ import org.bukkit.command.CommandSender
 
 internal val giveCommand = command(
     "give",
-    "Gives a player an item.",
-    "/give <player> <item> [<amount>]",
+    "Gives a player an item",
     "zcore.give"
 ) {
-    playerArgument("target") {
+    playerArgument("player") {
         materialArgument("material") {
             runs {
-                val target: CorePlayer by this
+                val player: CorePlayer by this
                 val material: MaterialData by this
-                doGive(target, material, ZCoreConfig.getInt("command.give.default-amount"))
+                doGive(player, material, ZCoreConfig.getInt("command.give.default-amount"))
             }
             intArgument("amount") {
                 runs {
-                    val target: CorePlayer by this
+                    val player: CorePlayer by this
                     val material: MaterialData by this
                     val amount: Int by this
-                    doGive(target, material, amount)
+                    doGive(player, material, amount)
                 }
             }
         }

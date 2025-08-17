@@ -8,14 +8,13 @@ import org.bukkit.command.CommandSender
 
 internal val kickCommand = command(
     "kick",
-    "Kicks a player.",
-    "/kick <player> [<reason>]",
+    "Kicks a player",
     "zcore.kick"
 ) {
-    playerArgument("target") {
+    playerArgument("player") {
         runs {
-            val target: CorePlayer by this
-            doKick(target, ZCoreConfig.getString("command.kick.default-reason"))
+            val player: CorePlayer by this
+            doKick(player, ZCoreConfig.getString("command.kick.default-reason"))
         }
         textArgument("reason") {
             runs {

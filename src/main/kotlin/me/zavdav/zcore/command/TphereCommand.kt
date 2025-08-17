@@ -7,14 +7,13 @@ import org.bukkit.command.CommandSender
 
 internal val tphereCommand = command(
     "tphere",
-    "Teleports a player to you.",
-    "/tphere <player>",
+    "Teleports a player to you",
     "zcore.tphere"
 ) {
-    playerArgument("target") {
+    playerArgument("player") {
         runs {
-            val target: CorePlayer by this
-            doTphere(target)
+            val player: CorePlayer by this
+            doTphere(player)
         }
     }
 }

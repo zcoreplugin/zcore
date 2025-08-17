@@ -9,27 +9,24 @@ import org.bukkit.command.CommandSender
 
 internal val delptCommand = command(
     "delpt",
-    "Deletes the power tool attached to the item in your hand.",
-    "/delpt [<player>]",
+    "Deletes the power tool attached to the item in your hand",
     "zcore.delpt"
 ) {
     runs {
         val source = requirePlayer()
         doDelpt(source.data)
     }
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
+        requiresPermission("zcore.delpt.other")
         runs {
-            val target: OfflinePlayer by this
-            doDelpt(target)
+            val player: OfflinePlayer by this
+            doDelpt(player)
         }
     }
 }
 
 private fun CommandContext<CommandSender>.doDelpt(target: OfflinePlayer) {
     val source = requirePlayer()
-    val self = source.uniqueId == target.uuid
-    if (!self) require("zcore.delpt.other")
-
     val item = source.itemInHand
     if (item.type == Material.AIR)
         throw TranslatableException("command.delpt.noItem")

@@ -9,8 +9,7 @@ import org.bukkit.entity.Player
 
 internal val kickallCommand = command(
     "kickall",
-    "Kicks all players.",
-    "/kickall [<reason>]",
+    "Kicks all players",
     "zcore.kickall"
 ) {
     runs {

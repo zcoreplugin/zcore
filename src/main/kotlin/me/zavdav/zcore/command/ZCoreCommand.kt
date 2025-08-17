@@ -7,14 +7,14 @@ import org.bukkit.command.CommandSender
 
 internal val zcoreCommand = command(
     "zcore",
-    "Shows information about ZCore.",
-    "/zcore",
+    "Shows information about ZCore",
     "zcore.zcore"
 ) {
     runs {
         doZCore()
     }
     literal("reload") {
+        requiresPermission("zcore.zcore.reload")
         runs {
             doZCoreReload()
         }
@@ -29,7 +29,6 @@ private fun CommandContext<CommandSender>.doZCore() {
 }
 
 private fun CommandContext<CommandSender>.doZCoreReload() {
-    require("zcore.zcore.reload")
     source.sendMessage(local("command.zcore.reload.start"))
     ZCore.INSTANCE.onDisable()
     ZCore.INSTANCE.onEnable()

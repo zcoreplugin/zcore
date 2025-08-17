@@ -8,14 +8,13 @@ import org.bukkit.command.CommandSender
 
 internal val unmuteCommand = command(
     "unmute",
-    "Unmutes a player.",
-    "/unmute <player>",
+    "Unmutes a player",
     "zcore.unmute"
 ) {
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         runs {
-            val target: OfflinePlayer by this
-            doUnmute(target)
+            val player: OfflinePlayer by this
+            doUnmute(player)
         }
     }
 }

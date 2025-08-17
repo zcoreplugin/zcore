@@ -11,8 +11,7 @@ import kotlin.math.floor
 
 internal val warpsCommand = command(
     "warps",
-    "Shows a list of warps.",
-    "/warps [<page>]",
+    "Shows a list of warps",
     "zcore.warps"
 ) {
     runs {

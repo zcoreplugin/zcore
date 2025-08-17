@@ -7,14 +7,13 @@ import org.bukkit.command.CommandSender
 
 internal val delwarpCommand = command(
     "delwarp",
-    "Deletes a warp.",
-    "/delwarp <name>",
+    "Deletes a warp",
     "zcore.delwarp"
 ) {
-    stringArgument("warpName") {
+    stringArgument("warp") {
         runs {
-            val warpName: String by this
-            doDelwarp(warpName)
+            val warp: String by this
+            doDelwarp(warp)
         }
     }
 }

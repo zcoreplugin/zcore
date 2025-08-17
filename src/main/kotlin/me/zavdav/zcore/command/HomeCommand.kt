@@ -8,23 +8,23 @@ import org.bukkit.command.CommandSender
 internal val homeCommand = command(
     "home",
     arrayOf("h"),
-    "Teleports you to a home.",
-    "/home <name>",
+    "Teleports you to a player's home",
     "zcore.home"
 ) {
-    stringArgument("homeName") {
+    stringArgument("home") {
         runs {
             val source = requirePlayer()
-            val homeName: String by this
-            doHome(source.data, homeName)
+            val home: String by this
+            doHome(source.data, home)
         }
     }
-    offlinePlayerArgument("target") {
-        stringArgument("homeName") {
+    offlinePlayerArgument("player") {
+        requiresPermission("zcore.home.other")
+        stringArgument("home") {
             runs {
-                val target: OfflinePlayer by this
-                val homeName: String by this
-                doHome(target, homeName)
+                val player: OfflinePlayer by this
+                val home: String by this
+                doHome(player, home)
             }
         }
     }
@@ -32,9 +32,6 @@ internal val homeCommand = command(
 
 private fun CommandContext<CommandSender>.doHome(target: OfflinePlayer, homeName: String) {
     val source = requirePlayer()
-    val self = source.data.uuid == target.uuid
-    if (!self) require("zcore.home.other")
-
     val home = target.getHome(homeName)
     if (home == null)
         throw TranslatableException("command.home.unknown", target.name, homeName)

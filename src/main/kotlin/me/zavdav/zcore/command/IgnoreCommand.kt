@@ -7,14 +7,13 @@ import org.bukkit.command.CommandSender
 
 internal val ignoreCommand = command(
     "ignore",
-    "Toggles whether you ignore a player.",
-    "/ignore <player>",
+    "Ignores/unignores a player",
     "zcore.ignore"
 ) {
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         runs {
-            val target: OfflinePlayer by this
-            doIgnore(target)
+            val player: OfflinePlayer by this
+            doIgnore(player)
         }
     }
 }

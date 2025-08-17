@@ -2,34 +2,28 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.CorePlayer
-import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 
 internal val healCommand = command(
     "heal",
-    "Heals a player.",
-    "/heal [<player>]",
+    "Heals a player",
     "zcore.heal"
 ) {
     runs {
         val source = requirePlayer()
         doHeal(source)
     }
-    playerArgument("target") {
+    playerArgument("player") {
+        requiresPermission("zcore.heal.other")
         runs {
-            val target: CorePlayer by this
-            doHeal(target)
+            val player: CorePlayer by this
+            doHeal(player)
         }
     }
 }
 
 private fun CommandContext<CommandSender>.doHeal(target: CorePlayer) {
-    val source = this.source
-    val self = source is Player && source.core() == target
-    if (!self) require("zcore.heal.other")
-
     target.health = 20
     source.sendMessage(local("command.heal", target.name))
 }

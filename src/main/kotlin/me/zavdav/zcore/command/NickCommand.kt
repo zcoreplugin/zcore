@@ -12,8 +12,7 @@ import org.bukkit.entity.Player
 internal val nickCommand = command(
     "nick",
     arrayOf("nickname"),
-    "Changes a player's nickname.",
-    "/nick [<player>] (<nickname>|reset)",
+    "Changes a player's nickname",
     "zcore.nick"
 ) {
     stringArgument("nickname") {
@@ -23,12 +22,13 @@ internal val nickCommand = command(
             doNick(source, nickname)
         }
     }
-    playerArgument("target") {
+    playerArgument("player") {
+        requiresPermission("zcore.nick.other")
         stringArgument("nickname") {
             runs {
-                val target: CorePlayer by this
+                val player: CorePlayer by this
                 val nickname: String by this
-                doNick(target, nickname)
+                doNick(player, nickname)
             }
         }
     }
@@ -37,7 +37,6 @@ internal val nickCommand = command(
 private fun CommandContext<CommandSender>.doNick(target: CorePlayer, nickname: String) {
     val source = this.source
     val self = source is Player && source.core() == target
-    if (!self) require("zcore.nick.other")
 
     if (nickname.equals("reset", true) || nickname == target.name) {
         target.data.nickname = null
@@ -47,7 +46,7 @@ private fun CommandContext<CommandSender>.doNick(target: CorePlayer, nickname: S
     }
 
     var finalNickname = nickname
-    if (source.isOp || source.hasPermission("zcore.nick.color"))
+    if (source.hasPermission("zcore.nick.color"))
         finalNickname = finalNickname.colored()
 
     if (ChatColor.stripColor(finalNickname).isEmpty())

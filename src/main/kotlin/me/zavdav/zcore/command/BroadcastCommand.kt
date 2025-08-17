@@ -9,8 +9,7 @@ import org.bukkit.command.CommandSender
 internal val broadcastCommand = command(
     "broadcast",
     arrayOf("bc"),
-    "Broadcasts a message to all players.",
-    "/broadcast <message>",
+    "Broadcasts a message",
     "zcore.broadcast"
 ) {
     textArgument("message") {
@@ -24,7 +23,7 @@ internal val broadcastCommand = command(
 private fun CommandContext<CommandSender>.doBroadcast(message: String) {
     val source = this.source
     var broadcast = message
-    if (source.isOp || source.hasPermission("zcore.broadcast.color"))
+    if (source.hasPermission("zcore.broadcast.color"))
         broadcast = broadcast.colored()
 
     Bukkit.broadcastMessage(local("command.broadcast", broadcast))

@@ -7,8 +7,7 @@ import org.bukkit.command.CommandSender
 
 internal val setspawnCommand = command(
     "setspawn",
-    "Sets the spawn point.",
-    "/setspawn",
+    "Sets the spawn point",
     "zcore.setspawn"
 ) {
     runs {

@@ -8,23 +8,23 @@ import org.bukkit.command.CommandSender
 internal val movehomeCommand = command(
     "movehome",
     arrayOf("mh"),
-    "Moves a home to your current location.",
-    "/movehome <home>",
+    "Moves a player's home to your current location",
     "zcore.movehome"
 ) {
-    stringArgument("homeName") {
+    stringArgument("home") {
         runs {
             val source = requirePlayer()
-            val homeName: String by this
-            doMovehome(source.data, homeName)
+            val home: String by this
+            doMovehome(source.data, home)
         }
     }
-    offlinePlayerArgument("target") {
-        stringArgument("homeName") {
+    offlinePlayerArgument("player") {
+        requiresPermission("zcore.movehome.other")
+        stringArgument("home") {
             runs {
-                val target: OfflinePlayer by this
-                val homeName: String by this
-                doMovehome(target, homeName)
+                val player: OfflinePlayer by this
+                val home: String by this
+                doMovehome(player, home)
             }
         }
     }
@@ -32,9 +32,6 @@ internal val movehomeCommand = command(
 
 private fun CommandContext<CommandSender>.doMovehome(target: OfflinePlayer, homeName: String) {
     val source = requirePlayer()
-    val self = source.data.uuid == target.uuid
-    if (!self) require("zcore.movehome.other")
-
     val existingHome = target.moveHome(homeName, source.location)
     if (existingHome != null) {
         source.sendMessage(local("command.movehome", target.name, existingHome.name))

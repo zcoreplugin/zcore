@@ -7,8 +7,7 @@ import org.bukkit.command.CommandSender
 
 internal val timeCommand = command(
     "time",
-    "Changes the time.",
-    "/time (set (<ticks>|day|night|..)|add <ticks>)",
+    "Changes the time",
     "zcore.time"
 ) {
     literal("set") {

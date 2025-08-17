@@ -16,64 +16,63 @@ import java.math.RoundingMode
 
 internal val bankCommand = command(
     "bank",
-    "Root command of the bank system.",
-    "/bank",
+    "Manages player banks",
     "zcore.bank"
 ) {
     literal("create") {
-        stringArgument("bankName") {
+        stringArgument("name") {
             runs {
-                val bankName: String by this
-                doBankCreate(bankName)
+                val name: String by this
+                doBankCreate(name)
             }
         }
     }
     literal("delete") {
-        stringArgument("bankName") {
+        stringArgument("bank") {
             runs {
-                val bankName: String by this
-                doBankDelete(bankName)
+                val bank: String by this
+                doBankDelete(bank)
             }
         }
     }
-    stringArgument("bankName") {
+    stringArgument("bank") {
         runs {
-            val bankName: String by this
-            doBankInfo(bankName)
+            val bank: String by this
+            doBankInfo(bank)
         }
         literal("deposit") {
             bigDecimalArgument("amount") {
                 runs {
-                    val bankName: String by this
+                    val bank: String by this
                     val amount: BigDecimal by this
-                    doBankDeposit(bankName, amount)
+                    doBankDeposit(bank, amount)
                 }
             }
         }
         literal("withdraw") {
             bigDecimalArgument("amount") {
                 runs {
-                    val bankName: String by this
+                    val bank: String by this
                     val amount: BigDecimal by this
-                    doBankWithdraw(bankName, amount)
+                    doBankWithdraw(bank, amount)
                 }
             }
         }
         literal("add") {
-            offlinePlayerArgument("target") {
+            offlinePlayerArgument("player") {
                 runs {
-                    val bankName: String by this
-                    val target: OfflinePlayer by this
-                    doBankAdd(bankName, target)
+                    val bank: String by this
+                    val player: OfflinePlayer by this
+                    doBankAdd(bank, player)
                 }
             }
         }
         literal("remove") {
-            offlinePlayerArgument("target") {
+            offlinePlayerArgument("player") {
                 runs {
-                    val bankName: String by this
-                    val target: OfflinePlayer by this
-                    doBankRemove(bankName, target)
+                    val bank: String by this
+                    val player: OfflinePlayer by this
+                    doBankRemove(bank, player)
                 }
             }
         }
@@ -179,7 +178,7 @@ private fun CommandContext<CommandSender>.doBankRemove(bankName: String, target:
 }
 
 private fun authorizeMember(bank: BankAccount, source: CommandSender) {
-    if (source !is Player || source.isOp && source.hasPermission("zcore.bank.op"))
+    if (source !is Player || source.hasPermission("zcore.bank.op"))
         return
 
     val player = source.core()
@@ -188,7 +187,7 @@ private fun authorizeMember(bank: BankAccount, source: CommandSender) {
 }
 
 private fun authorizeOwner(bank: BankAccount, source: CommandSender) {
-    if (source !is Player || source.isOp && source.hasPermission("zcore.bank.op"))
+    if (source !is Player || source.hasPermission("zcore.bank.op"))
         return
 
     val player = source.core()

@@ -13,35 +13,34 @@ import org.bukkit.entity.Player
 
 internal val muteCommand = command(
     "mute",
-    "Mutes a player.",
-    "/mute <player> [<duration>] [<reason>]",
+    "Mutes a player",
     "zcore.mute"
 ) {
-    offlinePlayerArgument("target") {
+    offlinePlayerArgument("player") {
         runs {
-            val target: OfflinePlayer by this
-            doMute(target, null, ZCoreConfig.getString("command.mute.default-reason"))
+            val player: OfflinePlayer by this
+            doMute(player, null, ZCoreConfig.getString("command.mute.default-reason"))
         }
         durationArgument("duration") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val duration: Long by this
-                doMute(target, duration, ZCoreConfig.getString("command.mute.default-reason"))
+                doMute(player, duration, ZCoreConfig.getString("command.mute.default-reason"))
             }
             textArgument("reason") {
                 runs {
-                    val target: OfflinePlayer by this
+                    val player: OfflinePlayer by this
                     val duration: Long by this
                     val reason: String by this
-                    doMute(target, duration, reason)
+                    doMute(player, duration, reason)
                 }
             }
         }
         textArgument("reason") {
             runs {
-                val target: OfflinePlayer by this
+                val player: OfflinePlayer by this
                 val reason: String by this
-                doMute(target, null, reason)
+                doMute(player, null, reason)
             }
         }
     }

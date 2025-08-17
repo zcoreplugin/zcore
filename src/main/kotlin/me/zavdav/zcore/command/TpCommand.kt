@@ -12,32 +12,31 @@ import java.math.RoundingMode
 
 internal val tpCommand = command(
     "tp",
-    "Teleports a player to a location.",
-    "/tp [<player>] (<player>|<x> <y> <z>)",
+    "Teleports a player to a location",
     "zcore.tp"
 ) {
-    playerArgument("target") {
+    playerArgument("player") {
         runs {
             val source = requirePlayer()
-            val target: CorePlayer by this
-            doTpPlayer(source, target)
+            val player: CorePlayer by this
+            doTpPlayer(source, player)
         }
-        playerArgument("target2") {
+        playerArgument("otherPlayer") {
             runs {
-                val target: CorePlayer by this
-                val target2: CorePlayer by this
-                doTpPlayer(target, target2)
+                val player: CorePlayer by this
+                val otherPlayer: CorePlayer by this
+                doTpPlayer(player, otherPlayer)
             }
         }
         bigDecimalArgument("x") {
             bigDecimalArgument("y") {
                 bigDecimalArgument("z") {
                     runs {
-                        val target: CorePlayer by this
+                        val player: CorePlayer by this
                         val x: BigDecimal by this
                         val y: BigDecimal by this
                         val z: BigDecimal by this
-                        doTpLocation(target, x, y, z)
+                        doTpLocation(player, x, y, z)
                     }
                 }
             }

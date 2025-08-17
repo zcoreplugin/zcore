@@ -14,8 +14,7 @@ import org.bukkit.command.CommandSender
 internal val leaderboardCommand = command(
     "leaderboard",
     arrayOf("lbd"),
-    "Shows the leaderboard for a statistic.",
-    "/leaderboard <statistic> [<page>]",
+    "Shows the leaderboard for a statistic",
     "zcore.leaderboard"
 ) {
     stringArgument("category") {

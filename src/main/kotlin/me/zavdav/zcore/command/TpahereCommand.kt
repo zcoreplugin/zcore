@@ -10,14 +10,13 @@ import org.bukkit.command.CommandSender
 
 internal val tpahereCommand = command(
     "tpahere",
-    "Sends a request for a player to teleport to you.",
-    "/tpahere <player>",
+    "Sends a request for a player to teleport to you",
     "zcore.tpahere"
 ) {
-    playerArgument("target") {
+    playerArgument("player") {
         runs {
-            val target: CorePlayer by this
-            doTpahere(target)
+            val player: CorePlayer by this
+            doTpahere(player)
         }
     }
 }
@@ -28,7 +27,7 @@ private fun CommandContext<CommandSender>.doTpahere(target: CorePlayer) {
         throw TranslatableException("command.tpa.alreadySent", target.name)
 
     source.sendMessage(local("command.tpa", target.name))
-    if (target.data.ignores(source.data) && !source.isOp && !source.hasPermission("zcore.ignore.bypass"))
+    if (target.data.ignores(source.data) && !source.hasPermission("zcore.ignore.bypass"))
         return
 
     val request = TeleportRequest(source, true)
