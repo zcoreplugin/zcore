@@ -112,22 +112,6 @@ internal object PowerTools : UUIDTable("power_tools") {
     init { uniqueIndex(player, material, data) }
 }
 
-internal object Kits : UUIDTable("kits") {
-    val name = varchar("name", 255).uniqueIndex()
-    val cost = decimal("cost", 100000, 10).default(BigDecimal.ZERO)
-    val cooldown = long("cooldown").default(0)
-}
-
-internal object KitItems : UUIDTable("kit_items") {
-    val kit = reference("kit", Kits, CASCADE, CASCADE)
-    val slot = integer("slot")
-    val material = enumeration<Material>("material")
-    val data = short("data")
-    val amount = integer("amount")
-
-    init { uniqueIndex(kit, slot) }
-}
-
 internal object Mails : UUIDTable("mails") {
     val sender = reference("sender", OfflinePlayers, CASCADE, CASCADE)
     val recipient = reference("recipient", OfflinePlayers, CASCADE, CASCADE)

@@ -9,8 +9,6 @@ import me.zavdav.zcore.data.Homes
 import me.zavdav.zcore.data.Ignores
 import me.zavdav.zcore.data.IpAddresses
 import me.zavdav.zcore.data.IpBans
-import me.zavdav.zcore.data.KitItems
-import me.zavdav.zcore.data.Kits
 import me.zavdav.zcore.data.Mails
 import me.zavdav.zcore.data.Mutes
 import me.zavdav.zcore.data.OfflinePlayers
@@ -22,8 +20,6 @@ import me.zavdav.zcore.event.ActionListener
 import me.zavdav.zcore.event.ActivityListener
 import me.zavdav.zcore.event.JoinQuitListener
 import me.zavdav.zcore.event.StatisticsListener
-import me.zavdav.zcore.kit.Kit
-import me.zavdav.zcore.kit.KitItem
 import me.zavdav.zcore.location.Warp
 import me.zavdav.zcore.permission.ValuePermissions
 import me.zavdav.zcore.player.CorePlayer
@@ -36,7 +32,6 @@ import me.zavdav.zcore.version.ZCoreVersion
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.event.Event
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.RegisteredListener
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Database
@@ -81,8 +76,6 @@ class ZCore : JavaPlugin() {
             Homes,
             Warps,
             PowerTools,
-            Kits,
-            KitItems,
             Mails,
             Ignores
         )
@@ -141,10 +134,6 @@ class ZCore : JavaPlugin() {
         /** All existing warps. */
         @JvmStatic
         val warps: Iterable<Warp> get() = Warp.all()
-
-        /** All existing kits. */
-        @JvmStatic
-        val kits: Iterable<Kit> get() = Kit.all()
 
         /** All existing bank accounts. */
         @JvmStatic
@@ -253,54 +242,6 @@ class ZCore : JavaPlugin() {
             val warp = getWarp(name)
             warp?.delete()
             return warp
-        }
-
-        /** Gets a kit by its [name], or `null` if no such kit exists. */
-        @JvmStatic
-        fun getKit(name: String): Kit? =
-            Kit.find { Kits.name.lowerCase() eq name.lowercase() }.firstOrNull()
-
-        /**
-         * Sets a new kit with a [name] that players can equip.
-         * Returns `null` on success, or the kit with this name if it already exists.
-         */
-        @JvmStatic
-        fun setKit(
-            name: String,
-            items: Map<Int, ItemStack>,
-            cost: BigDecimal = BigDecimal.ZERO,
-            cooldown: Long = 0
-        ): Kit? {
-            val kit = getKit(name)
-            if (kit == null) {
-                val newKit = Kit.new {
-                    this.name = name
-                    this.cost = cost
-                    this.cooldown = cooldown
-                }
-
-                items.forEach { (slot, item) ->
-                    KitItem.new {
-                        this.kit = newKit
-                        this.slot = slot
-                        this.material = item.type
-                        this.data = item.durability
-                        this.amount = item.amount
-                    }
-                }
-            }
-            return kit
-        }
-
-        /**
-         * Deletes the kit with the specified [name].
-         * Returns the kit that was deleted, or `null` if no kit with this name exists.
-         */
-        @JvmStatic
-        fun deleteKit(name: String): Kit? {
-            val kit = getKit(name)
-            kit?.delete()
-            return kit
         }
 
         @JvmStatic
