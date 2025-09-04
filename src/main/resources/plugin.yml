@@ -220,12 +220,16 @@ permissions:
   zcore.mail:
     default: op
 
+  zcore.mail.send.color:
+    default: op
+
   zcore.mail.read.other:
     default: op
 
   zcore.mail.*:
     children:
       zcore.mail: true
+      zcore.mail.send.color: true
       zcore.mail.read.other: true
 
   zcore.motd:
@@ -244,6 +248,14 @@ permissions:
 
   zcore.msg:
     default: op
+
+  zcore.msg.color:
+    default: op
+
+  zcore.msg.*:
+    children:
+      zcore.msg: true
+      zcore.msg.color: true
 
   zcore.mute:
     default: op

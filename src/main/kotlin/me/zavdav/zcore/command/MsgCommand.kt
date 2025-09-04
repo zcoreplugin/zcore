@@ -3,6 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.core
+import me.zavdav.zcore.util.colored
 import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -26,19 +27,23 @@ internal val msgCommand = command(
 
 private fun CommandContext<CommandSender>.doMsg(target: CorePlayer, message: String) {
     val source = requirePlayer()
+    var finalMessage = message
+    if (source.hasPermission("zcore.msg.color"))
+        finalMessage = message.colored()
+
     source.replyingTo = target
-    source.sendMessage(local("command.msg.to", target.displayName, message))
+    source.sendMessage(local("command.msg.to", target.displayName, finalMessage))
     Bukkit.getOnlinePlayers()
         .filter { it.uniqueId != source.uniqueId && it.uniqueId != target.uniqueId }
         .filter { it.core().data.isSocialSpy }
         .forEach {
             it.sendMessage(local("command.socialspy.msg",
-                source.displayName, target.displayName, message))
+                source.displayName, target.displayName, finalMessage))
         }
 
     if (target.data.ignores(source.data) && !source.hasPermission("zcore.ignore.bypass"))
         return
 
     target.replyingTo = source
-    target.sendMessage(local("command.msg.from", source.displayName, message))
+    target.sendMessage(local("command.msg.from", source.displayName, finalMessage))
 }
