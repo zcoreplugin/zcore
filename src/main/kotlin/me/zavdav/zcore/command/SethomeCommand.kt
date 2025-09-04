@@ -32,10 +32,6 @@ internal val sethomeCommand = command(
 
 private fun CommandContext<CommandSender>.doSethome(target: OfflinePlayer, homeName: String) {
     val source = requirePlayer()
-    val allowedHomes = target.getPermissionValue("zcore.sethome.allowed", 1)
-    if (allowedHomes < target.homes.count() + 1)
-        throw TranslatableException("command.sethome.limit", target.name, allowedHomes)
-
     if (!homeName.matches(Regex("[a-zA-Z0-9_-]+")))
         throw TranslatableException("command.sethome.illegal", homeName)
 

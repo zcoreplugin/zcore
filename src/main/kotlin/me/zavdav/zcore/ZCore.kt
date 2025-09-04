@@ -21,7 +21,6 @@ import me.zavdav.zcore.event.ActivityListener
 import me.zavdav.zcore.event.JoinQuitListener
 import me.zavdav.zcore.event.StatisticsListener
 import me.zavdav.zcore.location.Warp
-import me.zavdav.zcore.permission.ValuePermissions
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
@@ -58,7 +57,6 @@ class ZCore : JavaPlugin() {
         server.logger.info("[ZCore] Loading configuration...")
         ZCoreConfig.load()
         Materials.load()
-        ValuePermissions.load()
 
         server.logger.info("[ZCore] Establishing database connection...")
         Database.connect("jdbc:h2:${dataFolder.absolutePath}/db/zcore", "org.h2.Driver")
@@ -110,9 +108,6 @@ class ZCore : JavaPlugin() {
         server.logger.info("[ZCore] Terminating database connection...")
         transaction.commit()
         transaction.close()
-
-        server.logger.info("[ZCore] Saving configuration...")
-        ValuePermissions.save()
     }
 
     /** Represents the ZCore API. */

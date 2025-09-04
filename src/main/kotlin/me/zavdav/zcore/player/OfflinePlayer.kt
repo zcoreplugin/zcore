@@ -12,7 +12,6 @@ import me.zavdav.zcore.data.PowerTools
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.economy.PersonalAccount
 import me.zavdav.zcore.location.Home
-import me.zavdav.zcore.permission.ValuePermissions
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.MuteList
 import org.bukkit.Bukkit
@@ -156,18 +155,6 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         get() = IpAddresses.select(IpAddresses.ipAddress)
             .where { IpAddresses.player eq this@OfflinePlayer.id }
             .map { it[IpAddresses.ipAddress] }
-
-    /** Gets the value of a [permission], or [default] if it is not set. */
-    fun getPermissionValue(permission: String, default: Int): Int =
-        ValuePermissions.getPermissionValue(this, permission, default)
-
-    /** Sets the [value] of a [permission]. */
-    fun setPermissionValue(permission: String, value: Int) =
-        ValuePermissions.setPermissionValue(this, permission, value)
-
-    /** Adds [delta] to the value of a [permission]. */
-    fun addToPermissionValue(permission: String, delta: Int) =
-        ValuePermissions.addToPermissionValue(this, permission, delta)
 
     /** Gets the location of a home by its [name], or `null` if no home with this name exists. */
     fun getHome(name: String): Home? =
