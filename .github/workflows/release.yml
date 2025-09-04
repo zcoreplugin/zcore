@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up JDK
@@ -22,13 +22,13 @@ jobs:
           distribution: 'zulu'
           java-version: '8'
 
-      - name: Get version from project properties
+      - name: Get Current Version
         id: get_version
         run: |
           VERSION=$(./gradlew properties | grep -Po '(?<=version: ).*')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Get latest GitHub Release
+      - name: Get Latest GitHub Release
         id: get_latest_release
         uses: octokit/request-action@v2.x
         with:

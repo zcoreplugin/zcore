@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    java
-    kotlin("jvm") version "2.1.20"
+    id("java")
+    kotlin("jvm") version "2.2.10"
     id("com.gradleup.shadow") version "8.3.6"
 }
 
@@ -16,16 +16,14 @@ repositories {
 }
 
 dependencies {
-    // Kotlin dependencies
-    implementation(kotlin("stdlib-jdk8", "2.1.20"))
-    testImplementation(kotlin("test", "2.1.20"))
-
-    implementation("com.legacyminecraft.poseidon:poseidon-craftbukkit:1.1.10-250328-1731-f67a8e3")
+    implementation(kotlin("stdlib-jdk8", "2.2.10"))
+    compileOnly("com.legacyminecraft.poseidon:poseidon-craftbukkit:1.1.10-250328-1731-f67a8e3")
     implementation("com.mojang:brigadier:1.0.18")
     implementation("org.jetbrains.exposed:exposed-core:0.61.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
     implementation("com.h2database:h2:2.2.224")
+    implementation("org.slf4j:slf4j-nop:2.0.17")
 }
 
 kotlin {
@@ -41,8 +39,5 @@ tasks.processResources {
 }
 
 tasks.shadowJar {
-    dependencies {
-        exclude(dependency("com.legacyminecraft.poseidon:poseidon-craftbukkit:1.1.10-250328-1731-f67a8e3"))
-    }
     archiveClassifier = ""
 }
