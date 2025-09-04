@@ -80,17 +80,6 @@ permissions:
       zcore.clear: true
       zcore.clear.other: true
 
-  zcore.clearmail:
-    default: op
-
-  zcore.clearmail.other:
-    default: op
-
-  zcore.clearmail.*:
-    children:
-      zcore.clearmail: true
-      zcore.clearmail.other: true
-
   zcore.delhome:
     default: op
 
@@ -231,13 +220,13 @@ permissions:
   zcore.mail:
     default: op
 
-  zcore.mail.other:
+  zcore.mail.read.other:
     default: op
 
   zcore.mail.*:
     children:
       zcore.mail: true
-      zcore.mail.other: true
+      zcore.mail.read.other: true
 
   zcore.motd:
     default: op
@@ -312,9 +301,6 @@ permissions:
     default: op
 
   zcore.seen:
-    default: op
-
-  zcore.sendmail:
     default: op
 
   zcore.sethome:

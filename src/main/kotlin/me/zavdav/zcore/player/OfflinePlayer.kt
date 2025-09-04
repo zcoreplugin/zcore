@@ -235,14 +235,9 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         }
     }
 
-    /**
-     * Clears this player's mail.
-     * Returns `true` on success, `false` if this player has no mail.
-     */
-    fun clearMail(): Boolean {
-        if (mail.empty()) return false
+    /** Clears this player's mail. */
+    fun clearMail() {
         mail.forEach { it.delete() }
-        return true
     }
 
     /**
@@ -251,7 +246,7 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
      * @param player the other player
      * @return `true` if this player ignores the player
      */
-    fun ignores(player: OfflinePlayer) = player in ignoredPlayers
+    fun ignores(player: OfflinePlayer): Boolean = player in ignoredPlayers
 
     /**
      * Makes this player ignore a [player].
