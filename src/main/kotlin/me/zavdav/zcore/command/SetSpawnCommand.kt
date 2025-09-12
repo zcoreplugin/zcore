@@ -11,11 +11,11 @@ internal val setspawnCommand = command(
     "zcore.setspawn"
 ) {
     runs {
-        doSetspawn()
+        doSetSpawn()
     }
 }
 
-private fun CommandContext<CommandSender>.doSetspawn() {
+private fun CommandContext<CommandSender>.doSetSpawn() {
     val source = requirePlayer()
     val world = Bukkit.getWorlds()[0]
     val location = source.location

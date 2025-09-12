@@ -15,7 +15,7 @@ internal val delhomeCommand = command(
         runs {
             val source = requirePlayer()
             val home: String by this
-            doDelhome(source.data, home)
+            doDelHome(source.data, home)
         }
     }
     offlinePlayerArgument("player") {
@@ -24,13 +24,13 @@ internal val delhomeCommand = command(
             runs {
                 val player: OfflinePlayer by this
                 val home: String by this
-                doDelhome(player, home)
+                doDelHome(player, home)
             }
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doDelhome(target: OfflinePlayer, homeName: String) {
+private fun CommandContext<CommandSender>.doDelHome(target: OfflinePlayer, homeName: String) {
     val existingHome = target.deleteHome(homeName)
     if (existingHome != null) {
         source.sendMessage(local("command.delhome", target.name, existingHome.name))

@@ -7,29 +7,29 @@ import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-internal val godCommand = command(
-    "god",
-    "Enables invulnerability for a player",
-    "zcore.god"
+internal val ungodCommand = command(
+    "ungod",
+    "Disables invulnerability for a player",
+    "zcore.ungod"
 ) {
     runs {
         val source = requirePlayer()
-        doGod(source)
+        doUnGod(source)
     }
     playerArgument("player") {
-        requiresPermission("zcore.god.other")
+        requiresPermission("zcore.ungod.other")
         runs {
             val player: CorePlayer by this
-            doGod(player)
+            doUnGod(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doGod(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doUnGod(target: CorePlayer) {
     val source = this.source
     val self = source is Player && source.core() == target
-    target.data.isInvincible = true
+    target.data.isInvincible = false
 
-    source.sendMessage(local("command.god", target.name))
-    if (!self) target.sendMessage(local("command.god", target.name))
+    source.sendMessage(local("command.ungod", target.name))
+    if (!self) target.sendMessage(local("command.ungod", target.name))
 }

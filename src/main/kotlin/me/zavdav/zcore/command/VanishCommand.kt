@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 
 internal val vanishCommand = command(
     "vanish",
-    "Toggles a player's vanish status",
+    "Enables invisibility for a player",
     "zcore.vanish"
 ) {
     runs {
@@ -28,14 +28,8 @@ internal val vanishCommand = command(
 private fun CommandContext<CommandSender>.doVanish(target: CorePlayer) {
     val source = this.source
     val self = source is Player && source.core() == target
-    val isVanished = !target.data.isVanished
-    target.data.isVanished = isVanished
 
-    if (isVanished) {
-        source.sendMessage(local("command.vanish.enabled", target.name))
-        if (!self) target.sendMessage(local("command.vanish.enabled", target.name))
-    } else {
-        source.sendMessage(local("command.vanish.disabled", target.name))
-        if (!self) target.sendMessage(local("command.vanish.disabled", target.name))
-    }
+    target.data.isVanished = true
+    source.sendMessage(local("command.vanish", target.name))
+    if (!self) target.sendMessage(local("command.vanish", target.name))
 }

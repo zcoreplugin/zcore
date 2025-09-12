@@ -13,12 +13,12 @@ internal val invseeCommand = command(
     playerArgument("player") {
         runs {
             val player: CorePlayer by this
-            doInvsee(player)
+            doInvSee(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doInvsee(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doInvSee(target: CorePlayer) {
     val source = requirePlayer()
     InventoryView(source, target).open()
 }

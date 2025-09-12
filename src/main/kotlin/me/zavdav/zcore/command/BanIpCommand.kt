@@ -21,20 +21,20 @@ internal val banipCommand = command(
     inet4AddressArgument("address") {
         runs {
             val address: Inet4Address by this
-            doBanip(address, null, ZCoreConfig.getString("command.banip.default-reason"))
+            doBanIp(address, null, ZCoreConfig.getString("command.banip.default-reason"))
         }
         durationArgument("duration") {
             runs {
                 val address: Inet4Address by this
                 val duration: Long by this
-                doBanip(address, duration, ZCoreConfig.getString("command.banip.default-reason"))
+                doBanIp(address, duration, ZCoreConfig.getString("command.banip.default-reason"))
             }
             textArgument("reason") {
                 runs {
                     val address: Inet4Address by this
                     val duration: Long by this
                     val reason: String by this
-                    doBanip(address, duration, reason)
+                    doBanIp(address, duration, reason)
                 }
             }
         }
@@ -42,27 +42,27 @@ internal val banipCommand = command(
             runs {
                 val address: Inet4Address by this
                 val reason: String by this
-                doBanip(address, null, reason)
+                doBanIp(address, null, reason)
             }
         }
     }
     offlinePlayerArgument("player") {
         runs {
             val player: OfflinePlayer by this
-            doBanip(player, null, ZCoreConfig.getString("command.banip.default-reason"))
+            doBanIp(player, null, ZCoreConfig.getString("command.banip.default-reason"))
         }
         durationArgument("duration") {
             runs {
                 val player: OfflinePlayer by this
                 val duration: Long by this
-                doBanip(player, duration, ZCoreConfig.getString("command.banip.default-reason"))
+                doBanIp(player, duration, ZCoreConfig.getString("command.banip.default-reason"))
             }
             textArgument("reason") {
                 runs {
                     val player: OfflinePlayer by this
                     val duration: Long by this
                     val reason: String by this
-                    doBanip(player, duration, reason)
+                    doBanIp(player, duration, reason)
                 }
             }
         }
@@ -70,13 +70,13 @@ internal val banipCommand = command(
             runs {
                 val player: OfflinePlayer by this
                 val reason: String by this
-                doBanip(player, null, reason)
+                doBanIp(player, null, reason)
             }
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doBanip(target: Inet4Address, duration: Long?, reason: String) {
+private fun CommandContext<CommandSender>.doBanIp(target: Inet4Address, duration: Long?, reason: String) {
     val source = this.source
     val issuer = (source as? Player)?.core()?.data
 
@@ -100,7 +100,7 @@ private fun CommandContext<CommandSender>.doBanip(target: Inet4Address, duration
     }
 }
 
-private fun CommandContext<CommandSender>.doBanip(target: OfflinePlayer, duration: Long?, reason: String) {
+private fun CommandContext<CommandSender>.doBanIp(target: OfflinePlayer, duration: Long?, reason: String) {
     val source = this.source
     val issuer = (source as? Player)?.core()?.data
 

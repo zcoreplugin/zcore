@@ -13,12 +13,12 @@ internal val delwarpCommand = command(
     stringArgument("warp") {
         runs {
             val warp: String by this
-            doDelwarp(warp)
+            doDelWarp(warp)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doDelwarp(warpName: String) {
+private fun CommandContext<CommandSender>.doDelWarp(warpName: String) {
     val existingWarp = ZCore.deleteWarp(warpName)
     if (existingWarp != null) {
         source.sendMessage(local("command.delwarp", existingWarp.name))

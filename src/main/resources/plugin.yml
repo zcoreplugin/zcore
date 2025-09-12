@@ -9,16 +9,12 @@ permissions:
   zcore.afk:
     default: op
 
-  zcore.afk.other:
-    default: op
-
   zcore.afk.kick.exempt:
     default: op
 
   zcore.afk.*:
     children:
       zcore.afk: true
-      zcore.afk.other: true
       zcore.afk.kick.exempt: true
 
   zcore.balance:
@@ -396,8 +392,44 @@ permissions:
   zcore.unbanip:
     default: op
 
+  zcore.ungod:
+    default: op
+
+  zcore.ungod.other:
+    default: op
+
+  zcore.ungod.*:
+    children:
+      zcore.ungod: true
+      zcore.ungod.other: true
+
+  zcore.unignore:
+    default: op
+
   zcore.unmute:
     default: op
+
+  zcore.unnick:
+    default: op
+
+  zcore.unnick.other:
+    default: op
+
+  zcore.unnick.*:
+    children:
+      zcore.unnick: true
+      zcore.unnick.other: true
+
+  zcore.unvanish:
+    default: op
+
+  zcore.unvanish.other:
+    default: op
+
+  zcore.unvanish.*:
+    children:
+      zcore.unvanish: true
+      zcore.unvanish.other: true
 
   zcore.vanish:
     default: op

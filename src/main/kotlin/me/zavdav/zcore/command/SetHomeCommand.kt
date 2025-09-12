@@ -15,7 +15,7 @@ internal val sethomeCommand = command(
         runs {
             val source = requirePlayer()
             val name: String by this
-            doSethome(source.data, name)
+            doSetHome(source.data, name)
         }
     }
     offlinePlayerArgument("player") {
@@ -24,13 +24,13 @@ internal val sethomeCommand = command(
             runs {
                 val player: OfflinePlayer by this
                 val name: String by this
-                doSethome(player, name)
+                doSetHome(player, name)
             }
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doSethome(target: OfflinePlayer, homeName: String) {
+private fun CommandContext<CommandSender>.doSetHome(target: OfflinePlayer, homeName: String) {
     val source = requirePlayer()
     if (!homeName.matches(Regex("[a-zA-Z0-9_-]+")))
         throw TranslatableException("command.sethome.illegal", homeName)

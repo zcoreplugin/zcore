@@ -13,12 +13,12 @@ internal val setwarpCommand = command(
     stringArgument("name") {
         runs {
             val name: String by this
-            doSetwarp(name)
+            doSetWarp(name)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doSetwarp(warpName: String) {
+private fun CommandContext<CommandSender>.doSetWarp(warpName: String) {
     val source = requirePlayer()
     if (!warpName.matches(Regex("[a-zA-Z0-9_-]+")))
         throw TranslatableException("command.setwarp.illegal", warpName)

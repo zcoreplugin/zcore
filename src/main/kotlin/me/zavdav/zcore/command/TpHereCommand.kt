@@ -13,12 +13,12 @@ internal val tphereCommand = command(
     playerArgument("player") {
         runs {
             val player: CorePlayer by this
-            doTphere(player)
+            doTpHere(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doTphere(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doTpHere(target: CorePlayer) {
     val source = requirePlayer()
     target.teleport(source)
     source.sendMessage(local("command.tp.player", target.name, source.name))

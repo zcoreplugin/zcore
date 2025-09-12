@@ -17,7 +17,7 @@ internal val renamehomeCommand = command(
                 val source = requirePlayer()
                 val home: String by this
                 val newName: String by this
-                doRenamehome(source.data, home, newName)
+                doRenameHome(source.data, home, newName)
             }
         }
     }
@@ -29,14 +29,14 @@ internal val renamehomeCommand = command(
                     val player: OfflinePlayer by this
                     val home: String by this
                     val newName: String by this
-                    doRenamehome(player, home, newName)
+                    doRenameHome(player, home, newName)
                 }
             }
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doRenamehome(
+private fun CommandContext<CommandSender>.doRenameHome(
     target: OfflinePlayer, oldName: String, newName: String
 ) {
     if (!newName.matches(Regex("[a-zA-Z0-9_-]+")))

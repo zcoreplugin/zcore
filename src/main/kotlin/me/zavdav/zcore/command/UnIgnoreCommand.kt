@@ -5,21 +5,21 @@ import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
-internal val ignoreCommand = command(
-    "ignore",
-    "Makes a player ignore a player",
-    "zcore.ignore"
+internal val unignoreCommand = command(
+    "unignore",
+    "Makes a player stop ignoring a player",
+    "zcore.unignore"
 ) {
     offlinePlayerArgument("player") {
         runs {
             val player: OfflinePlayer by this
-            doIgnore(player)
+            doUnIgnore(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doIgnore(target: OfflinePlayer) {
+private fun CommandContext<CommandSender>.doUnIgnore(target: OfflinePlayer) {
     val source = requirePlayer()
-    source.data.addIgnore(target)
-    source.sendMessage(local("command.ignore", target.name))
+    source.data.removeIgnore(target)
+    source.sendMessage(local("command.unignore", target.name))
 }

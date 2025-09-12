@@ -12,17 +12,17 @@ internal val tpdenyCommand = command(
     "zcore.tpdeny"
 ) {
     runs {
-        doTpdeny()
+        doTpDeny()
     }
     playerArgument("player") {
         runs {
             val player: CorePlayer by this
-            doTpdeny(player)
+            doTpDeny(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doTpdeny() {
+private fun CommandContext<CommandSender>.doTpDeny() {
     val source = requirePlayer()
     if (source.teleportRequests.isEmpty())
         throw TranslatableException("command.tpa.none")
@@ -33,7 +33,7 @@ private fun CommandContext<CommandSender>.doTpdeny() {
     requester.sendMessage(local("command.tpdeny.notify", source.name))
 }
 
-private fun CommandContext<CommandSender>.doTpdeny(requester: CorePlayer) {
+private fun CommandContext<CommandSender>.doTpDeny(requester: CorePlayer) {
     val source = requirePlayer()
     val request = source.teleportRequests.firstOrNull { it.source == requester }
     if (request == null)

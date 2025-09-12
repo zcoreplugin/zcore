@@ -16,12 +16,12 @@ internal val tpahereCommand = command(
     playerArgument("player") {
         runs {
             val player: CorePlayer by this
-            doTpahere(player)
+            doTpaHere(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doTpahere(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doTpaHere(target: CorePlayer) {
     val source = requirePlayer()
     if (target.teleportRequests.any { it.source == source })
         throw TranslatableException("command.tpa.alreadySent", target.name)

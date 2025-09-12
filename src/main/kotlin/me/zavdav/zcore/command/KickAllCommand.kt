@@ -13,17 +13,17 @@ internal val kickallCommand = command(
     "zcore.kickall"
 ) {
     runs {
-        doKickall(ZCoreConfig.getString("command.kick.default-reason"))
+        doKickAll(ZCoreConfig.getString("command.kick.default-reason"))
     }
     textArgument("reason") {
         runs {
             val reason: String by this
-            doKickall(reason)
+            doKickAll(reason)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doKickall(reason: String) {
+private fun CommandContext<CommandSender>.doKickAll(reason: String) {
     val source = this.source
     for (player in Bukkit.getOnlinePlayers()) {
         if (source is Player && player.uniqueId == source.uniqueId)

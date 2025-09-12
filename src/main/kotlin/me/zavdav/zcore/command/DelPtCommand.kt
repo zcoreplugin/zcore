@@ -14,18 +14,18 @@ internal val delptCommand = command(
 ) {
     runs {
         val source = requirePlayer()
-        doDelpt(source.data)
+        doDelPt(source.data)
     }
     offlinePlayerArgument("player") {
         requiresPermission("zcore.delpt.other")
         runs {
             val player: OfflinePlayer by this
-            doDelpt(player)
+            doDelPt(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doDelpt(target: OfflinePlayer) {
+private fun CommandContext<CommandSender>.doDelPt(target: OfflinePlayer) {
     val source = requirePlayer()
     val item = source.itemInHand
     if (item.type == Material.AIR)

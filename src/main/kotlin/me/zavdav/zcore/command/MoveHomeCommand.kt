@@ -15,7 +15,7 @@ internal val movehomeCommand = command(
         runs {
             val source = requirePlayer()
             val home: String by this
-            doMovehome(source.data, home)
+            doMoveHome(source.data, home)
         }
     }
     offlinePlayerArgument("player") {
@@ -24,13 +24,13 @@ internal val movehomeCommand = command(
             runs {
                 val player: OfflinePlayer by this
                 val home: String by this
-                doMovehome(player, home)
+                doMoveHome(player, home)
             }
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doMovehome(target: OfflinePlayer, homeName: String) {
+private fun CommandContext<CommandSender>.doMoveHome(target: OfflinePlayer, homeName: String) {
     val source = requirePlayer()
     val existingHome = target.moveHome(homeName, source.location)
     if (existingHome != null) {

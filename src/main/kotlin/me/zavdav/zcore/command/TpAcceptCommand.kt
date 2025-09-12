@@ -12,17 +12,17 @@ internal val tpacceptCommand = command(
     "zcore.tpaccept"
 ) {
     runs {
-        doTpaccept()
+        doTpAccept()
     }
     playerArgument("player") {
         runs {
             val player: CorePlayer by this
-            doTpaccept(player)
+            doTpAccept(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doTpaccept() {
+private fun CommandContext<CommandSender>.doTpAccept() {
     val source = requirePlayer()
     if (source.teleportRequests.isEmpty())
         throw TranslatableException("command.tpa.none")
@@ -39,7 +39,7 @@ private fun CommandContext<CommandSender>.doTpaccept() {
     }
 }
 
-private fun CommandContext<CommandSender>.doTpaccept(requester: CorePlayer) {
+private fun CommandContext<CommandSender>.doTpAccept(requester: CorePlayer) {
     val source = requirePlayer()
     val request = source.teleportRequests.firstOrNull { it.source == requester }
     if (request == null)

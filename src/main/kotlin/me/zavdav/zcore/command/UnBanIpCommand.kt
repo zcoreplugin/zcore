@@ -17,18 +17,18 @@ internal val unbanipCommand = command(
     inet4AddressArgument("address") {
         runs {
             val address: Inet4Address by this
-            doUnbanip(address)
+            doUnBanIp(address)
         }
     }
     offlinePlayerArgument("player") {
         runs {
             val player: OfflinePlayer by this
-            doUnbanip(player)
+            doUnBanIp(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doUnbanip(target: Inet4Address) {
+private fun CommandContext<CommandSender>.doUnBanIp(target: Inet4Address) {
     if (IpBanList.pardonBan(target)) {
         source.sendMessage(local("command.unbanip", target.hostAddress))
     } else {
@@ -36,7 +36,7 @@ private fun CommandContext<CommandSender>.doUnbanip(target: Inet4Address) {
     }
 }
 
-private fun CommandContext<CommandSender>.doUnbanip(target: OfflinePlayer) {
+private fun CommandContext<CommandSender>.doUnBanIp(target: OfflinePlayer) {
     BanList.pardonBan(target)
     target.ipAddresses.forEach { IpBanList.pardonBan(it) }
     source.sendMessage(local("command.unbanip", target.name))

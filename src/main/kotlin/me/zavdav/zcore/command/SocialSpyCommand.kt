@@ -9,33 +9,51 @@ import org.bukkit.entity.Player
 
 internal val socialspyCommand = command(
     "socialspy",
-    "Toggles a player's socialspy status",
+    "Changes a player's socialspy status",
     "zcore.socialspy"
 ) {
-    runs {
-        val source = requirePlayer()
-        doSocialspy(source)
-    }
-    playerArgument("player") {
-        requiresPermission("zcore.socialspy.other")
+    literal("on") {
         runs {
-            val player: CorePlayer by this
-            doSocialspy(player)
+            val source = requirePlayer()
+            doSocialSpyOn(source)
+        }
+        playerArgument("player") {
+            requiresPermission("zcore.socialspy.other")
+            runs {
+                val player: CorePlayer by this
+                doSocialSpyOn(player)
+            }
+        }
+    }
+    literal("off") {
+        runs {
+            val source = requirePlayer()
+            doSocialSpyOff(source)
+        }
+        playerArgument("player") {
+            requiresPermission("zcore.socialspy.other")
+            runs {
+                val player: CorePlayer by this
+                doSocialSpyOff(player)
+            }
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doSocialspy(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doSocialSpyOn(target: CorePlayer) {
     val source = this.source
     val self = source is Player && source.core() == target
-    val isSocialSpy = !target.data.isSocialSpy
-    target.data.isSocialSpy = isSocialSpy
 
-    if (isSocialSpy) {
-        source.sendMessage(local("command.socialspy.enabled", target.name))
-        if (!self) target.sendMessage(local("command.socialspy.enabled", target.name))
-    } else {
-        source.sendMessage(local("command.socialspy.disabled", target.name))
-        if (!self) target.sendMessage(local("command.socialspy.disabled", target.name))
-    }
+    target.data.isSocialSpy = true
+    source.sendMessage(local("command.socialspy.enabled", target.name))
+    if (!self) target.sendMessage(local("command.socialspy.enabled", target.name))
+}
+
+private fun CommandContext<CommandSender>.doSocialSpyOff(target: CorePlayer) {
+    val source = this.source
+    val self = source is Player && source.core() == target
+
+    target.data.isSocialSpy = false
+    source.sendMessage(local("command.socialspy.disabled", target.name))
+    if (!self) target.sendMessage(local("command.socialspy.disabled", target.name))
 }

@@ -16,12 +16,12 @@ internal val realnameCommand = command(
     stringArgument("nickname") {
         runs {
             val nickname: String by this
-            doRealname(nickname)
+            doRealName(nickname)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doRealname(nickname: String) {
+private fun CommandContext<CommandSender>.doRealName(nickname: String) {
     val matches = Bukkit.getOnlinePlayers().filter {
         val nick = it.core().data.nickname
         nick != null && ChatColor.stripColor(nick).equals(nickname, true)

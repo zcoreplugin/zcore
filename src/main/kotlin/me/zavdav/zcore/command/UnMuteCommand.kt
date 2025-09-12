@@ -14,12 +14,12 @@ internal val unmuteCommand = command(
     offlinePlayerArgument("player") {
         runs {
             val player: OfflinePlayer by this
-            doUnmute(player)
+            doUnMute(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doUnmute(target: OfflinePlayer) {
+private fun CommandContext<CommandSender>.doUnMute(target: OfflinePlayer) {
     if (MuteList.pardonMute(target)) {
         source.sendMessage(local("command.unmute", target.name))
     } else {

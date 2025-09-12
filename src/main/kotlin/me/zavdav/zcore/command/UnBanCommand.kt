@@ -15,12 +15,12 @@ internal val unbanCommand = command(
     offlinePlayerArgument("player") {
         runs {
             val player: OfflinePlayer by this
-            doUnban(player)
+            doUnBan(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doUnban(target: OfflinePlayer) {
+private fun CommandContext<CommandSender>.doUnBan(target: OfflinePlayer) {
     if (BanList.pardonBan(target)) {
         source.sendMessage(local("command.unban", target.name))
     } else {

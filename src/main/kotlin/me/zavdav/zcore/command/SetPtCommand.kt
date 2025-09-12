@@ -14,12 +14,12 @@ internal val setptCommand = command(
     textArgument("command") {
         runs {
             val command: String by this
-            doSetpt(command)
+            doSetPt(command)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doSetpt(command: String) {
+private fun CommandContext<CommandSender>.doSetPt(command: String) {
     val source = requirePlayer()
     val item = source.itemInHand
     if (item.type == Material.AIR)
