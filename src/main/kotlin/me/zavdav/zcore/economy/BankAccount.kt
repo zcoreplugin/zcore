@@ -43,19 +43,8 @@ class BankAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Acc
     override var balance: BigDecimal
         get() = _balance
         set(value) {
-            if (value < -overdrawLimit) return
+            if (value < BigDecimal.ZERO) return
             _balance = value.setScale(10, RoundingMode.DOWN)
-        }
-
-    private var _overdrawLimit: BigDecimal by BankAccounts.overdrawLimit
-
-    override var overdrawLimit: BigDecimal
-        get() = _overdrawLimit
-        set(value) {
-            if (value < BigDecimal.ZERO)
-                throw IllegalArgumentException("Invalid amount: $value")
-
-            _overdrawLimit = value
         }
 
     /**

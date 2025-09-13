@@ -22,19 +22,8 @@ class PersonalAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id),
     override var balance: BigDecimal
         get() = _balance
         set(value) {
-            if (value < -overdrawLimit) return
+            if (value < BigDecimal.ZERO) return
             _balance = value.setScale(10, RoundingMode.DOWN)
-        }
-
-    private var _overdrawLimit: BigDecimal by PersonalAccounts.overdrawLimit
-
-    override var overdrawLimit: BigDecimal
-        get() = _overdrawLimit
-        set(value) {
-            if (value < BigDecimal.ZERO)
-                throw IllegalArgumentException("Invalid amount: $value")
-
-            _overdrawLimit = value
         }
 
 }

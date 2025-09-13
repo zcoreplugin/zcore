@@ -54,7 +54,7 @@ private fun CommandContext<CommandSender>.doEcoSet(target: OfflinePlayer, amount
     if (target.account.set(roundedAmount)) {
         source.sendMessage(local("command.eco.set", target.name, ZCore.formatCurrency(roundedAmount)))
     } else {
-        throw TranslatableException("command.eco.overdraw", ZCore.formatCurrency(target.account.overdrawLimit))
+        throw TranslatableException("command.eco.negative")
     }
 }
 
@@ -75,6 +75,6 @@ private fun CommandContext<CommandSender>.doEcoTake(target: OfflinePlayer, amoun
     if (target.account.subtract(roundedAmount)) {
         source.sendMessage(local("command.eco.take", ZCore.formatCurrency(roundedAmount), target.name))
     } else {
-        throw TranslatableException("command.eco.overdraw", ZCore.formatCurrency(target.account.overdrawLimit))
+        throw TranslatableException("command.eco.negative")
     }
 }

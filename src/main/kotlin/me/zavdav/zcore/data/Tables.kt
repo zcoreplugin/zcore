@@ -29,14 +29,12 @@ internal object OfflinePlayers : UUIDTable("offline_players") {
 internal object PersonalAccounts : UUIDTable("personal_accounts") {
     val owner = reference("owner", OfflinePlayers, CASCADE, CASCADE).uniqueIndex()
     val balance = decimal("balance", 100000, 10).default(BigDecimal.ZERO)
-    val overdrawLimit = decimal("overdraw_limit", 100000, 10).default(BigDecimal.ZERO)
 }
 
 internal object BankAccounts : UUIDTable("bank_accounts") {
     val name = varchar("name", 255).uniqueIndex()
     val owner = reference("owner", OfflinePlayers, CASCADE, CASCADE)
     val balance = decimal("balance", 100000, 10).default(BigDecimal.ZERO)
-    val overdrawLimit = decimal("overdraw_limit", 100000, 10).default(BigDecimal.ZERO)
 }
 
 internal object BankMembers : CompositeIdTable("bank_members") {

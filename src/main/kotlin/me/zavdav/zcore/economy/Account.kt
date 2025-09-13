@@ -13,16 +13,13 @@ sealed interface Account {
     /** This account's current balance. */
     var balance: BigDecimal
 
-    /** Determines how far this account can be overdrawn. */
-    var overdrawLimit: BigDecimal
-
     /**
      * Tries to set the balance to an [amount].
-     * Returns `true` if the overdraw limit would not be exceeded.
+     * Returns `true` if the new balance would not be negative.
      */
     fun set(amount: BigDecimal): Boolean {
         val newBalance = amount.setScale(10, RoundingMode.DOWN)
-        if (newBalance < -overdrawLimit) return false
+        if (newBalance < BigDecimal.ZERO) return false
         balance = newBalance
         return true
     }
@@ -37,7 +34,7 @@ sealed interface Account {
 
     /**
      * Tries to subtract an [amount] from the current balance.
-     * Returns `true` if the overdraw limit would not be exceeded.
+     * Returns `true` if the new balance would not be negative.
      */
     fun subtract(amount: BigDecimal): Boolean {
         if (amount < BigDecimal.ZERO)
@@ -48,7 +45,7 @@ sealed interface Account {
 
     /**
      * Tries to multiply the current balance with a [factor].
-     * Returns `true` if the overdraw limit would not be exceeded.
+     * Returns `true` if the new balance would not be negative.
      */
     fun multiply(factor: BigDecimal): Boolean {
         if (factor < BigDecimal.ZERO)
@@ -59,7 +56,7 @@ sealed interface Account {
 
     /**
      * Tries to divide the current balance by a [divisor].
-     * Returns `true` if the overdraw limit would not be exceeded.
+     * Returns `true` if the new balance would not be negative.
      */
     fun divide(divisor: BigDecimal): Boolean {
         if (divisor <= BigDecimal.ZERO)
@@ -70,7 +67,7 @@ sealed interface Account {
 
     /**
      * Tries to transfer an [amount] from this account to another [account].
-     * Returns `true` if the overdraw limit would not be exceeded.
+     * Returns `true` if this account's new balance would not be negative.
      */
     fun transfer(amount: BigDecimal, account: Account): Boolean {
         if (amount < BigDecimal.ZERO)

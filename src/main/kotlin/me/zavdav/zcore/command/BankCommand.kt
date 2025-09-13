@@ -87,7 +87,6 @@ private fun CommandContext<CommandSender>.doBankInfo(bankName: String) {
     val info = listOf(
         local("command.bank.info.owner") to bank.owner.name,
         local("command.bank.info.balance") to ZCore.formatCurrency(bank.balance),
-        local("command.bank.info.maxOverdraw") to ZCore.formatCurrency(bank.overdrawLimit)
     )
 
     info.forEach { (key, value) ->
@@ -129,7 +128,7 @@ private fun CommandContext<CommandSender>.doBankDeposit(bankName: String, amount
     if (source.data.account.transfer(roundedAmount, bank)) {
         source.sendMessage(local("command.bank.deposit", ZCore.formatCurrency(roundedAmount), bank.name))
     } else {
-        throw TranslatableException("command.bank.overdraw", ZCore.formatCurrency(bank.overdrawLimit))
+        throw TranslatableException("command.bank.insufficient")
     }
 }
 
@@ -145,7 +144,7 @@ private fun CommandContext<CommandSender>.doBankWithdraw(bankName: String, amoun
     if (bank.transfer(roundedAmount, source.data.account)) {
         source.sendMessage(local("command.bank.withdraw", ZCore.formatCurrency(roundedAmount), bank.name))
     } else {
-        throw TranslatableException("command.bank.overdraw", ZCore.formatCurrency(bank.overdrawLimit))
+        throw TranslatableException("command.bank.insufficient")
     }
 }
 

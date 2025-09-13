@@ -35,6 +35,6 @@ private fun CommandContext<CommandSender>.doPay(target: OfflinePlayer, amount: B
         val player = ZCore.getPlayer(target.uuid)
         player?.sendMessage(local("command.pay.received", ZCore.formatCurrency(roundedAmount), source.name))
     } else {
-        throw TranslatableException("command.pay.overdraw", ZCore.formatCurrency(source.data.account.overdrawLimit))
+        throw TranslatableException("command.pay.insufficient")
     }
 }
