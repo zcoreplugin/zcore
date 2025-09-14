@@ -68,9 +68,6 @@ class BankAccount internal constructor(id: EntityID<UUID>) : UUIDEntity(id), Acc
      * Returns `true` on success, `false` if that player is not a member of this bank.
      */
     fun removePlayer(player: OfflinePlayer): Boolean {
-        if (player == owner) {
-            throw IllegalArgumentException("Cannot remove owner of the bank account")
-        }
         val exists = player in members
         if (exists) {
             BankMembers.deleteWhere { (this.bank eq this@BankAccount.id) and (this.player eq player.id) }

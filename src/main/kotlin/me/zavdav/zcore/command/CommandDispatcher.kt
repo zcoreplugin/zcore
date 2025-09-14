@@ -114,6 +114,7 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
                 is NameNoMatchesExceptionType,
                 is NameMultipleMatchesExceptionType,
                 is UnknownPlayerExceptionType,
+                is UnknownBankExceptionType,
                 is UnknownCreatureExceptionType,
                 is UnknownMaterialExceptionType -> source.sendMessage(e.rawMessage.string)
                 else -> source.sendMessage(local("command.syntaxError"))

@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.DURATION_PATTERN
@@ -30,6 +31,10 @@ internal object NameMultipleMatchesExceptionType : DynamicCommandExceptionType({
 
 internal object UnknownPlayerExceptionType : DynamicCommandExceptionType({
     input -> LiteralMessage(local("command.unknownPlayer", input))
+})
+
+internal object UnknownBankExceptionType : DynamicCommandExceptionType({
+    input -> LiteralMessage(local("command.unknownBank", input))
 })
 
 internal object UnknownCreatureExceptionType : DynamicCommandExceptionType({
@@ -143,6 +148,18 @@ internal inline fun <S> ArgumentBuilder<S, *>.offlinePlayerArgument(
     name: String,
     action: RequiredArgumentBuilder<S, OfflinePlayer>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, OfflinePlayerArgument, action)
+
+internal object BankArgument : ArgumentType<BankAccount> {
+    override fun parse(reader: StringReader): BankAccount {
+        val name = reader.readArgument()
+        return ZCore.getBank(name) ?: throw UnknownBankExceptionType.create(name)
+    }
+}
+
+internal inline fun <S> ArgumentBuilder<S, *>.bankArgument(
+    name: String,
+    action: RequiredArgumentBuilder<S, BankAccount>.() -> Unit
+): ArgumentBuilder<S, *> = argument(name, BankArgument, action)
 
 internal object CreatureArgument : ArgumentType<CreatureType> {
     override fun parse(reader: StringReader): CreatureType {
