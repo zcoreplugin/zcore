@@ -106,9 +106,10 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
 
     internal fun getCommand(name: String): Command? = bukkitKnownCommands[name.lowercase()]
 
-    override fun execute(input: String, source: CommandSender): Int {
+    internal fun execute(source: CommandSender, command: CoreCommand, args: Array<String>) {
         try {
-            return super.execute(input, source)
+            val parsedArgs = if (args.isEmpty()) "" else " " + args.joinToString(" ").trim()
+            execute(command.name + parsedArgs, source)
         } catch (e: CommandSyntaxException) {
             when (e.type) {
                 is NameNoMatchesExceptionType,
@@ -117,7 +118,7 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
                 is UnknownBankExceptionType,
                 is UnknownCreatureExceptionType,
                 is UnknownMaterialExceptionType -> source.sendMessage(e.rawMessage.string)
-                else -> source.sendMessage(local("command.syntaxError"))
+                else -> source.sendMessage(local("command.syntaxError", command.name))
             }
         } catch (e: TranslatableException) {
             source.sendMessage(local(e.key, *e.args))
@@ -125,8 +126,6 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
             e.printStackTrace()
             source.sendMessage(local("command.genericError"))
         }
-
-        return 0
     }
 
 }

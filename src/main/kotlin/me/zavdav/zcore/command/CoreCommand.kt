@@ -26,8 +26,7 @@ internal class CoreCommand(
             sender.sendMessage(local("command.noPermission"))
             return true
         }
-        val parsedArgs = if (args.isEmpty()) "" else " " + args.joinToString(" ").trim()
-        CommandDispatcher.execute(name + parsedArgs, sender)
+        CommandDispatcher.execute(sender, this, args)
         return true
     }
 
