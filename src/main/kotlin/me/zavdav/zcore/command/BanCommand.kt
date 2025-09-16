@@ -8,6 +8,7 @@ import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.local
+import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -49,6 +50,9 @@ internal val banCommand = command(
 private fun CommandContext<CommandSender>.doBan(target: OfflinePlayer, duration: Long?, reason: String) {
     val source = this.source
     val issuer = (source as? Player)?.core()?.data
+
+    if (Bukkit.getOfflinePlayer(target.name).isOp)
+        throw TranslatableException("command.ban.exempt", target.name)
 
     BanList.addBan(target, issuer, duration, reason)
     val player = ZCore.getPlayer(target.uuid)

@@ -104,6 +104,9 @@ private fun CommandContext<CommandSender>.doBanIp(target: OfflinePlayer, duratio
     val source = this.source
     val issuer = (source as? Player)?.core()?.data
 
+    if (Bukkit.getOfflinePlayer(target.name).isOp)
+        throw TranslatableException("command.banip.exempt", target.name)
+
     BanList.addBan(target, issuer, duration, reason)
     target.ipAddresses.forEach { IpBanList.addBan(it, issuer, duration, reason) }
     Bukkit.getOnlinePlayers()
