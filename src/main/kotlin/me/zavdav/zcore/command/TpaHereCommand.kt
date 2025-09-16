@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.TeleportRequest
+import me.zavdav.zcore.util.checkIgnoring
 import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.syncDelayedTask
 import org.bukkit.command.CommandSender
@@ -27,9 +28,7 @@ private fun CommandContext<CommandSender>.doTpaHere(target: CorePlayer) {
         throw TranslatableException("command.tpa.alreadySent", target.name)
 
     source.sendMessage(local("command.tpa", target.name))
-    if (target.data.ignores(source.data) && !source.hasPermission("zcore.ignore.bypass"))
-        return
-
+    if (target.data.checkIgnoring(source)) return
     val request = TeleportRequest(source, true)
     val expiresAfter = ZCoreConfig.getInt("command.tpahere.expire-after")
     target.teleportRequests.add(request)

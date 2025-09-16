@@ -9,7 +9,7 @@ import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.IpBanList
 import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.local
-import org.bukkit.Bukkit
+import me.zavdav.zcore.util.updateVanishStates
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -88,15 +88,7 @@ internal class JoinQuitListener : Listener {
             }
         }
 
-        for (pl in Bukkit.getOnlinePlayers()) {
-            if (pl.core().data.isVanished) {
-                Bukkit.getOnlinePlayers()
-                    .filter { !it.hasPermission("zcore.vanish.bypass") }
-                    .forEach { it.hidePlayer(pl) }
-            } else {
-                Bukkit.getOnlinePlayers().forEach { it.showPlayer(pl) }
-            }
-        }
+        updateVanishStates()
     }
 
     @EventHandler(priority = Event.Priority.Lowest)

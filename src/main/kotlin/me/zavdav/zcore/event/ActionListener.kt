@@ -3,6 +3,7 @@ package me.zavdav.zcore.event
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.MuteList
+import me.zavdav.zcore.util.checkIgnoring
 import me.zavdav.zcore.util.colored
 import me.zavdav.zcore.util.displayName
 import me.zavdav.zcore.util.formatDuration
@@ -39,21 +40,16 @@ internal class ActionListener : Listener {
             } else {
                 player.sendMessage(local("command.mute.permanent.notify", mute.reason))
             }
-
             event.isCancelled = true
             return
         }
 
         if (player.hasPermission("zcore.chat.color"))
             event.message = event.message.colored()
-
         event.format = formatted(ZCoreConfig.getString("general.chat-format"),
-            "player" to "%1\$s", "message" to "%2\$s"
-        )
+            "player" to "%1\$s", "message" to "%2\$s")
 
-        event.recipients.removeIf {
-            it.core().data.ignores(player.data) && !player.hasPermission("zcore.ignore.bypass")
-        }
+        event.recipients.removeIf { it.core().data.checkIgnoring(player) }
     }
 
     @EventHandler(priority = Event.Priority.Low)
@@ -91,7 +87,7 @@ internal class ActionListener : Listener {
     @EventHandler(priority = Event.Priority.Low)
     fun onEntityDamage(event: EntityDamageEvent) {
         val target = (event.entity as? Player)?.core() ?: return
-        if (target.data.isInvincible) {
+        if (target.data.isInvincible && target.hasPermission("zcore.god")) {
             target.fireTicks = 0
             target.remainingAir = target.maximumAir
             event.isCancelled = true

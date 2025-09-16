@@ -14,7 +14,7 @@ import me.zavdav.zcore.economy.PersonalAccount
 import me.zavdav.zcore.location.Home
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.MuteList
-import org.bukkit.Bukkit
+import me.zavdav.zcore.util.updateVanishStates
 import org.bukkit.Material
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -83,17 +83,7 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         get() = _isVanished
         set(value) {
             _isVanished = value
-            if (!isOnline) return
-
-            for (pl in Bukkit.getOnlinePlayers()) {
-                if (pl.core().data.isVanished) {
-                    Bukkit.getOnlinePlayers()
-                        .filter { !it.hasPermission("zcore.vanish.bypass") }
-                        .forEach { it.hidePlayer(pl) }
-                } else {
-                    Bukkit.getOnlinePlayers().forEach { it.showPlayer(pl) }
-                }
-            }
+            updateVanishStates()
         }
 
     /** Determines if this player sees messages sent by others through /msg or /mail. */

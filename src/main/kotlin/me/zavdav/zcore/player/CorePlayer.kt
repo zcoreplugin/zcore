@@ -4,7 +4,7 @@ import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.inventory.InventoryView
-import me.zavdav.zcore.util.colored
+import me.zavdav.zcore.util.computeNickname
 import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.getSafe
 import me.zavdav.zcore.util.local
@@ -44,13 +44,7 @@ class CorePlayer(val base: Player) : Player by base {
     override fun isOnline(): Boolean =
         server.onlinePlayers.any { it.uniqueId == uniqueId }
 
-    override fun getDisplayName(): String {
-        val nickname = data.nickname
-        return if (nickname != null)
-            "§f${ZCoreConfig.getString("general.nick-prefix").colored()}$nickname§f"
-        else
-            name
-    }
+    override fun getDisplayName(): String = computeNickname(data)
 
     override fun kickPlayer(message: String) =
         base.kickPlayer(if (message.length <= 100) message else message.substring(0, 100))
