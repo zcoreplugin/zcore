@@ -61,6 +61,7 @@ class ZCore : JavaPlugin() {
         server.logger.info("[ZCore] Establishing database connection...")
         Database.connect("jdbc:h2:${dataFolder.absolutePath}/db/zcore", "org.h2.Driver")
         transaction = TransactionManager.currentOrNew(Connection.TRANSACTION_REPEATABLE_READ)
+        transaction.connection.autoCommit = true
 
         SchemaUtils.create(
             OfflinePlayers,
