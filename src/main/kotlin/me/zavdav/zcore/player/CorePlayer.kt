@@ -4,8 +4,10 @@ import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.inventory.InventoryView
+import me.zavdav.zcore.group.GroupResolver
 import me.zavdav.zcore.util.computeNickname
 import me.zavdav.zcore.util.formatDuration
+import me.zavdav.zcore.util.formatted
 import me.zavdav.zcore.util.getSafe
 import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.syncRepeatingTask
@@ -44,7 +46,12 @@ class CorePlayer(val base: Player) : Player by base {
     override fun isOnline(): Boolean =
         server.onlinePlayers.any { it.uniqueId == uniqueId }
 
-    override fun getDisplayName(): String = computeNickname(data)
+    override fun getDisplayName(): String =
+        "§f${formatted(ZCoreConfig.getString("general.display-name-format"),
+            "prefix" to GroupResolver.getPrefix(data),
+            "nickname" to computeNickname(data),
+            "suffix" to GroupResolver.getSuffix(data)
+        ).trim()}§f"
 
     override fun kickPlayer(message: String) =
         base.kickPlayer(if (message.length <= 100) message else message.substring(0, 100))

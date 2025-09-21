@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "me.zavdav.zcore"
-version = "0.21.4"
+version = "0.21.5"
 
 repositories {
     mavenCentral()
@@ -24,6 +24,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
     implementation("com.h2database:h2:2.2.224")
     implementation("org.slf4j:slf4j-nop:2.0.17")
+    compileOnly("com.johnymuffin.jperms:beta:1.0.1")
+    compileOnly("com.earth2me.essentials:essentials-libraries-rollup:0.0.1")
 }
 
 kotlin {

@@ -15,6 +15,7 @@ object ZCoreConfig {
         put("general.command-prefix", "&7>>")
         put("general.chat-format", "{PLAYER}: {MESSAGE}")
         put("general.nick-prefix", "~")
+        put("general.display-name-format", "{PREFIX} {NICKNAME} {SUFFIX}")
         put("general.currency", "$")
 
         put("command.afk.auto.enabled", true)
@@ -26,6 +27,7 @@ object ZCoreConfig {
         put("command.banip.default-reason", "The ban hammer has spoken!")
         put("command.give.default-amount", 1, 1)
         put("command.kick.default-reason", "Kicked from server")
+        put("command.list.group-order", listOf("admin", "moderator", "donator", "default"))
         put("command.motd.lines", listOf("&6Welcome, {NAME}!", "&7-------------------------", "&eOnline players: &b{PLAYERCOUNT}/{MAXPLAYERS}"))
         put("command.mute.default-reason", "A mysterious force leaves you speechless!")
         put("command.rules.lines", listOf("&7=> &bRules &7<==============================", "1. Placeholder text", "2. Placeholder text", "3. Placeholder text"))
