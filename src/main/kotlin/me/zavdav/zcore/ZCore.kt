@@ -252,7 +252,7 @@ class ZCore : JavaPlugin() {
             currencyFormat.minimumFractionDigits = 0
             currencyFormat.maximumFractionDigits = roundedAmount.scale()
 
-            return "${ZCoreConfig.getString("general.currency")}${currencyFormat.format(roundedAmount)}"
+            return "${ZCoreConfig.getString("text.currency")}${currencyFormat.format(roundedAmount)}"
         }
 
     }

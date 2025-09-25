@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender
 
 internal val msgCommand = command(
     "msg",
-    arrayOf("tell", "whisper"),
+    arrayOf("m", "tell", "t", "whisper", "w"),
     "Sends a private message to a player",
     "zcore.msg"
 ) {

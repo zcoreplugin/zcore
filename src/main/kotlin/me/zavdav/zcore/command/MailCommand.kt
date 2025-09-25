@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.checkIgnoring
 import me.zavdav.zcore.util.colored
@@ -60,6 +61,8 @@ private fun CommandContext<CommandSender>.doMailSend(target: OfflinePlayer, mess
 
     if (target.checkIgnoring(source)) return
     source.data.sendMail(target, finalMessage)
+    val onlineTarget = ZCore.getPlayer(target.uuid) ?: return
+    onlineTarget.sendMessage(local("command.mail.pending"))
 }
 
 private fun CommandContext<CommandSender>.doMailRead(target: OfflinePlayer) {

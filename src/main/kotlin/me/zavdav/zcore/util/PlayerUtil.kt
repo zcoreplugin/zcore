@@ -10,7 +10,7 @@ import java.util.UUID
 internal fun computeNickname(player: OfflinePlayer): String {
     val nickname = player.nickname
     return if (nickname != null) {
-        "§f${ZCoreConfig.getString("general.nick-prefix").colored()}$nickname§f"
+        "§f${ZCoreConfig.getString("text.nick-prefix").colored()}$nickname§f"
     } else {
         player.name
     }

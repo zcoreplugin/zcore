@@ -12,12 +12,6 @@ object ZCoreConfig {
     fun load() {
         yaml.load()
 
-        put("general.command-prefix", "&7>>")
-        put("general.chat-format", "{PLAYER}: {MESSAGE}")
-        put("general.nick-prefix", "~")
-        put("general.display-name-format", "{PREFIX} {NICKNAME} {SUFFIX}")
-        put("general.currency", "$")
-
         put("command.afk.auto.enabled", true)
         put("command.afk.auto.time", 300, 1)
         put("command.afk.auto.kick.enabled", true)
@@ -28,12 +22,18 @@ object ZCoreConfig {
         put("command.give.default-amount", 1, 1)
         put("command.kick.default-reason", "Kicked from server")
         put("command.list.group-order", listOf("admin", "moderator", "donator", "default"))
-        put("command.motd.lines", listOf("&6Welcome, {NAME}!", "&7-------------------------", "&eOnline players: &b{PLAYERCOUNT}/{MAXPLAYERS}"))
         put("command.mute.default-reason", "A mysterious force leaves you speechless!")
-        put("command.rules.lines", listOf("&7=> &bRules &7<==============================", "1. Placeholder text", "2. Placeholder text", "3. Placeholder text"))
+        put("command.rules.lines", listOf("&7--------------- &fServer Rules &7---------------", "1. Placeholder text", "2. Placeholder text", "3. Placeholder text"))
         put("command.tp.max-radius", 100000, 1)
         put("command.tpa.expire-after", 30, 1)
         put("command.tpahere.expire-after", 30, 1)
+        put("text.command-prefix", "&7>>")
+        put("text.currency", "$")
+        put("text.chat-format", "{PLAYER}: {MESSAGE}")
+        put("text.nick-prefix", "~")
+        put("text.display-name-format", "{PREFIX} {NICKNAME} {SUFFIX}")
+        put("text.new-player-announcement", "&eWelcome to the server, {PLAYER}!")
+        put("text.message-of-the-day", listOf("&6Welcome, {NAME}!", "&7-------------------------", "&eOnline players: &b{PLAYERCOUNT}/{MAXPLAYERS}"))
 
         yaml.save()
     }

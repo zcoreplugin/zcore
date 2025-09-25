@@ -13,7 +13,7 @@ fun line(color: ChatColor): String =
 
 fun local(key: String, vararg replacements: Any): String {
     var message = ResourceBundle.getBundle("lang").getString(key)
-        .replaceFirst("<prefix>", ZCoreConfig.getString("general.command-prefix") + "&f")
+        .replaceFirst("<prefix>", ZCoreConfig.getString("text.command-prefix") + "&f")
         .colored()
 
     for (i in replacements.indices) {

@@ -1,6 +1,7 @@
 package me.zavdav.zcore.event
 
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.data.IpAddresses
 import me.zavdav.zcore.economy.PersonalAccount
 import me.zavdav.zcore.player.OfflinePlayer
@@ -8,8 +9,10 @@ import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.IpBanList
 import me.zavdav.zcore.util.formatDuration
+import me.zavdav.zcore.util.formatted
 import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.updateVanishStates
+import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -66,10 +69,11 @@ internal class JoinQuitListener : Listener {
                 this.lastJoin = now
                 this.lastActivity = now
             }
-
-            PersonalAccount.new {
-                this.owner = player
-            }
+            PersonalAccount.new { this.owner = player }
+            Bukkit.broadcastMessage(formatted(
+                ZCoreConfig.getString("text.new-player-announcement"),
+                "player" to event.player.name
+            ))
         }
 
         player.name = event.player.name
@@ -89,6 +93,20 @@ internal class JoinQuitListener : Listener {
         }
 
         updateVanishStates()
+
+        ZCoreConfig.getStringList("text.message-of-the-day").forEach {
+            event.player.sendMessage(formatted(
+                it,
+                "name" to event.player.name,
+                "displayname" to event.player.displayName,
+                "playercount" to Bukkit.getOnlinePlayers().size,
+                "maxplayers" to Bukkit.getMaxPlayers()
+            ))
+        }
+
+        if (!player.mail.empty()) {
+            event.player.sendMessage(local("command.mail.pending"))
+        }
     }
 
     @EventHandler(priority = Event.Priority.Lowest)

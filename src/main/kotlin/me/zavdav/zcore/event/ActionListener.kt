@@ -46,7 +46,7 @@ internal class ActionListener : Listener {
 
         if (player.hasPermission("zcore.chat.color"))
             event.message = event.message.colored()
-        event.format = formatted(ZCoreConfig.getString("general.chat-format"),
+        event.format = formatted(ZCoreConfig.getString("text.chat-format"),
             "player" to "%1\$s", "message" to "%2\$s")
 
         event.recipients.removeIf { it.core().data.checkIgnoring(player) }

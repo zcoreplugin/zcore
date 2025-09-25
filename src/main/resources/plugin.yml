@@ -228,9 +228,6 @@ permissions:
       zcore.mail.send.color: true
       zcore.mail.read.other: true
 
-  zcore.motd:
-    default: op
-
   zcore.movehome:
     default: op
 

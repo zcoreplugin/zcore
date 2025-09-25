@@ -47,7 +47,7 @@ class CorePlayer(val base: Player) : Player by base {
         server.onlinePlayers.any { it.uniqueId == uniqueId }
 
     override fun getDisplayName(): String =
-        "§f${formatted(ZCoreConfig.getString("general.display-name-format"),
+        "§f${formatted(ZCoreConfig.getString("text.display-name-format"),
             "prefix" to GroupResolver.getPrefix(data),
             "nickname" to computeNickname(data),
             "suffix" to GroupResolver.getSuffix(data)
