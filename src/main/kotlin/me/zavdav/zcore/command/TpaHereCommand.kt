@@ -28,19 +28,21 @@ private fun CommandContext<CommandSender>.doTpaHere(target: CorePlayer) {
         throw TranslatableException("command.tpa.alreadySent", target.name)
 
     source.sendMessage(local("command.tpa", target.name))
-    if (target.data.checkIgnoring(source)) return
-    val request = TeleportRequest(source, true)
     val expiresAfter = ZCoreConfig.getInt("command.tpahere.expire-after")
+    val ignoring = target.data.checkIgnoring(source)
+    val request = TeleportRequest(source, true, ignoring)
     target.teleportRequests.add(request)
 
     syncDelayedTask(expiresAfter * 20L) {
         if (target.teleportRequests.remove(request)) {
             source.sendMessage(local("command.tpa.expired", target.name))
-            target.sendMessage(local("command.tpa.incoming.expired", source.name))
+            if (!ignoring) target.sendMessage(local("command.tpa.incoming.expired", source.name))
         }
     }
 
-    target.sendMessage(local("command.tpa.here.incoming", source.name))
-    target.sendMessage(local("command.tpa.incoming.use"))
-    target.sendMessage(local("command.tpa.incoming.expiration", expiresAfter))
+    if (!ignoring) {
+        target.sendMessage(local("command.tpa.here.incoming", source.name))
+        target.sendMessage(local("command.tpa.incoming.use"))
+        target.sendMessage(local("command.tpa.incoming.expiration", expiresAfter))
+    }
 }

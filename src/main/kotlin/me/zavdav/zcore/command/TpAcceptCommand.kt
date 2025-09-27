@@ -24,10 +24,11 @@ internal val tpacceptCommand = command(
 
 private fun CommandContext<CommandSender>.doTpAccept() {
     val source = requirePlayer()
-    if (source.teleportRequests.isEmpty())
+    val request = source.teleportRequests.peek()
+    if (request == null || request.ignore)
         throw TranslatableException("command.tpa.none")
 
-    val request = source.teleportRequests.poll()
+    source.teleportRequests.poll()
     val requester = request.source
     source.sendMessage(local("command.tpaccept", requester.name))
     requester.sendMessage(local("command.tpaccept.notify", source.name))
@@ -42,7 +43,7 @@ private fun CommandContext<CommandSender>.doTpAccept() {
 private fun CommandContext<CommandSender>.doTpAccept(requester: CorePlayer) {
     val source = requirePlayer()
     val request = source.teleportRequests.firstOrNull { it.source == requester }
-    if (request == null)
+    if (request == null || request.ignore)
         throw TranslatableException("command.tpa.none.player", requester.name)
 
     source.teleportRequests.remove(request)

@@ -1,3 +1,3 @@
 package me.zavdav.zcore.player
 
-data class TeleportRequest(val source: CorePlayer, val here: Boolean)
+data class TeleportRequest(val source: CorePlayer, val here: Boolean, val ignore: Boolean)

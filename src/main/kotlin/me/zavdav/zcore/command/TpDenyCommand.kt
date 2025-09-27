@@ -24,10 +24,11 @@ internal val tpdenyCommand = command(
 
 private fun CommandContext<CommandSender>.doTpDeny() {
     val source = requirePlayer()
-    if (source.teleportRequests.isEmpty())
+    val request = source.teleportRequests.peek()
+    if (request == null || request.ignore)
         throw TranslatableException("command.tpa.none")
 
-    val request = source.teleportRequests.poll()
+    source.teleportRequests.poll()
     val requester = request.source
     source.sendMessage(local("command.tpdeny", requester.name))
     requester.sendMessage(local("command.tpdeny.notify", source.name))
@@ -36,7 +37,7 @@ private fun CommandContext<CommandSender>.doTpDeny() {
 private fun CommandContext<CommandSender>.doTpDeny(requester: CorePlayer) {
     val source = requirePlayer()
     val request = source.teleportRequests.firstOrNull { it.source == requester }
-    if (request == null)
+    if (request == null || request.ignore)
         throw TranslatableException("command.tpa.none.player", requester.name)
 
     source.teleportRequests.remove(request)
