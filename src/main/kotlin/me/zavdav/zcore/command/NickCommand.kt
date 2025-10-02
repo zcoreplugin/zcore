@@ -2,6 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.command.event.PlayerNickEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.colored
 import me.zavdav.zcore.util.computeNickname
@@ -45,6 +46,7 @@ private fun CommandContext<CommandSender>.doNick(target: OfflinePlayer, nickname
     if (ChatColor.stripColor(finalNickname).isEmpty())
         throw TranslatableException("command.nick.empty")
 
+    if (!PlayerNickEvent(source, target, finalNickname).call()) return
     target.nickname = finalNickname
     source.sendMessage(local("command.nick", target.name, computeNickname(target)))
 

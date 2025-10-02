@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.MessageSendEvent
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.util.checkIgnoring
 import me.zavdav.zcore.util.colored
@@ -31,6 +32,7 @@ private fun CommandContext<CommandSender>.doMsg(target: CorePlayer, message: Str
     if (source.hasPermission("zcore.msg.color"))
         finalMessage = message.colored()
 
+    if (!MessageSendEvent(source, target, finalMessage).call()) return
     source.replyingTo = target
     source.sendMessage(local("command.msg.to", target.displayName, finalMessage))
     notifySocialSpy(

@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.TeleportAcceptEvent
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
@@ -28,8 +29,9 @@ private fun CommandContext<CommandSender>.doTpAccept() {
     if (request == null || request.ignore)
         throw TranslatableException("command.tpa.none")
 
-    source.teleportRequests.poll()
     val requester = request.source
+    if (!TeleportAcceptEvent(source, request).call()) return
+    source.teleportRequests.poll()
     source.sendMessage(local("command.tpaccept", requester.name))
     requester.sendMessage(local("command.tpaccept.notify", source.name))
 
@@ -46,6 +48,7 @@ private fun CommandContext<CommandSender>.doTpAccept(requester: CorePlayer) {
     if (request == null || request.ignore)
         throw TranslatableException("command.tpa.none.player", requester.name)
 
+    if (!TeleportAcceptEvent(source, request).call()) return
     source.teleportRequests.remove(request)
     source.sendMessage(local("command.tpaccept", requester.name))
     requester.sendMessage(local("command.tpaccept.notify", source.name))

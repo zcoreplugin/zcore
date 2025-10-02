@@ -1,6 +1,8 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.IpBanEvent
+import me.zavdav.zcore.command.event.PlayerBanEvent
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
@@ -80,6 +82,7 @@ private fun CommandContext<CommandSender>.doBanIp(target: Inet4Address, duration
     val source = this.source
     val issuer = (source as? Player)?.core()?.data
 
+    if (!IpBanEvent(source, target, duration, reason).call()) return
     IpBanList.addBan(target, issuer, duration, reason)
     Bukkit.getOnlinePlayers()
         .filter { it.address.address == target }
@@ -106,6 +109,7 @@ private fun CommandContext<CommandSender>.doBanIp(target: OfflinePlayer, duratio
 
     if (Bukkit.getOfflinePlayer(target.name).isOp)
         throw TranslatableException("command.banip.exempt", target.name)
+    if (!PlayerBanEvent(source, target, duration, reason).call()) return
 
     BanList.addBan(target, issuer, duration, reason)
     target.ipAddresses.forEach { IpBanList.addBan(it, issuer, duration, reason) }

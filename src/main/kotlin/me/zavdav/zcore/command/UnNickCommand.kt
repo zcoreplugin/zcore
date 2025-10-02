@@ -2,6 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.command.event.PlayerUnnickEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
@@ -29,6 +30,7 @@ private fun CommandContext<CommandSender>.doUnNick(target: OfflinePlayer) {
     val source = this.source
     val self = source is Player && source.uniqueId == target.uuid
 
+    if (!PlayerUnnickEvent(source, target).call()) return
     target.nickname = null
     source.sendMessage(local("command.unnick", target.name))
 

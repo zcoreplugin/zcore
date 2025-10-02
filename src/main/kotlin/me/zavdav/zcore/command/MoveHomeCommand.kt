@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.HomeMoveEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
@@ -32,8 +33,10 @@ internal val movehomeCommand = command(
 
 private fun CommandContext<CommandSender>.doMoveHome(target: OfflinePlayer, homeName: String) {
     val source = requirePlayer()
-    val existingHome = target.moveHome(homeName, source.location)
+    val existingHome = target.getHome(homeName)
     if (existingHome != null) {
+        if (!HomeMoveEvent(source, existingHome, source.location).call()) return
+        target.moveHome(homeName, source.location)
         source.sendMessage(local("command.movehome", target.name, existingHome.name))
     } else {
         source.sendMessage(local("command.movehome.unknown", target.name, homeName))

@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.PowerToolDeleteEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.MaterialData
 import me.zavdav.zcore.util.local
@@ -30,6 +31,7 @@ private fun CommandContext<CommandSender>.doDelPt(target: OfflinePlayer) {
     val item = source.itemInHand
     if (item.type == Material.AIR)
         throw TranslatableException("command.delpt.noItem")
+    if (!PowerToolDeleteEvent(source, item).call()) return
 
     val materialData = MaterialData(item.type, item.durability)
     if (target.deletePowerTool(item.type, item.durability) != null) {

@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.TeleportDenyEvent
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
@@ -28,8 +29,9 @@ private fun CommandContext<CommandSender>.doTpDeny() {
     if (request == null || request.ignore)
         throw TranslatableException("command.tpa.none")
 
-    source.teleportRequests.poll()
     val requester = request.source
+    if (!TeleportDenyEvent(source, request).call()) return
+    source.teleportRequests.poll()
     source.sendMessage(local("command.tpdeny", requester.name))
     requester.sendMessage(local("command.tpdeny.notify", source.name))
 }
@@ -40,6 +42,7 @@ private fun CommandContext<CommandSender>.doTpDeny(requester: CorePlayer) {
     if (request == null || request.ignore)
         throw TranslatableException("command.tpa.none.player", requester.name)
 
+    if (!TeleportDenyEvent(source, request).call()) return
     source.teleportRequests.remove(request)
     source.sendMessage(local("command.tpdeny", requester.name))
     requester.sendMessage(local("command.tpdeny.notify", source.name))

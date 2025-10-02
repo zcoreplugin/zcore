@@ -1,6 +1,8 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.IpUnbanEvent
+import me.zavdav.zcore.command.event.PlayerUnbanEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.IpBanList
@@ -29,7 +31,9 @@ internal val unbanipCommand = command(
 }
 
 private fun CommandContext<CommandSender>.doUnBanIp(target: Inet4Address) {
-    if (IpBanList.pardonBan(target)) {
+    if (IpBanList.getActiveBan(target) != null) {
+        if (!IpUnbanEvent(source, target).call()) return
+        IpBanList.pardonBan(target)
         source.sendMessage(local("command.unbanip", target.hostAddress))
     } else {
         throw TranslatableException("command.unbanip.notBanned", target.hostAddress)
@@ -37,6 +41,7 @@ private fun CommandContext<CommandSender>.doUnBanIp(target: Inet4Address) {
 }
 
 private fun CommandContext<CommandSender>.doUnBanIp(target: OfflinePlayer) {
+    if (!PlayerUnbanEvent(source, target).call()) return
     BanList.pardonBan(target)
     target.ipAddresses.forEach { IpBanList.pardonBan(it) }
     source.sendMessage(local("command.unbanip", target.name))

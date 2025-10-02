@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.TeleportRequestEvent
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.TeleportRequest
@@ -27,11 +28,13 @@ private fun CommandContext<CommandSender>.doTpaHere(target: CorePlayer) {
     if (target.teleportRequests.any { it.source == source })
         throw TranslatableException("command.tpa.alreadySent", target.name)
 
-    source.sendMessage(local("command.tpa", target.name))
     val expiresAfter = ZCoreConfig.getInt("command.tpahere.expire-after")
     val ignoring = target.data.checkIgnoring(source)
     val request = TeleportRequest(source, true, ignoring)
+
+    if (!TeleportRequestEvent(source, target, request).call()) return
     target.teleportRequests.add(request)
+    source.sendMessage(local("command.tpa", target.name))
 
     syncDelayedTask(expiresAfter * 20L) {
         if (target.teleportRequests.remove(request)) {

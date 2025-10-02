@@ -2,6 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.command.event.MailSendEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.checkIgnoring
 import me.zavdav.zcore.util.colored
@@ -53,6 +54,7 @@ private fun CommandContext<CommandSender>.doMailSend(target: OfflinePlayer, mess
     if (source.hasPermission("zcore.mail.send.color"))
         finalMessage = message.colored()
 
+    if (!MailSendEvent(source, target, finalMessage).call()) return
     source.sendMessage(local("command.mail.send", target.name))
     notifySocialSpy(
         local("command.socialspy.mail", source.displayName, target.name, finalMessage),

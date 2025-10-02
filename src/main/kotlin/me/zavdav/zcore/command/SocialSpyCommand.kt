@@ -1,6 +1,8 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.SocialSpyDisableEvent
+import me.zavdav.zcore.command.event.SocialSpyEnableEvent
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.local
@@ -44,6 +46,7 @@ private fun CommandContext<CommandSender>.doSocialSpyOn(target: CorePlayer) {
     val source = this.source
     val self = source is Player && source.core() == target
 
+    if (!SocialSpyEnableEvent(source, target).call()) return
     target.data.isSocialSpy = true
     source.sendMessage(local("command.socialspy.enabled", target.name))
     if (!self) target.sendMessage(local("command.socialspy.enabled", target.name))
@@ -53,6 +56,7 @@ private fun CommandContext<CommandSender>.doSocialSpyOff(target: CorePlayer) {
     val source = this.source
     val self = source is Player && source.core() == target
 
+    if (!SocialSpyDisableEvent(source, target).call()) return
     target.data.isSocialSpy = false
     source.sendMessage(local("command.socialspy.disabled", target.name))
     if (!self) target.sendMessage(local("command.socialspy.disabled", target.name))

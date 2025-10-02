@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.PlayerUnbanEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.util.local
@@ -21,7 +22,9 @@ internal val unbanCommand = command(
 }
 
 private fun CommandContext<CommandSender>.doUnBan(target: OfflinePlayer) {
-    if (BanList.pardonBan(target)) {
+    if (BanList.getActiveBan(target) != null) {
+        if (!PlayerUnbanEvent(source, target).call()) return
+        BanList.pardonBan(target)
         source.sendMessage(local("command.unban", target.name))
     } else {
         throw TranslatableException("command.unban.notBanned", target.name)

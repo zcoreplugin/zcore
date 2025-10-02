@@ -2,6 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.command.event.PlayerBanEvent
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
@@ -53,6 +54,7 @@ private fun CommandContext<CommandSender>.doBan(target: OfflinePlayer, duration:
 
     if (Bukkit.getOfflinePlayer(target.name).isOp)
         throw TranslatableException("command.ban.exempt", target.name)
+    if (!PlayerBanEvent(source, target, duration, reason).call()) return
 
     BanList.addBan(target, issuer, duration, reason)
     val player = ZCore.getPlayer(target.uuid)

@@ -2,6 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.command.event.PlayerPayEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
@@ -29,6 +30,7 @@ private fun CommandContext<CommandSender>.doPay(target: OfflinePlayer, amount: B
     val roundedAmount = amount.setScale(2, RoundingMode.DOWN)
     if (roundedAmount <= BigDecimal.ZERO)
         throw TranslatableException("command.invalidAmount", roundedAmount)
+    if (!PlayerPayEvent(source, target, roundedAmount).call()) return
 
     if (source.data.account.transfer(roundedAmount, target.account)) {
         source.sendMessage(local("command.pay", ZCore.formatCurrency(roundedAmount), target.name))

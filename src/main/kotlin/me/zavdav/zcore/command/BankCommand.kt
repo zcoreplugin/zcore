@@ -2,6 +2,10 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.command.event.BankCreateEvent
+import me.zavdav.zcore.command.event.BankDeleteEvent
+import me.zavdav.zcore.command.event.BankDepositEvent
+import me.zavdav.zcore.command.event.BankWithdrawEvent
 import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
@@ -197,6 +201,7 @@ private fun CommandContext<CommandSender>.doBankCreate(name: String) {
 
     val existingBank = ZCore.getBank(name)
     if (existingBank == null) {
+        if (!BankCreateEvent(source, name).call()) return
         ZCore.createBank(name, source.data)
         source.sendMessage(local("command.bank.create", name))
     } else {
@@ -206,6 +211,7 @@ private fun CommandContext<CommandSender>.doBankCreate(name: String) {
 
 private fun CommandContext<CommandSender>.doBankDelete(bank: BankAccount) {
     checkIsOwner(source, bank)
+    if (!BankDeleteEvent(source, bank).call()) return
     bank.transfer(bank.balance, bank.owner.account)
     bank.delete()
     source.sendMessage(local("command.bank.delete", bank.name))
@@ -215,6 +221,7 @@ private fun CommandContext<CommandSender>.doBankDeposit(amount: BigDecimal, bank
     val source = requirePlayer()
     checkIsMember(source, bank)
     val finalAmount = roundAmount(amount)
+    if (!BankDepositEvent(source, finalAmount, bank).call()) return
 
     if (source.data.account.transfer(finalAmount, bank)) {
         source.sendMessage(local("command.bank.deposit", ZCore.formatCurrency(finalAmount), bank.name))
@@ -227,6 +234,7 @@ private fun CommandContext<CommandSender>.doBankWithdraw(amount: BigDecimal, ban
     val source = requirePlayer()
     checkIsMember(source, bank)
     val finalAmount = roundAmount(amount)
+    if (!BankWithdrawEvent(source, finalAmount, bank).call()) return
 
     if (bank.transfer(finalAmount, source.data.account)) {
         source.sendMessage(local("command.bank.withdraw", ZCore.formatCurrency(finalAmount), bank.name))

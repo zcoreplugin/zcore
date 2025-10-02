@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.HomeRenameEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
@@ -49,6 +50,7 @@ private fun CommandContext<CommandSender>.doRenameHome(
     if (matchingHome != null)
         throw TranslatableException("command.renamehome.exists", target.name, matchingHome.name)
 
+    if (!HomeRenameEvent(source, existingHome, newName).call()) return
     val prevName = existingHome.name
     existingHome.name = newName
     source.sendMessage(local("command.renamehome", target.name, prevName, newName))

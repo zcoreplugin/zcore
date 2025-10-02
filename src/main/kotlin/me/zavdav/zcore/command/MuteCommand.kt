@@ -2,6 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.command.event.PlayerMuteEvent
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
@@ -53,6 +54,7 @@ private fun CommandContext<CommandSender>.doMute(target: OfflinePlayer, duration
 
     if (Bukkit.getOfflinePlayer(target.name).isOp)
         throw TranslatableException("command.mute.exempt", target.name)
+    if (!PlayerMuteEvent(source, target, duration, reason).call()) return
 
     MuteList.addMute(target, issuer, duration, reason)
     val player = ZCore.getPlayer(target.uuid)

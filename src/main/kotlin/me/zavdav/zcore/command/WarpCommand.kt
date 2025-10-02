@@ -2,6 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
+import me.zavdav.zcore.command.event.WarpTeleportEvent
 import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.normalizedDirection
 import org.bukkit.command.CommandSender
@@ -25,6 +26,7 @@ private fun CommandContext<CommandSender>.doWarp(warpName: String) {
     if (warp == null)
         throw TranslatableException("command.warp.unknown", warpName)
 
+    if (!WarpTeleportEvent(source, warp).call()) return
     val location = warp.toBukkitLocation().normalizedDirection()
     if (source.safelyTeleport(location)) {
         source.sendMessage(local("command.warp", warp.name))

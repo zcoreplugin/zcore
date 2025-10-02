@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.InvincibilityDisableEvent
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.local
@@ -28,8 +29,9 @@ internal val ungodCommand = command(
 private fun CommandContext<CommandSender>.doUnGod(target: CorePlayer) {
     val source = this.source
     val self = source is Player && source.core() == target
-    target.data.isInvincible = false
 
+    if (!InvincibilityDisableEvent(source, target).call()) return
+    target.data.isInvincible = false
     source.sendMessage(local("command.ungod", target.name))
     if (!self) target.sendMessage(local("command.ungod", target.name))
 }

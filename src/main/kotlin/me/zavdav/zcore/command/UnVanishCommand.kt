@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.command.event.VanishDisableEvent
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.util.local
@@ -29,6 +30,7 @@ private fun CommandContext<CommandSender>.doUnVanish(target: CorePlayer) {
     val source = this.source
     val self = source is Player && source.core() == target
 
+    if (!VanishDisableEvent(source, target).call()) return
     target.data.isVanished = false
     source.sendMessage(local("command.unvanish", target.name))
     if (!self) target.sendMessage(local("command.unvanish", target.name))

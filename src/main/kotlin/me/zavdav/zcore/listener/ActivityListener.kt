@@ -1,4 +1,4 @@
-package me.zavdav.zcore.event
+package me.zavdav.zcore.listener
 
 import me.zavdav.zcore.command.afkCommand
 import me.zavdav.zcore.config.ZCoreConfig
