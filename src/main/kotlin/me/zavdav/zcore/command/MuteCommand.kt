@@ -7,7 +7,6 @@ import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.MuteList
-import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -59,8 +58,8 @@ private fun CommandContext<CommandSender>.doMute(target: OfflinePlayer, duration
     MuteList.addMute(target, issuer, duration, reason)
     val player = ZCore.getPlayer(target.uuid)
     if (duration != null) {
-        player?.sendMessage(local("command.mute.temporary.notify", formatDuration(duration), reason))
-        source.sendMessage(local("command.mute.temporary", target.name, formatDuration(duration), reason))
+        player?.sendMessage(local("command.mute.temporary.notify", ZCore.formatDuration(duration), reason))
+        source.sendMessage(local("command.mute.temporary", target.name, ZCore.formatDuration(duration), reason))
     } else {
         player?.sendMessage(local("command.mute.permanent.notify", reason))
         source.sendMessage(local("command.mute.permanent", target.name, reason))

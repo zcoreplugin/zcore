@@ -1,8 +1,8 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
@@ -25,10 +25,10 @@ internal val seenCommand = command(
 
 private fun CommandContext<CommandSender>.doSeen(target: OfflinePlayer) {
     if (target.isOnline) {
-        val duration = formatDuration(System.currentTimeMillis() - target.lastJoin)
+        val duration = ZCore.formatDuration(System.currentTimeMillis() - target.lastJoin)
         source.sendMessage(local("command.seen.online", target.name, duration))
     } else {
-        val duration = formatDuration(System.currentTimeMillis() - target.lastActivity)
+        val duration = ZCore.formatDuration(System.currentTimeMillis() - target.lastActivity)
         source.sendMessage(local("command.seen.offline", target.name, duration))
     }
 }

@@ -41,8 +41,10 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.sql.Connection
-import java.text.NumberFormat
-import java.util.Locale
+import java.text.DecimalFormat
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.SortedSet
 import java.util.UUID
 
@@ -240,19 +242,23 @@ class ZCore : JavaPlugin() {
             return warp
         }
 
+        /** Formats the specified amount according to the currency format. */
         @JvmStatic
         fun formatCurrency(amount: BigDecimal): String {
-            var roundedAmount = amount.setScale(2, RoundingMode.DOWN)
+            val formatted = DecimalFormat("#,##0.00").format(amount.setScale(2, RoundingMode.DOWN))
+            return "${ZCoreConfig.getString("text.currency")}$formatted"
+        }
 
-            try {
-                roundedAmount = roundedAmount.setScale(0, RoundingMode.UNNECESSARY)
-            } catch (_: ArithmeticException) {}
+        /** Formats the specified duration in milliseconds according to the duration format. */
+        @JvmStatic
+        fun formatDuration(millis: Long): String = me.zavdav.zcore.util.formatDuration(millis)
 
-            val currencyFormat = NumberFormat.getInstance(Locale.US)
-            currencyFormat.minimumFractionDigits = 0
-            currencyFormat.maximumFractionDigits = roundedAmount.scale()
-
-            return "${ZCoreConfig.getString("text.currency")}${currencyFormat.format(roundedAmount)}"
+        /** Formats the specified unix timestamp according to the timestamp format. */
+        @JvmStatic
+        fun formatTimestamp(millis: Long): String {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val dateTime = Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).toLocalDateTime()
+            return formatter.format(dateTime) + " UTC"
         }
 
     }

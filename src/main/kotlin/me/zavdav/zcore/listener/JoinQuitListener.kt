@@ -8,7 +8,6 @@ import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.IpBanList
-import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.formatted
 import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.updateVanishStates
@@ -36,7 +35,7 @@ internal class JoinQuitListener : Listener {
             val duration = ipBan.expiration?.let { it - System.currentTimeMillis() }
             if (duration != null) {
                 event.disallow(Result.KICK_BANNED_IP,
-                    local("command.banip.temporary.notify", formatDuration(duration), ipBan.reason))
+                    local("command.banip.temporary.notify", ZCore.formatDuration(duration), ipBan.reason))
             } else {
                 event.disallow(Result.KICK_BANNED_IP,
                     local("command.banip.permanent.notify", ipBan.reason))
@@ -50,7 +49,7 @@ internal class JoinQuitListener : Listener {
 
         if (duration != null) {
             event.disallow(Result.KICK_BANNED,
-                local("command.ban.temporary.notify", formatDuration(duration), ban.reason))
+                local("command.ban.temporary.notify", ZCore.formatDuration(duration), ban.reason))
         } else {
             event.disallow(Result.KICK_BANNED,
                 local("command.ban.permanent.notify", ban.reason))

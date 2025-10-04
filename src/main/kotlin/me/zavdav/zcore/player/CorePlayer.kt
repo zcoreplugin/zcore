@@ -6,7 +6,6 @@ import me.zavdav.zcore.economy.BankAccount
 import me.zavdav.zcore.inventory.InventoryView
 import me.zavdav.zcore.group.GroupResolver
 import me.zavdav.zcore.util.computeNickname
-import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.formatted
 import me.zavdav.zcore.util.getSafe
 import me.zavdav.zcore.util.local
@@ -97,7 +96,7 @@ class CorePlayer(val base: Player) : Player by base {
         if (!ZCoreConfig.getBoolean("command.afk.auto.kick.enabled")) return
         val autoKickTime = ZCoreConfig.getInt("command.afk.auto.kick.time") * 1000L
         if (isAfk && inactiveTime >= autoKickTime && !hasPermission("zcore.afk.kick.exempt"))
-            kickPlayer(local("command.afk.kick.message", formatDuration(autoKickTime)))
+            kickPlayer(local("command.afk.kick.message", ZCore.formatDuration(autoKickTime)))
     }
 
     internal companion object {

@@ -1,6 +1,7 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.command.event.IpBanEvent
 import me.zavdav.zcore.command.event.PlayerBanEvent
 import me.zavdav.zcore.config.ZCoreConfig
@@ -8,7 +9,6 @@ import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.IpBanList
-import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -89,7 +89,7 @@ private fun CommandContext<CommandSender>.doBanIp(target: Inet4Address, duration
         .map { it.core() }
         .forEach {
             if (duration != null) {
-                it.kickPlayer(local("command.banip.temporary.notify", formatDuration(duration), reason))
+                it.kickPlayer(local("command.banip.temporary.notify", ZCore.formatDuration(duration), reason))
             } else {
                 it.kickPlayer(local("command.banip.permanent.notify", reason))
             }
@@ -97,7 +97,7 @@ private fun CommandContext<CommandSender>.doBanIp(target: Inet4Address, duration
 
     if (duration != null) {
         source.sendMessage(local("command.banip.temporary",
-            target.hostAddress, formatDuration(duration), reason))
+            target.hostAddress, ZCore.formatDuration(duration), reason))
     } else {
         source.sendMessage(local("command.banip.permanent", target.hostAddress, reason))
     }
@@ -118,14 +118,14 @@ private fun CommandContext<CommandSender>.doBanIp(target: OfflinePlayer, duratio
         .map { it.core() }
         .forEach {
             if (duration != null) {
-                it.kickPlayer(local("command.banip.temporary.notify", formatDuration(duration), reason))
+                it.kickPlayer(local("command.banip.temporary.notify", ZCore.formatDuration(duration), reason))
             } else {
                 it.kickPlayer(local("command.banip.permanent.notify", reason))
             }
         }
 
     if (duration != null) {
-        source.sendMessage(local("command.banip.temporary", target.name, formatDuration(duration), reason))
+        source.sendMessage(local("command.banip.temporary", target.name, ZCore.formatDuration(duration), reason))
     } else {
         source.sendMessage(local("command.banip.permanent", target.name, reason))
     }

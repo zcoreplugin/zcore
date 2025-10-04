@@ -1,11 +1,10 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
+import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.punishment.MuteList
 import me.zavdav.zcore.util.PagingList
-import me.zavdav.zcore.util.formatDuration
-import me.zavdav.zcore.util.formatTimestamp
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
@@ -43,8 +42,8 @@ private fun CommandContext<CommandSender>.doMutes(target: OfflinePlayer, page: I
 
     list.page(index).forEach {
         val issuer = it.issuer?.name ?: "Console"
-        val duration = it.duration?.let { dur -> formatDuration(dur) } ?: "permanent"
-        source.sendMessage(local("command.mutes.issued", issuer, formatTimestamp(it.timeIssued)))
+        val duration = it.duration?.let { dur -> ZCore.formatDuration(dur) } ?: "permanent"
+        source.sendMessage(local("command.mutes.issued", issuer, ZCore.formatTimestamp(it.timeIssued)))
         source.sendMessage(local("command.mutes.details", duration, it.reason, it.pardoned))
     }
 }

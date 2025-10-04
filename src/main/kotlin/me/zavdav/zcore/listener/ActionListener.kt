@@ -1,12 +1,12 @@
 package me.zavdav.zcore.listener
 
+import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.core
 import me.zavdav.zcore.punishment.MuteList
 import me.zavdav.zcore.util.checkIgnoring
 import me.zavdav.zcore.util.colored
 import me.zavdav.zcore.util.displayName
-import me.zavdav.zcore.util.formatDuration
 import me.zavdav.zcore.util.formatted
 import me.zavdav.zcore.util.local
 import net.minecraft.server.Packet102WindowClick
@@ -36,7 +36,7 @@ internal class ActionListener : Listener {
         if (mute != null) {
             val duration = mute.expiration?.let { it - System.currentTimeMillis() }
             if (duration != null) {
-                player.sendMessage(local("command.mute.temporary.notify", formatDuration(duration), mute.reason))
+                player.sendMessage(local("command.mute.temporary.notify", ZCore.formatDuration(duration), mute.reason))
             } else {
                 player.sendMessage(local("command.mute.permanent.notify", mute.reason))
             }
