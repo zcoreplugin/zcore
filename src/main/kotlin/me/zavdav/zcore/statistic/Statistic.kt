@@ -35,10 +35,9 @@ class Statistic<V : Comparable<V>> private constructor(
      * @return the player's rank
      */
     fun getRank(player: OfflinePlayer): Int {
-        val players = ZCore.players.sortedWith(
-            compareByDescending<OfflinePlayer> { getScore(it) }
-                .then { p1, p2 -> p1.name.compareTo(p2.name, true) })
-        return players.indexOf(player) + 1
+        val comparator = compareByDescending<OfflinePlayer> { getScore(it) }
+            .then { p1, p2 -> p1.name.compareTo(p2.name, true) }
+        return ZCore.players.count { comparator.compare(player, it) >= 0 }
     }
 
     companion object {

@@ -34,7 +34,7 @@ private fun CommandContext<CommandSender>.doStats(target: OfflinePlayer) {
     Statistic.getAllRegistered().forEach {
         source.sendMessage(alignText(
             local("command.stats.name", it.name) to 1,
-            local("command.stats.score", it.getFormattedScore(target), it.getRank(target)) to 1
+            local("command.stats.score", it.getFormattedScore(target)) to 1
         ))
     }
 }
