@@ -66,7 +66,8 @@ private fun CommandContext<CommandSender>.doHelpCommand(name: String) {
         val allUsage = CommandDispatcher.getAllUsage(command.node, source, true)
         syntaxList.addAll(allUsage.map { "/${command.name} $it" })
     } else {
-        syntaxList.add(command.usage)
+        val allUsage = command.usage.replace("/<command>".toRegex(), "/${command.name}").split("\n")
+        syntaxList.addAll(allUsage)
     }
 
     source.sendMessage(local("command.help.syntax"))

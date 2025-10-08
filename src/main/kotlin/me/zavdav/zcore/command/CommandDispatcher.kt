@@ -117,7 +117,12 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
                 is UnknownBankExceptionType,
                 is UnknownCreatureExceptionType,
                 is UnknownMaterialExceptionType -> source.sendMessage(e.rawMessage.string)
-                else -> source.sendMessage(local("command.syntaxError", command.name))
+                else -> {
+                    source.sendMessage(local("command.correctSyntax"))
+                    val syntaxList = getAllUsage(command.node, source, true).map { "/${command.name} $it" }
+                    syntaxList.forEach { source.sendMessage(local("command.syntaxLine", it)) }
+                    source.sendMessage(local("command.commandHelp", command.name))
+                }
             }
         } catch (e: TranslatableException) {
             source.sendMessage(local(e.key, *e.args))
