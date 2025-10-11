@@ -1,8 +1,10 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
+import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.util.getField
 import me.zavdav.zcore.util.local
+import me.zavdav.zcore.util.syncDelayedTask
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
@@ -10,7 +12,7 @@ import org.bukkit.command.CommandSender
 
 internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<CommandSender>() {
 
-    private val commands = listOf(
+    private val commands = mutableListOf(
         afkCommand,
         balanceCommand,
         baltopCommand,
@@ -87,11 +89,28 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
     private val bukkitKnownCommands = getField<MutableMap<String, Command>>(bukkitCommandMap, "knownCommands")
 
     init {
+        commands.removeAll { it.name in ZCoreConfig.getStringList("command.disabled") }
         commands.forEach { root.addChild(it.node) }
     }
 
     internal fun registerAll() {
-        bukkitCommandMap.registerAll("zcore", commands)
+        val overridden = commands.filter { it.name in ZCoreConfig.getStringList("command.overridden") }
+        commands.removeAll(overridden)
+        bukkitCommandMap.registerAll("zcore", commands.toList())
+
+        syncDelayedTask(1) {
+            for (command in overridden) {
+                val matches = bukkitKnownCommands.filter { it.value.name.equals(command.name, true) }
+                matches.forEach {
+                    bukkitKnownCommands.remove(it.key)
+                    it.value.unregister(bukkitCommandMap)
+                }
+
+                commands.add(command)
+                bukkitCommandMap.register("zcore", command)
+                matches.forEach { bukkitCommandMap.register(it.key, it.value) }
+            }
+        }
     }
 
     internal fun unregisterAll() {

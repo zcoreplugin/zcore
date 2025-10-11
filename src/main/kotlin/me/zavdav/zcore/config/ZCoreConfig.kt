@@ -27,6 +27,8 @@ object ZCoreConfig {
         put("command.tp.max-radius", 100000, 1)
         put("command.tpa.expire-after", 30, 1)
         put("command.tpahere.expire-after", 30, 1)
+        put("command.disabled", ArrayList())
+        put("command.overridden", ArrayList())
         put("text.command-prefix", "&7>>")
         put("text.currency", "$")
         put("text.chat-format", "{PLAYER}: {MESSAGE}")
