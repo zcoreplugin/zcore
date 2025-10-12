@@ -16,6 +16,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityTargetEvent
@@ -136,6 +137,16 @@ internal class ActionListener : Listener {
         val view = player.inventoryView ?: return
         event.isCancelled = true
         view.handleClick(packet)
+    }
+
+    @EventHandler(priority = Event.Priority.Low, ignoreCancelled = true)
+    fun onSignChange(event: SignChangeEvent) {
+        val player = event.player.core()
+        if (player.hasPermission("zcore.sign.color")) {
+            for (i in event.lines.indices) {
+                event.setLine(i, event.getLine(i).colored())
+            }
+        }
     }
 
 }

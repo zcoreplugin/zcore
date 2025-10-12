@@ -328,6 +328,9 @@ permissions:
   zcore.setwarp:
     default: op
 
+  zcore.sign.color:
+    default: op
+
   zcore.smite:
     default: op
 
