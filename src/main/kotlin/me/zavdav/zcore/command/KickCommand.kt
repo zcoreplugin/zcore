@@ -18,9 +18,9 @@ internal val kickCommand = command(
         }
         textArgument("reason") {
             runs {
-                val target: CorePlayer by this
+                val player: CorePlayer by this
                 val reason: String by this
-                doKick(target, reason)
+                doKick(player, reason)
             }
         }
     }
