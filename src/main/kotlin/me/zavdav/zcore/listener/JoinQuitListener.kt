@@ -16,6 +16,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerLoginEvent.Result
 import org.bukkit.event.player.PlayerQuitEvent
@@ -106,6 +107,9 @@ internal class JoinQuitListener : Listener {
         if (!player.mail.empty()) {
             event.player.sendMessage(local("command.mail.pending"))
         }
+
+        event.joinMessage = formatted(ZCoreConfig.getString("text.join-message"),
+            "player" to event.player.name)
     }
 
     @EventHandler(priority = Event.Priority.Lowest)
@@ -113,6 +117,21 @@ internal class JoinQuitListener : Listener {
         val player = event.player.core()
         player.data._playtime = player.data.playtime
         player.isAfk = false
+
+        event.quitMessage = formatted(ZCoreConfig.getString("text.quit-message"),
+            "player" to event.player.name)
+    }
+
+    @EventHandler(priority = Event.Priority.Lowest)
+    fun onPlayerKick(event: PlayerKickEvent) {
+        val player = event.player.core()
+        if (player.data.isBanned) {
+            event.leaveMessage = formatted(ZCoreConfig.getString("text.ban-message"),
+                "player" to event.player.name)
+        } else {
+            event.leaveMessage = formatted(ZCoreConfig.getString("text.kick-message"),
+                "player" to event.player.name)
+        }
     }
 
 }

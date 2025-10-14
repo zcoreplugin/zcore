@@ -34,6 +34,10 @@ object ZCoreConfig {
         put("text.chat-format", "{PLAYER}: {MESSAGE}")
         put("text.nick-prefix", "~")
         put("text.display-name-format", "{PREFIX} {NICKNAME} {SUFFIX}")
+        put("text.join-message", "&e{PLAYER} joined the game.")
+        put("text.quit-message", "&e{PLAYER} left the game.")
+        put("text.kick-message", "&e{PLAYER} was kicked from the game.")
+        put("text.ban-message", "&e{PLAYER} was banned from the server.")
         put("text.new-player-announcement", "&eWelcome to the server, {PLAYER}!")
         put("text.message-of-the-day", listOf("&6Welcome, {NAME}!", "&7-------------------------", "&eOnline players: &b{PLAYERCOUNT}/{MAXPLAYERS}"))
 
