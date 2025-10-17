@@ -228,6 +228,17 @@ permissions:
       zcore.mail.send.color: true
       zcore.mail.read.other: true
 
+  zcore.me:
+    default: op
+
+  zcore.me.color:
+    default: op
+
+  zcore.me.*:
+    children:
+      zcore.me: true
+      zcore.me.color: true
+
   zcore.movehome:
     default: op
 

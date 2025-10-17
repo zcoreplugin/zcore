@@ -42,6 +42,7 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
         leaderboardCommand,
         listCommand,
         mailCommand,
+        meCommand,
         movehomeCommand,
         msgCommand,
         muteCommand,

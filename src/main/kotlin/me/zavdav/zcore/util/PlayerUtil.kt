@@ -1,9 +1,11 @@
 package me.zavdav.zcore.util
 
+import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.player.core
+import me.zavdav.zcore.punishment.MuteList
 import org.bukkit.Bukkit
 import java.util.UUID
 
@@ -25,6 +27,20 @@ internal fun notifySocialSpy(message: String, vararg exempt: UUID) {
 
 internal fun OfflinePlayer.checkIgnoring(target: CorePlayer): Boolean =
     ignores(target.data) && !target.hasPermission("zcore.ignore.bypass")
+
+internal fun CorePlayer.checkMuted(): Boolean {
+    val mute = MuteList.getActiveMute(data)
+    if (mute != null) {
+        val duration = mute.expiration?.let { it - System.currentTimeMillis() }
+        if (duration != null) {
+            sendMessage(local("command.mute.temporary.notify", ZCore.formatDuration(duration), mute.reason))
+        } else {
+            sendMessage(local("command.mute.permanent.notify", mute.reason))
+        }
+        return true
+    }
+    return false
+}
 
 internal fun updateVanishStates() {
     for (pl in Bukkit.getOnlinePlayers()) {

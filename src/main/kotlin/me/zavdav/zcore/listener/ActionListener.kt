@@ -1,10 +1,9 @@
 package me.zavdav.zcore.listener
 
-import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.core
-import me.zavdav.zcore.punishment.MuteList
 import me.zavdav.zcore.util.checkIgnoring
+import me.zavdav.zcore.util.checkMuted
 import me.zavdav.zcore.util.colored
 import me.zavdav.zcore.util.displayName
 import me.zavdav.zcore.util.formatted
@@ -32,24 +31,16 @@ internal class ActionListener : Listener {
     @EventHandler(priority = Event.Priority.Low, ignoreCancelled = true)
     fun onPlayerChat(event: PlayerChatEvent) {
         val player = event.player.core()
-        val mute = MuteList.getActiveMute(player.data)
+        if (player.hasPermission("zcore.chat.color"))
+            event.message = event.message.colored()
 
-        if (mute != null) {
-            val duration = mute.expiration?.let { it - System.currentTimeMillis() }
-            if (duration != null) {
-                player.sendMessage(local("command.mute.temporary.notify", ZCore.formatDuration(duration), mute.reason))
-            } else {
-                player.sendMessage(local("command.mute.permanent.notify", mute.reason))
-            }
+        if (player.checkMuted()) {
             event.isCancelled = true
             return
         }
 
-        if (player.hasPermission("zcore.chat.color"))
-            event.message = event.message.colored()
         event.format = formatted(ZCoreConfig.getString("text.chat-format"),
             "player" to "%1\$s", "message" to "%2\$s")
-
         event.recipients.removeIf { it.core().data.checkIgnoring(player) }
     }
 
