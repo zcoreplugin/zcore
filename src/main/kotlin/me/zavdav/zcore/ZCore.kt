@@ -180,7 +180,7 @@ class ZCore : JavaPlugin() {
         /** Gets an offline player by their [name], or `null` if no such player exists. */
         @JvmStatic
         fun getOfflinePlayer(name: String): OfflinePlayer? =
-            OfflinePlayer.find { OfflinePlayers.name.lowerCase() eq name.lowercase() }.firstOrNull()
+            OfflinePlayer.find { OfflinePlayers.name.lowerCase() eq name.lowercase() }.maxByOrNull { it.lastJoin }
 
         /** Gets a bank by its [uuid], or `null` if no such bank exists. */
         @JvmStatic
