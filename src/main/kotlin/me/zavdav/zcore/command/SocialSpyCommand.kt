@@ -3,8 +3,7 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.command.event.SocialSpyDisableEvent
 import me.zavdav.zcore.command.event.SocialSpyEnableEvent
-import me.zavdav.zcore.player.CorePlayer
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.data
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -22,7 +21,7 @@ internal val socialspyCommand = command(
         playerArgument("player") {
             requiresPermission("zcore.socialspy.other")
             runs {
-                val player: CorePlayer by this
+                val player: Player by this
                 doSocialSpyOn(player)
             }
         }
@@ -35,16 +34,16 @@ internal val socialspyCommand = command(
         playerArgument("player") {
             requiresPermission("zcore.socialspy.other")
             runs {
-                val player: CorePlayer by this
+                val player: Player by this
                 doSocialSpyOff(player)
             }
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doSocialSpyOn(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doSocialSpyOn(target: Player) {
     val source = this.source
-    val self = source is Player && source.core() == target
+    val self = source is Player && source == target
 
     if (!SocialSpyEnableEvent(source, target).call()) return
     target.data.isSocialSpy = true
@@ -52,9 +51,9 @@ private fun CommandContext<CommandSender>.doSocialSpyOn(target: CorePlayer) {
     if (!self) target.sendMessage(local("command.socialspy.enabled", target.name))
 }
 
-private fun CommandContext<CommandSender>.doSocialSpyOff(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doSocialSpyOff(target: Player) {
     val source = this.source
-    val self = source is Player && source.core() == target
+    val self = source is Player && source == target
 
     if (!SocialSpyDisableEvent(source, target).call()) return
     target.data.isSocialSpy = false

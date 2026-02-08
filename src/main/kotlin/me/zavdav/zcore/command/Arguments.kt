@@ -8,7 +8,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.economy.BankAccount
-import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.util.DURATION_PATTERN
 import me.zavdav.zcore.util.MaterialData
@@ -18,6 +17,7 @@ import me.zavdav.zcore.util.parseDuration
 import me.zavdav.zcore.util.parseInetAddress
 import org.bukkit.Material
 import org.bukkit.entity.CreatureType
+import org.bukkit.entity.Player
 import java.math.BigDecimal
 import java.net.Inet4Address
 
@@ -120,8 +120,8 @@ internal inline fun <S> ArgumentBuilder<S, *>.inet4AddressArgument(
     action: RequiredArgumentBuilder<S, Inet4Address>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, Inet4AddressArgument, action)
 
-internal object PlayerArgument : ArgumentType<CorePlayer> {
-    override fun parse(reader: StringReader): CorePlayer {
+internal object PlayerArgument : ArgumentType<Player> {
+    override fun parse(reader: StringReader): Player {
         val name = reader.readArgument()
         val matches = ZCore.matchPlayer(name)
         return when (matches.size) {
@@ -134,7 +134,7 @@ internal object PlayerArgument : ArgumentType<CorePlayer> {
 
 internal inline fun <S> ArgumentBuilder<S, *>.playerArgument(
     name: String,
-    action: RequiredArgumentBuilder<S, CorePlayer>.() -> Unit
+    action: RequiredArgumentBuilder<S, Player>.() -> Unit
 ): ArgumentBuilder<S, *> = argument(name, PlayerArgument, action)
 
 internal object OfflinePlayerArgument : ArgumentType<OfflinePlayer> {

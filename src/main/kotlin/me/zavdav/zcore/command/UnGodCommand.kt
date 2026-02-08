@@ -2,8 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.command.event.InvincibilityDisableEvent
-import me.zavdav.zcore.player.CorePlayer
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.data
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -20,15 +19,15 @@ internal val ungodCommand = command(
     playerArgument("player") {
         requiresPermission("zcore.ungod.other")
         runs {
-            val player: CorePlayer by this
+            val player: Player by this
             doUnGod(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doUnGod(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doUnGod(target: Player) {
     val source = this.source
-    val self = source is Player && source.core() == target
+    val self = source is Player && source == target
 
     if (!InvincibilityDisableEvent(source, target).call()) return
     target.data.isInvincible = false

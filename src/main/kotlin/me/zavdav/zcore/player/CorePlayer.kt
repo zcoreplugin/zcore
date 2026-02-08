@@ -14,127 +14,156 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.CreatureType
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import java.util.LinkedList
 import java.util.UUID
+import kotlin.math.min
 
-/** Returns the [CorePlayer] associated with this player. */
-fun Player.core(): CorePlayer = CorePlayer.get(this)
+private val Player.onlineData: OnlinePlayerData
+    get() = OnlinePlayerData.get(this)
 
-/** Represents a Bukkit [Player] with additional functionality. */
-class CorePlayer(val base: Player) : Player by base {
+val Player.data: OfflinePlayer
+    get() = onlineData.data
 
-    /** The [OfflinePlayer] associated with this player. */
-    val data: OfflinePlayer = ZCore.getOfflinePlayer(uniqueId)!!
+/** Determines if this player is AFK. */
+var Player.isAfk: Boolean
+    get() = onlineData.isAfk
+    internal set(value) {
+        onlineData.isAfk = value
+    }
 
-    /** Determines if this player is AFK. */
+/** The player this player is replying to with /r. */
+var Player.replyingTo: Player?
+    get() = onlineData.replyingTo
+    internal set(value) {
+        onlineData.replyingTo = value
+    }
+
+/** This player's incoming teleport requests. */
+val Player.teleportRequests
+    get() = onlineData.teleportRequests
+
+internal val Player.bankInvites: MutableMap<BankAccount, Player>
+    get() = onlineData.bankInvites
+
+internal var Player.inventoryView: InventoryView?
+    get() = onlineData.inventoryView
+    set(value) {
+        onlineData.inventoryView = value
+    }
+
+internal var Player.spawnerType: CreatureType?
+    get() = onlineData.spawnerType
+    set(value) {
+        onlineData.spawnerType = value
+    }
+
+internal var Player.lastPowerToolUse: Long
+    get() = onlineData.lastPowerToolUse
+    set(value) {
+        onlineData.lastPowerToolUse = value
+    }
+
+val Player.zcoreDisplayName: String
+    get() = "§f${formatted(ZCoreConfig.getString("text.display-name-format"),
+        "prefix" to GroupResolver.getPrefix(data),
+        "nickname" to computeNickname(data),
+        "suffix" to GroupResolver.getSuffix(data)
+    ).trim()}§f"
+
+fun Player.kick(message: String) =
+    kickPlayer(message.substring(0, min(message.length, 100)))
+
+fun Player.teleportTo(location: Location): Boolean {
+    location.block.chunk.load()
+    vehicle?.eject()
+    (this as? CraftPlayer)?.handle?.a(false, false, false)
+    return teleport(location)
+}
+
+fun Player.teleportTo(entity: Entity): Boolean {
+    return teleportTo(entity.location)
+}
+
+fun Player.teleportSafelyTo(location: Location): Boolean {
+    val safeLocation = location.getSafe() ?: return false
+    return teleportTo(safeLocation)
+}
+
+fun Player.setInactive() {
+    if (!isOnline || isAfk) return
+    isAfk = true
+    Bukkit.broadcastMessage(local("command.afk.enabled", name))
+}
+
+fun Player.updateActivity() {
+    if (!isOnline) return
+    data.lastActivity = System.currentTimeMillis()
+    displayName = zcoreDisplayName
+
+    if (isAfk) {
+        isAfk = false
+        Bukkit.broadcastMessage(local("command.afk.disabled", name))
+    }
+}
+
+private class OnlinePlayerData(private val uuid: UUID) {
+
+    val data: OfflinePlayer = ZCore.getOfflinePlayer(uuid)!!
     var isAfk: Boolean = false
-        internal set
-
-    /** The player this player is replying to with /r. */
-    var replyingTo: CorePlayer? = null
-
-    /** This player's incoming teleport requests. */
+    var replyingTo: Player? = null
     val teleportRequests = LinkedList<TeleportRequest>()
+    val bankInvites = mutableMapOf<BankAccount, Player>()
+    var inventoryView: InventoryView? = null
+    var spawnerType: CreatureType? = null
+    var lastPowerToolUse: Long = 0
 
-    internal val bankInvites = mutableMapOf<BankAccount, CorePlayer>()
-    internal var inventoryView: InventoryView? = null
-    internal var spawnerType: CreatureType? = null
-    internal var lastPowerToolUse: Long = 0
-
-    override fun isOnline(): Boolean =
-        server.onlinePlayers.any { it.uniqueId == uniqueId }
-
-    override fun getDisplayName(): String =
-        "§f${formatted(ZCoreConfig.getString("text.display-name-format"),
-            "prefix" to GroupResolver.getPrefix(data),
-            "nickname" to computeNickname(data),
-            "suffix" to GroupResolver.getSuffix(data)
-        ).trim()}§f"
-
-    override fun kickPlayer(message: String) =
-        base.kickPlayer(if (message.length <= 100) message else message.substring(0, 100))
-
-    override fun teleport(location: Location): Boolean {
-        location.block.chunk.load()
-        vehicle?.eject()
-        (base as? CraftPlayer)?.handle?.a(false, false, false)
-        return base.teleport(location)
-    }
-
-    fun safelyTeleport(location: Location): Boolean {
-        val safeLocation = location.getSafe() ?: return false
-        teleport(safeLocation)
-        return true
-    }
-
-    fun setInactive() {
-        if (!isOnline || isAfk) return
-        isAfk = true
-        Bukkit.broadcastMessage(local("command.afk.enabled", name))
-    }
-
-    fun updateActivity() {
-        if (!isOnline) return
-        data.lastActivity = System.currentTimeMillis()
-        base.displayName = displayName
-
-        if (isAfk) {
-            isAfk = false
-            Bukkit.broadcastMessage(local("command.afk.disabled", name))
-        }
-    }
+    val isOnline: Boolean
+        get() = Bukkit.getOnlinePlayers().any { it.uniqueId == uuid }
 
     private fun checkActivity() {
-        if (!isOnline) return
+        val player = ZCore.getPlayer(uuid) ?: return
         val inactiveTime = System.currentTimeMillis() - data.lastActivity
 
         val autoAfkTime = ZCoreConfig.getInt("command.afk.auto.time") * 1000L
         if (!isAfk && inactiveTime >= autoAfkTime)
-            setInactive()
+            player.setInactive()
 
         if (!ZCoreConfig.getBoolean("command.afk.auto.kick.enabled")) return
         val autoKickTime = ZCoreConfig.getInt("command.afk.auto.kick.time") * 1000L
-        if (isAfk && inactiveTime >= autoKickTime && !hasPermission("zcore.afk.kick.exempt"))
-            kickPlayer(local("command.afk.kick.message", ZCore.formatDuration(autoKickTime)))
+        if (isAfk && inactiveTime >= autoKickTime && !player.hasPermission("zcore.afk.kick.exempt"))
+            player.kick(local("command.afk.kick.message", ZCore.formatDuration(autoKickTime)))
     }
 
-    internal companion object {
-        private val players = mutableMapOf<UUID, CorePlayer>()
+    companion object {
+        private val map = mutableMapOf<UUID, OnlinePlayerData>()
 
         init {
-            syncRepeatingTask(0, 20) {
-                checkPlayerActivity()
-                clearOfflinePlayers()
-            }
+            syncRepeatingTask(0, 20) { checkPlayerActivity() }
         }
 
-        internal fun get(player: Player): CorePlayer {
-            synchronized(players) {
-                var corePlayer = players[player.uniqueId]
-                if (corePlayer == null) {
-                    corePlayer = CorePlayer(player)
-                    players[player.uniqueId] = corePlayer
+        fun get(player: Player): OnlinePlayerData {
+            synchronized(map) {
+                var onlineData = map[player.uniqueId]
+                if (onlineData == null) {
+                    onlineData = OnlinePlayerData(player.uniqueId)
+                    map[player.uniqueId] = onlineData
                 }
-                return corePlayer
+                return onlineData
             }
         }
 
         private fun checkPlayerActivity() {
-            if (!ZCoreConfig.getBoolean("command.afk.auto.enabled")) return
-            synchronized(players) {
-                players.forEach { (_, player) -> player.checkActivity() }
-            }
-        }
-
-        private fun clearOfflinePlayers() {
-            synchronized(players) {
-                players.entries.removeIf { (_, player) ->
-                    !player.isOnline && System.currentTimeMillis() - player.data.lastActivity > 600 * 1000
+            synchronized(map) {
+                if (ZCoreConfig.getBoolean("command.afk.auto.enabled")) {
+                    map.forEach { (_, onlineData) -> onlineData.checkActivity() }
+                }
+                map.entries.removeIf { (_, onlineData) ->
+                    !onlineData.isOnline && System.currentTimeMillis() - onlineData.data.lastActivity > 600 * 1000
                 }
             }
         }
-
     }
 
 }

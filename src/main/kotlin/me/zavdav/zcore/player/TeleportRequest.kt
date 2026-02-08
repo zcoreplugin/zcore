@@ -1,3 +1,5 @@
 package me.zavdav.zcore.player
 
-data class TeleportRequest(val source: CorePlayer, val here: Boolean, val ignore: Boolean)
+import org.bukkit.entity.Player
+
+data class TeleportRequest(val source: Player, val here: Boolean, val ignore: Boolean)

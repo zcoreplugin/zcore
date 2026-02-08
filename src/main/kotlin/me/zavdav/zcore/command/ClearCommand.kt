@@ -1,12 +1,12 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.util.local
 import net.minecraft.server.ContainerPlayer
 import net.minecraft.server.ItemStack
 import org.bukkit.command.CommandSender
 import org.bukkit.craftbukkit.entity.CraftPlayer
+import org.bukkit.entity.Player
 
 internal val clearCommand = command(
     "clear",
@@ -20,18 +20,18 @@ internal val clearCommand = command(
     playerArgument("player") {
         requiresPermission("zcore.clear.other")
         runs {
-            val player: CorePlayer by this
+            val player: Player by this
             doClear(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doClear(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doClear(target: Player) {
     for (i in 0..<(target.inventory.size + 4)) {
         target.inventory.clear(i)
     }
 
-    val entityPlayer = (target.base as CraftPlayer).handle
+    val entityPlayer = (target as CraftPlayer).handle
     entityPlayer.inventory.b(null as? ItemStack)
     entityPlayer.z()
 

@@ -1,7 +1,10 @@
 package me.zavdav.zcore.listener
 
 import me.zavdav.zcore.config.ZCoreConfig
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.data
+import me.zavdav.zcore.player.inventoryView
+import me.zavdav.zcore.player.lastPowerToolUse
+import me.zavdav.zcore.player.spawnerType
 import me.zavdav.zcore.util.checkIgnoring
 import me.zavdav.zcore.util.checkMuted
 import me.zavdav.zcore.util.colored
@@ -30,7 +33,7 @@ internal class ActionListener : Listener {
 
     @EventHandler(priority = Event.Priority.Low, ignoreCancelled = true)
     fun onPlayerChat(event: PlayerChatEvent) {
-        val player = event.player.core()
+        val player = event.player
         if (player.hasPermission("zcore.chat.color"))
             event.message = event.message.colored()
 
@@ -41,12 +44,12 @@ internal class ActionListener : Listener {
 
         event.format = formatted(ZCoreConfig.getString("text.chat-format"),
             "player" to "%1\$s", "message" to "%2\$s")
-        event.recipients.removeIf { it.core().data.checkIgnoring(player) }
+        event.recipients.removeIf { it.data.checkIgnoring(player) }
     }
 
     @EventHandler(priority = Event.Priority.Low)
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        val player = event.player.core()
+        val player = event.player
         val creature = player.spawnerType ?: return
         val blockState = event.clickedBlock?.state ?: return
 
@@ -62,7 +65,7 @@ internal class ActionListener : Listener {
 
     @EventHandler(priority = Event.Priority.Low)
     fun onPlayerAnimation(event: PlayerAnimationEvent) {
-        val player = event.player.core()
+        val player = event.player
         val item = player.itemInHand
         if (item.type == Material.AIR) return
 
@@ -78,7 +81,7 @@ internal class ActionListener : Listener {
 
     @EventHandler(priority = Event.Priority.Low)
     fun onEntityDamage(event: EntityDamageEvent) {
-        val target = (event.entity as? Player)?.core() ?: return
+        val target = event.entity as? Player ?: return
         if (target.data.isInvincible && target.hasPermission("zcore.god")) {
             target.fireTicks = 0
             target.remainingAir = target.maximumAir
@@ -86,7 +89,7 @@ internal class ActionListener : Listener {
         }
 
         if (event !is EntityDamageByEntityEvent) return
-        val damager = (event.damager as? Player)?.core() ?: return
+        val damager = event.damager as? Player ?: return
         val item = damager.itemInHand
         if (item.type == Material.AIR) return
 
@@ -103,25 +106,25 @@ internal class ActionListener : Listener {
 
     @EventHandler(priority = Event.Priority.Lowest, ignoreCancelled = true)
     fun onEntityTarget(event: EntityTargetEvent) {
-        val player = (event.target as? Player)?.core()?.data ?: return
+        val player = (event.target as? Player)?.data ?: return
         if (player.isVanished) event.isCancelled = true
     }
 
     @EventHandler(priority = Event.Priority.Lowest, ignoreCancelled = true)
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
-        val player = event.player.core().data
+        val player = event.player.data
         if (player.isVanished) event.isCancelled = true
     }
 
     @EventHandler(priority = Event.Priority.Lowest, ignoreCancelled = true)
     fun onPlayerPickupItem(event: PlayerPickupItemEvent) {
-        val player = event.player.core().data
+        val player = event.player.data
         if (player.isVanished) event.isCancelled = true
     }
 
     @EventHandler(priority = Event.Priority.Low)
     fun onPacketReceived(event: PacketReceivedEvent) {
-        val player = event.player.core()
+        val player = event.player
         if (player.isDead) return
         val packet = event.packet as? Packet102WindowClick ?: return
 
@@ -132,7 +135,7 @@ internal class ActionListener : Listener {
 
     @EventHandler(priority = Event.Priority.Low, ignoreCancelled = true)
     fun onSignChange(event: SignChangeEvent) {
-        val player = event.player.core()
+        val player = event.player
         if (player.hasPermission("zcore.sign.color")) {
             for (i in event.lines.indices) {
                 event.setLine(i, event.getLine(i).colored())

@@ -3,6 +3,8 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.command.event.HomeTeleportEvent
 import me.zavdav.zcore.player.OfflinePlayer
+import me.zavdav.zcore.player.data
+import me.zavdav.zcore.player.teleportSafelyTo
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
@@ -39,7 +41,7 @@ private fun CommandContext<CommandSender>.doHome(target: OfflinePlayer, homeName
 
     if (!HomeTeleportEvent(source, home).call()) return
     val location = home.toBukkitLocation()
-    if (source.safelyTeleport(location)) {
+    if (source.teleportSafelyTo(location)) {
         source.sendMessage(local("command.home", target.name, home.name))
     } else {
         throw TranslatableException("command.home.unsafe")

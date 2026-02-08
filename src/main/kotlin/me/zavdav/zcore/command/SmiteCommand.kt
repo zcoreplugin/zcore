@@ -1,9 +1,9 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 internal val smiteCommand = command(
     "smite",
@@ -16,7 +16,7 @@ internal val smiteCommand = command(
     }
     playerArgument("player") {
         runs {
-            val player: CorePlayer by this
+            val player: Player by this
             doSmite(player)
         }
     }
@@ -29,7 +29,7 @@ private fun CommandContext<CommandSender>.doSmite() {
     source.sendMessage(local("command.smite"))
 }
 
-private fun CommandContext<CommandSender>.doSmite(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doSmite(target: Player) {
     val location = target.location
     location.world.strikeLightning(location)
     source.sendMessage(local("command.smite.player", target.name))

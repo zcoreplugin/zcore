@@ -7,9 +7,9 @@ import me.zavdav.zcore.command.event.BankDeleteEvent
 import me.zavdav.zcore.command.event.BankDepositEvent
 import me.zavdav.zcore.command.event.BankWithdrawEvent
 import me.zavdav.zcore.economy.BankAccount
-import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.bankInvites
+import me.zavdav.zcore.player.data
 import me.zavdav.zcore.util.PagingList
 import me.zavdav.zcore.util.alignText
 import me.zavdav.zcore.util.line
@@ -116,7 +116,7 @@ internal val bankCommand = command(
         playerArgument("player") {
             bankArgument("bank") {
                 runs {
-                    val player: CorePlayer by this
+                    val player: Player by this
                     val bank: BankAccount by this
                     doBankInvite(player, bank)
                 }
@@ -243,7 +243,7 @@ private fun CommandContext<CommandSender>.doBankWithdraw(amount: BigDecimal, ban
     }
 }
 
-private fun CommandContext<CommandSender>.doBankInvite(target: CorePlayer, bank: BankAccount) {
+private fun CommandContext<CommandSender>.doBankInvite(target: Player, bank: BankAccount) {
     val source = requirePlayer()
     checkIsOwner(source, bank)
 
@@ -308,8 +308,7 @@ private fun checkIsOwner(source: CommandSender, bank: BankAccount) {
     if (source !is Player || source.hasPermission("zcore.bank.op"))
         return
 
-    val player = source.core()
-    if (player.data != bank.owner)
+    if (source.data != bank.owner)
         throw TranslatableException("command.bank.action.owner", bank.name)
 }
 
@@ -317,7 +316,6 @@ private fun checkIsMember(source: CommandSender, bank: BankAccount) {
     if (source !is Player || source.hasPermission("zcore.bank.op"))
         return
 
-    val player = source.core()
-    if (player.data !in bank.members && player.data != bank.owner)
+    if (source.data !in bank.members && source.data != bank.owner)
         throw TranslatableException("command.bank.action.member", bank.name)
 }

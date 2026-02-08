@@ -2,7 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.config.ZCoreConfig
-import me.zavdav.zcore.player.CorePlayer
+import me.zavdav.zcore.player.teleportTo
 import me.zavdav.zcore.util.local
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
@@ -18,13 +18,13 @@ internal val tpCommand = command(
     playerArgument("player") {
         runs {
             val source = requirePlayer()
-            val player: CorePlayer by this
+            val player: Player by this
             doTpPlayer(source, player)
         }
         playerArgument("otherPlayer") {
             runs {
-                val player: CorePlayer by this
-                val otherPlayer: CorePlayer by this
+                val player: Player by this
+                val otherPlayer: Player by this
                 doTpPlayer(player, otherPlayer)
             }
         }
@@ -32,7 +32,7 @@ internal val tpCommand = command(
             bigDecimalArgument("y") {
                 bigDecimalArgument("z") {
                     runs {
-                        val player: CorePlayer by this
+                        val player: Player by this
                         val x: BigDecimal by this
                         val y: BigDecimal by this
                         val z: BigDecimal by this
@@ -57,13 +57,13 @@ internal val tpCommand = command(
     }
 }
 
-private fun CommandContext<CommandSender>.doTpPlayer(player: CorePlayer, target: CorePlayer) {
-    player.teleport(target)
+private fun CommandContext<CommandSender>.doTpPlayer(player: Player, target: Player) {
+    player.teleportTo(target)
     source.sendMessage(local("command.tp.player", player.name, target.name))
 }
 
 private fun CommandContext<CommandSender>.doTpLocation(
-    player: CorePlayer, x: BigDecimal, y: BigDecimal, z: BigDecimal
+    player: Player, x: BigDecimal, y: BigDecimal, z: BigDecimal
 ) {
     val maxRadius = ZCoreConfig.getInt("command.tp.max-radius").toBigDecimal()
     var finalX = x.coerceIn(-maxRadius, maxRadius)
@@ -86,6 +86,6 @@ private fun CommandContext<CommandSender>.doTpLocation(
     )
 
     player.world.loadChunk(location.blockX, location.blockZ)
-    player.teleport(location)
+    player.teleportTo(location)
     source.sendMessage(local("command.tp.location", player.name, finalX, finalY, finalZ))
 }

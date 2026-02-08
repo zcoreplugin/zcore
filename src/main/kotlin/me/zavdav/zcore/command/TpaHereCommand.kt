@@ -3,12 +3,14 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.command.event.TeleportRequestEvent
 import me.zavdav.zcore.config.ZCoreConfig
-import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.TeleportRequest
+import me.zavdav.zcore.player.data
+import me.zavdav.zcore.player.teleportRequests
 import me.zavdav.zcore.util.checkIgnoring
 import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.syncDelayedTask
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 internal val tpahereCommand = command(
     "tpahere",
@@ -17,13 +19,13 @@ internal val tpahereCommand = command(
 ) {
     playerArgument("player") {
         runs {
-            val player: CorePlayer by this
+            val player: Player by this
             doTpaHere(player)
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doTpaHere(target: CorePlayer) {
+private fun CommandContext<CommandSender>.doTpaHere(target: Player) {
     val source = requirePlayer()
     if (target.teleportRequests.any { it.source == source })
         throw TranslatableException("command.tpa.alreadySent", target.name)

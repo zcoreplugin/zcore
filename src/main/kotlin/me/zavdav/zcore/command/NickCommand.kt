@@ -4,6 +4,8 @@ import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.command.event.PlayerNickEvent
 import me.zavdav.zcore.player.OfflinePlayer
+import me.zavdav.zcore.player.data
+import me.zavdav.zcore.player.zcoreDisplayName
 import me.zavdav.zcore.util.colored
 import me.zavdav.zcore.util.computeNickname
 import me.zavdav.zcore.util.local
@@ -52,7 +54,7 @@ private fun CommandContext<CommandSender>.doNick(target: OfflinePlayer, nickname
 
     val onlineTarget = ZCore.getPlayer(target.uuid)
     if (onlineTarget != null) {
-        onlineTarget.base.displayName = onlineTarget.displayName
-        if (!self) onlineTarget.sendMessage(local("command.nick", target.name, onlineTarget.displayName))
+        onlineTarget.displayName = onlineTarget.zcoreDisplayName
+        if (!self) onlineTarget.sendMessage(local("command.nick", target.name, onlineTarget.zcoreDisplayName))
     }
 }

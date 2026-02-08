@@ -2,11 +2,11 @@ package me.zavdav.zcore.util
 
 import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.config.ZCoreConfig
-import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.data
 import me.zavdav.zcore.punishment.MuteList
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import java.util.UUID
 
 internal fun computeNickname(player: OfflinePlayer): String {
@@ -20,15 +20,15 @@ internal fun computeNickname(player: OfflinePlayer): String {
 
 internal fun notifySocialSpy(message: String, vararg exempt: UUID) {
     Bukkit.getOnlinePlayers()
-        .filter { it.core().data.isSocialSpy && it.hasPermission("zcore.socialspy") }
+        .filter { it.data.isSocialSpy && it.hasPermission("zcore.socialspy") }
         .filter { exempt.none { uuid -> it.uniqueId == uuid } }
         .forEach { it.sendMessage(message) }
 }
 
-internal fun OfflinePlayer.checkIgnoring(target: CorePlayer): Boolean =
+internal fun OfflinePlayer.checkIgnoring(target: Player): Boolean =
     ignores(target.data) && !target.hasPermission("zcore.ignore.bypass")
 
-internal fun CorePlayer.checkMuted(): Boolean {
+internal fun Player.checkMuted(): Boolean {
     val mute = MuteList.getActiveMute(data)
     if (mute != null) {
         val duration = mute.expiration?.let { it - System.currentTimeMillis() }
@@ -44,12 +44,11 @@ internal fun CorePlayer.checkMuted(): Boolean {
 
 internal fun updateVanishStates() {
     for (pl in Bukkit.getOnlinePlayers()) {
-        if (pl.core().data.isVanished && pl.hasPermission("zcore.vanish")) {
+        if (pl.data.isVanished && pl.hasPermission("zcore.vanish")) {
             Bukkit.getOnlinePlayers()
                 .filter { !it.hasPermission("zcore.vanish.bypass") }
                 .forEach { it.hidePlayer(pl) }
         } else {
-
             Bukkit.getOnlinePlayers().forEach { it.showPlayer(pl) }
         }
     }

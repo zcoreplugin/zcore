@@ -3,14 +3,15 @@ package me.zavdav.zcore.command
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.group.GroupResolver
-import me.zavdav.zcore.player.CorePlayer
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.data
+import me.zavdav.zcore.player.zcoreDisplayName
 import me.zavdav.zcore.util.PagingList
 import me.zavdav.zcore.util.line
 import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 internal val listCommand = command(
     "list",
@@ -30,9 +31,8 @@ internal val listCommand = command(
 }
 
 private fun CommandContext<CommandSender>.doList(page: Int) {
-    val players = mutableListOf<CorePlayer>()
+    val players = mutableListOf<Player>()
     val groups = Bukkit.getOnlinePlayers()
-        .map { it.core() }
         .groupBy { GroupResolver.getMainGroup(it.data) }
         .toMutableMap()
 
@@ -53,6 +53,6 @@ private fun CommandContext<CommandSender>.doList(page: Int) {
     source.sendMessage(line(ChatColor.GRAY))
     if (list.isEmpty()) return
     list.page(index).forEach {
-        source.sendMessage(local("command.list.line", it.displayName))
+        source.sendMessage(local("command.list.line", it.zcoreDisplayName))
     }
 }

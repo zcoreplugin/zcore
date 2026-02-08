@@ -2,7 +2,8 @@ package me.zavdav.zcore.listener
 
 import me.zavdav.zcore.command.afkCommand
 import me.zavdav.zcore.config.ZCoreConfig
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.isAfk
+import me.zavdav.zcore.player.updateActivity
 import me.zavdav.zcore.util.getSafe
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
@@ -22,7 +23,7 @@ internal class ActivityListener : Listener {
 
     @EventHandler(priority = Event.Priority.Low)
     fun onPlayerMove(event: PlayerMoveEvent) {
-        val player = event.player.core()
+        val player = event.player
         val from = event.from
         val to = event.to
 
@@ -56,19 +57,19 @@ internal class ActivityListener : Listener {
 
     @EventHandler(priority = Event.Priority.Low)
     fun onEntityDamage(event: EntityDamageEvent) {
-        val player = (event.entity as? Player)?.core() ?: return
+        val player = event.entity as? Player ?: return
         if (player.isAfk) event.isCancelled = true
     }
 
     @EventHandler(priority = Event.Priority.Lowest)
     fun onPlayerChat(event: PlayerChatEvent) {
-        val player = event.player.core()
+        val player = event.player
         player.updateActivity()
     }
 
     @EventHandler(priority = Event.Priority.Lowest)
     fun onPlayerCommandPreprocess(event: PlayerCommandPreprocessEvent) {
-        val player = event.player.core()
+        val player = event.player
         val command = event.message.trimEnd()
         if (command.equals("/${afkCommand.name}", true))
             return
@@ -77,25 +78,25 @@ internal class ActivityListener : Listener {
 
     @EventHandler(priority = Event.Priority.Lowest)
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        val player = event.player.core()
+        val player = event.player
         player.updateActivity()
     }
 
     @EventHandler(priority = Event.Priority.Lowest)
     fun onPlayerInteractEntity(event: PlayerInteractEntityEvent) {
-        val player = event.player.core()
+        val player = event.player
         player.updateActivity()
     }
 
     @EventHandler(priority = Event.Priority.Lowest)
     fun onBlockBreak(event: BlockBreakEvent) {
-        val player = event.player.core()
+        val player = event.player
         player.updateActivity()
     }
 
     @EventHandler(priority = Event.Priority.Lowest)
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
-        val player = event.player.core()
+        val player = event.player
         player.updateActivity()
     }
 

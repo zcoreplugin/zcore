@@ -1,6 +1,6 @@
 package me.zavdav.zcore.inventory
 
-import me.zavdav.zcore.player.CorePlayer
+import me.zavdav.zcore.player.inventoryView
 import me.zavdav.zcore.util.getField
 import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.syncRepeatingTask
@@ -16,16 +16,17 @@ import org.bukkit.Material
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 
-internal class InventoryView(val viewer: CorePlayer, target: CorePlayer) {
+internal class InventoryView(val viewer: Player, target: Player) {
 
     private var taskId: Int = 0
     private val viewerInventory: CraftInventory = CraftInventory(NmsInventory(target.name))
     private val targetInventory: PlayerInventory = target.inventory
-    private val nmsViewer: EntityPlayer = (viewer.base as CraftPlayer).handle
-    private val nmsTarget: EntityPlayer = (target.base as CraftPlayer).handle
+    private val nmsViewer: EntityPlayer = (viewer as CraftPlayer).handle
+    private val nmsTarget: EntityPlayer = (target as CraftPlayer).handle
 
     fun open() {
         viewer.inventoryView = this

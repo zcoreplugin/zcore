@@ -1,6 +1,6 @@
 package me.zavdav.zcore.listener
 
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.data
 import me.zavdav.zcore.util.syncDelayedTask
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -20,13 +20,13 @@ internal class StatisticsListener : Listener {
 
     @EventHandler(priority = Event.Priority.Monitor, ignoreCancelled = true)
     fun onBlockPlace(event: BlockPlaceEvent) {
-        val player = event.player.core().data
+        val player = event.player.data
         player.blocksPlaced++
     }
 
     @EventHandler(priority = Event.Priority.Monitor, ignoreCancelled = true)
     fun onBlockBreak(event: BlockBreakEvent) {
-        val player = event.player.core().data
+        val player = event.player.data
         player.blocksBroken++
     }
 
@@ -34,7 +34,7 @@ internal class StatisticsListener : Listener {
     fun onPlayerMove(event: PlayerMoveEvent) {
         val distance = event.from.distance(event.to)
         if (distance < 0.05) return
-        val player = event.player.core().data
+        val player = event.player.data
         player.blocksTraveled += distance.toBigDecimal()
     }
 
@@ -44,7 +44,7 @@ internal class StatisticsListener : Listener {
         val prevHealth = damagee.health
 
         if (damagee is Player) {
-            val player = damagee.core().data
+            val player = damagee.data
             syncDelayedTask(1) {
                 val damage = prevHealth - damagee.health.coerceAtLeast(0)
                 if (damage > 0) player.damageTaken += damage
@@ -58,7 +58,7 @@ internal class StatisticsListener : Listener {
                 else -> null
             }
 
-            val player = damager?.core()?.data ?: return
+            val player = damager?.data ?: return
             syncDelayedTask(1) {
                 val damage = prevHealth - damagee.health.coerceAtLeast(0)
                 if (damage > 0) player.damageDealt += damage
@@ -73,7 +73,7 @@ internal class StatisticsListener : Listener {
 
         if (entity is Player) {
             isPlayer = true
-            val player = entity.core().data
+            val player = entity.data
             player.deaths++
         }
 
@@ -85,7 +85,7 @@ internal class StatisticsListener : Listener {
                 else -> null
             }
 
-            val player = damager?.core()?.data ?: return
+            val player = damager?.data ?: return
             if (isPlayer) {
                 player.playersKilled++
             } else {

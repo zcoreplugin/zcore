@@ -2,9 +2,10 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.command.event.TeleportDenyEvent
-import me.zavdav.zcore.player.CorePlayer
+import me.zavdav.zcore.player.teleportRequests
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 internal val tpdenyCommand = command(
     "tpdeny",
@@ -17,7 +18,7 @@ internal val tpdenyCommand = command(
     }
     playerArgument("player") {
         runs {
-            val player: CorePlayer by this
+            val player: Player by this
             doTpDeny(player)
         }
     }
@@ -36,7 +37,7 @@ private fun CommandContext<CommandSender>.doTpDeny() {
     requester.sendMessage(local("command.tpdeny.notify", source.name))
 }
 
-private fun CommandContext<CommandSender>.doTpDeny(requester: CorePlayer) {
+private fun CommandContext<CommandSender>.doTpDeny(requester: Player) {
     val source = requirePlayer()
     val request = source.teleportRequests.firstOrNull { it.source == requester }
     if (request == null || request.ignore)

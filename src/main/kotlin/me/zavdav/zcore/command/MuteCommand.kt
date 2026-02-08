@@ -5,7 +5,7 @@ import me.zavdav.zcore.ZCore
 import me.zavdav.zcore.command.event.PlayerMuteEvent
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.data
 import me.zavdav.zcore.punishment.MuteList
 import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
@@ -49,7 +49,7 @@ internal val muteCommand = command(
 
 private fun CommandContext<CommandSender>.doMute(target: OfflinePlayer, duration: Long?, reason: String) {
     val source = this.source
-    val issuer = (source as? Player)?.core()?.data
+    val issuer = (source as? Player)?.data
 
     if (Bukkit.getOfflinePlayer(target.name).isOp)
         throw TranslatableException("command.mute.exempt", target.name)

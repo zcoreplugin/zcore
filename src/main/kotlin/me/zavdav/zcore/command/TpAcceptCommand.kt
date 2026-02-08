@@ -2,9 +2,11 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.command.event.TeleportAcceptEvent
-import me.zavdav.zcore.player.CorePlayer
+import me.zavdav.zcore.player.teleportRequests
+import me.zavdav.zcore.player.teleportTo
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 internal val tpacceptCommand = command(
     "tpaccept",
@@ -17,7 +19,7 @@ internal val tpacceptCommand = command(
     }
     playerArgument("player") {
         runs {
-            val player: CorePlayer by this
+            val player: Player by this
             doTpAccept(player)
         }
     }
@@ -36,13 +38,13 @@ private fun CommandContext<CommandSender>.doTpAccept() {
     requester.sendMessage(local("command.tpaccept.notify", source.name))
 
     if (request.here) {
-        source.teleport(requester)
+        source.teleportTo(requester)
     } else {
-        requester.teleport(source)
+        requester.teleportTo(source)
     }
 }
 
-private fun CommandContext<CommandSender>.doTpAccept(requester: CorePlayer) {
+private fun CommandContext<CommandSender>.doTpAccept(requester: Player) {
     val source = requirePlayer()
     val request = source.teleportRequests.firstOrNull { it.source == requester }
     if (request == null || request.ignore)
@@ -54,8 +56,8 @@ private fun CommandContext<CommandSender>.doTpAccept(requester: CorePlayer) {
     requester.sendMessage(local("command.tpaccept.notify", source.name))
 
     if (request.here) {
-        source.teleport(requester)
+        source.teleportTo(requester)
     } else {
-        requester.teleport(source)
+        requester.teleportTo(source)
     }
 }

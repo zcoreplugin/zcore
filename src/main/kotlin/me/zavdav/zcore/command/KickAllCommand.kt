@@ -2,6 +2,7 @@ package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.config.ZCoreConfig
+import me.zavdav.zcore.player.kick
 import me.zavdav.zcore.util.local
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -29,7 +30,7 @@ private fun CommandContext<CommandSender>.doKickAll(reason: String) {
         if (source is Player && player.uniqueId == source.uniqueId)
             continue
 
-        player.kickPlayer(local("command.kick.message", reason))
+        player.kick(local("command.kick.message", reason))
     }
 
     source.sendMessage(local("command.kickall", reason))

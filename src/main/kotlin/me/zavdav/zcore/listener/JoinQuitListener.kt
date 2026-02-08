@@ -5,7 +5,9 @@ import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.data.IpAddresses
 import me.zavdav.zcore.economy.PersonalAccount
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.data
+import me.zavdav.zcore.player.isAfk
+import me.zavdav.zcore.player.zcoreDisplayName
 import me.zavdav.zcore.punishment.BanList
 import me.zavdav.zcore.punishment.IpBanList
 import me.zavdav.zcore.util.formatted
@@ -98,7 +100,7 @@ internal class JoinQuitListener : Listener {
             event.player.sendMessage(formatted(
                 it,
                 "name" to event.player.name,
-                "displayname" to event.player.displayName,
+                "displayname" to event.player.zcoreDisplayName,
                 "playercount" to Bukkit.getOnlinePlayers().size,
                 "maxplayers" to Bukkit.getMaxPlayers()
             ))
@@ -114,7 +116,7 @@ internal class JoinQuitListener : Listener {
 
     @EventHandler(priority = Event.Priority.Lowest)
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        val player = event.player.core()
+        val player = event.player
         player.data._playtime = player.data.playtime
         player.isAfk = false
 
@@ -124,7 +126,7 @@ internal class JoinQuitListener : Listener {
 
     @EventHandler(priority = Event.Priority.Lowest)
     fun onPlayerKick(event: PlayerKickEvent) {
-        val player = event.player.core()
+        val player = event.player
         if (player.data.isBanned) {
             event.leaveMessage = formatted(ZCoreConfig.getString("text.ban-message"),
                 "player" to event.player.name)

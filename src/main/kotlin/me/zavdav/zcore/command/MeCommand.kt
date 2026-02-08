@@ -1,7 +1,8 @@
 package me.zavdav.zcore.command
 
 import com.mojang.brigadier.context.CommandContext
-import me.zavdav.zcore.player.core
+import me.zavdav.zcore.player.data
+import me.zavdav.zcore.player.zcoreDisplayName
 import me.zavdav.zcore.util.checkIgnoring
 import me.zavdav.zcore.util.checkMuted
 import me.zavdav.zcore.util.colored
@@ -30,6 +31,6 @@ private fun CommandContext<CommandSender>.doMe(message: String) {
 
     if (source.checkMuted()) return
     Bukkit.getOnlinePlayers()
-        .filter { !it.core().data.checkIgnoring(source) }
-        .forEach { it.sendMessage(local("command.me", source.displayName, finalMessage)) }
+        .filter { !it.data.checkIgnoring(source) }
+        .forEach { it.sendMessage(local("command.me", source.zcoreDisplayName, finalMessage)) }
 }

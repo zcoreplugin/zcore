@@ -21,15 +21,14 @@ import me.zavdav.zcore.listener.ActivityListener
 import me.zavdav.zcore.listener.JoinQuitListener
 import me.zavdav.zcore.listener.StatisticsListener
 import me.zavdav.zcore.location.Warp
-import me.zavdav.zcore.player.CorePlayer
 import me.zavdav.zcore.player.OfflinePlayer
-import me.zavdav.zcore.player.core
 import me.zavdav.zcore.statistic.Statistic
 import me.zavdav.zcore.util.Materials
 import me.zavdav.zcore.util.getField
 import me.zavdav.zcore.version.ZCoreVersion
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.plugin.RegisteredListener
 import org.bukkit.plugin.java.JavaPlugin
@@ -139,13 +138,13 @@ class ZCore : JavaPlugin() {
 
         /** Gets a player by their [uuid], or `null` if no such player is online. */
         @JvmStatic
-        fun getPlayer(uuid: UUID): CorePlayer? =
-            Bukkit.getOnlinePlayers().firstOrNull { it.uniqueId == uuid }?.core()
+        fun getPlayer(uuid: UUID): Player? =
+            Bukkit.getOnlinePlayers().firstOrNull { it.uniqueId == uuid }
 
         /** Gets a player by their [name], or `null` if no such player is online. */
         @JvmStatic
-        fun getPlayer(name: String): CorePlayer? =
-            Bukkit.getOnlinePlayers().firstOrNull { it.name.equals(name, true) }?.core()
+        fun getPlayer(name: String): Player? =
+            Bukkit.getOnlinePlayers().firstOrNull { it.name.equals(name, true) }
 
         /**
          * Gets all players whose names match a [partialName].
@@ -153,19 +152,19 @@ class ZCore : JavaPlugin() {
          * if no matches are found, an empty list is returned.
          */
         @JvmStatic
-        fun matchPlayer(partialName: String): List<CorePlayer> {
-            val matches = mutableListOf<CorePlayer>()
+        fun matchPlayer(partialName: String): List<Player> {
+            val matches = mutableListOf<Player>()
 
             for (player in Bukkit.getOnlinePlayers()) {
                 val name = player.name
                 if (partialName.equals(name, true)) {
                     matches.clear()
-                    matches.add(player.core())
+                    matches.add(player)
                     break
                 }
 
                 if (player.name.startsWith(partialName, true)) {
-                    matches.add(player.core())
+                    matches.add(player)
                 }
             }
 
