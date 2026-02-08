@@ -26,22 +26,24 @@ internal val baltopCommand = command(
 }
 
 private fun CommandContext<CommandSender>.doBaltop(page: Int) {
-    val players = ZCore.players.sortedByDescending { it.account.balance }
-    val list = PagingList(players, 10)
+    val balances = ZCore.players
+        .map { it.name to it.account.balance + it.bankAccounts.sumOf { it.balance } }
+        .sortedByDescending { it.second }
+    val list = PagingList(balances, 10)
     if (list.isEmpty()) return
 
     val index = page.coerceIn(1..list.pages()) - 1
     source.sendMessage(local("command.baltop", index + 1, list.pages()))
     source.sendMessage(line(ChatColor.GRAY))
-    list.page(index).forEachIndexed { i, it ->
+    list.page(index).forEachIndexed { i, (name, balance) ->
         val position = index * 10 + i + 1
         source.sendMessage(alignText(
-            local("command.baltop.rank", position, it.name) to 1,
-            local("command.baltop.amount", ZCore.formatCurrency(it.account.balance)) to 1
+            local("command.baltop.rank", position, name) to 1,
+            local("command.baltop.amount", ZCore.formatCurrency(balance)) to 1
         ))
     }
 
-    val total = players.sumOf { it.account.balance }
+    val total = balances.sumOf { it.second }
     source.sendMessage(line(ChatColor.GRAY))
     source.sendMessage(local("command.baltop.total", ZCore.formatCurrency(total)))
 }
