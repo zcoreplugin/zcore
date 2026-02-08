@@ -1,39 +1,44 @@
 plugins {
     id("java")
-    kotlin("jvm") version "2.2.10"
-    id("com.gradleup.shadow") version "8.3.6"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.shadow)
 }
 
-group = "me.zavdav.zcore"
+group = "me.zavdav"
 version = "0.23.0"
 
 repositories {
     mavenCentral()
     maven("https://repository.johnymuffin.com/repository/maven-public/")
     maven("https://libraries.minecraft.net/")
+    maven("https://jitpack.io/")
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8", "2.2.10"))
-    compileOnly("com.legacyminecraft.poseidon:poseidon-craftbukkit:1.1.10-250328-1731-f67a8e3")
-    implementation("com.mojang:brigadier:1.0.18")
-    implementation("org.jetbrains.exposed:exposed-core:0.61.0")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
-    implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
-    implementation("com.h2database:h2:2.2.224")
-    implementation("org.slf4j:slf4j-nop:2.0.17")
-    compileOnly("com.johnymuffin.jperms:beta:1.0.1")
-    compileOnly("com.earth2me.essentials:essentials-libraries-rollup:0.0.1")
+    implementation(libs.kotlin.stdlib)
+    compileOnly(libs.tsunami)
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.dao)
+    implementation(libs.h2)
+    implementation(libs.brigadier)
+    compileOnly(libs.jperms)
+    compileOnly(libs.essentials.libs)
+    implementation(libs.slf4j.nop)
 }
 
 kotlin {
     jvmToolchain(8)
 }
 
+tasks.build {
+    dependsOn(tasks.shadowJar)
+}
+
 tasks.processResources {
-    filesMatching("plugin.yml") {
-        expand(project.properties)
-    }
+    expand(mapOf(
+        "version" to project.version
+    ))
 }
 
 tasks.shadowJar {
