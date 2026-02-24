@@ -34,6 +34,9 @@ permissions:
   zcore.ban:
     default: op
 
+  zcore.banhistory:
+    default: op
+
   zcore.banip:
     default: op
 
@@ -47,9 +50,6 @@ permissions:
     children:
       zcore.bank: true
       zcore.bank.op: true
-
-  zcore.bans:
-    default: op
 
   zcore.broadcast:
     default: op
@@ -264,7 +264,7 @@ permissions:
   zcore.mute:
     default: op
 
-  zcore.mutes:
+  zcore.mutehistory:
     default: op
 
   zcore.nick:

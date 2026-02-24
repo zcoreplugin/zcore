@@ -10,40 +10,40 @@ import me.zavdav.zcore.util.local
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 
-internal val mutesCommand = command(
-    "mutes",
+internal val mutehistoryCommand = command(
+    "mutehistory",
     "Shows previous mutes of a player",
-    "zcore.mutes"
+    "zcore.mutehistory"
 ) {
     offlinePlayerArgument("player") {
         runs {
             val player: OfflinePlayer by this
-            doMutes(player, 1)
+            doMuteHistory(player, 1)
         }
         intArgument("page") {
             runs {
                 val player: OfflinePlayer by this
                 val page: Int by this
-                doMutes(player, page)
+                doMuteHistory(player, page)
             }
         }
     }
 }
 
-private fun CommandContext<CommandSender>.doMutes(target: OfflinePlayer, page: Int) {
+private fun CommandContext<CommandSender>.doMuteHistory(target: OfflinePlayer, page: Int) {
     val mutes = MuteList.getAllMutes(target).sortedByDescending { it.timeIssued }
     val list = PagingList(mutes, 5)
     if (list.isEmpty())
-        throw TranslatableException("command.mutes.none", target.name)
+        throw TranslatableException("command.mutehistory.none", target.name)
 
     val index = page.coerceIn(1..list.pages()) - 1
-    source.sendMessage(local("command.mutes", target.name, index + 1, list.pages()))
+    source.sendMessage(local("command.mutehistory", target.name, index + 1, list.pages()))
     source.sendMessage(line(ChatColor.GRAY))
 
     list.page(index).forEach {
         val issuer = it.issuer?.name ?: "Console"
         val duration = it.duration?.let { dur -> ZCore.formatDuration(dur) } ?: "permanent"
-        source.sendMessage(local("command.mutes.issued", issuer, ZCore.formatTimestamp(it.timeIssued)))
-        source.sendMessage(local("command.mutes.details", duration, it.reason, it.pardoned))
+        source.sendMessage(local("command.mutehistory.issued", issuer, ZCore.formatTimestamp(it.timeIssued)))
+        source.sendMessage(local("command.mutehistory.details", duration, it.reason, it.pardoned))
     }
 }
