@@ -146,6 +146,17 @@ class OfflinePlayer internal constructor(id: EntityID<UUID>) : UUIDEntity(id) {
             .where { IpAddresses.player eq this@OfflinePlayer.id }
             .map { it[IpAddresses.ipAddress] }
 
+    /** All alternate accounts of this player. */
+    val altAccounts: List<OfflinePlayer>
+        get() {
+            val ipAddresses = this.ipAddresses
+            return IpAddresses.select(IpAddresses.player)
+                .where { IpAddresses.ipAddress inList ipAddresses }.withDistinct()
+                .map { it[IpAddresses.player] }
+                .map { get(it) }
+                .minus(this)
+        }
+
     /** Gets the location of a home by its [name], or `null` if no home with this name exists. */
     fun getHome(name: String): Home? =
         Home.find {

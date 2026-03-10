@@ -17,6 +17,9 @@ permissions:
       zcore.afk: true
       zcore.afk.kick.exempt: true
 
+  zcore.alts:
+    default: op
+
   zcore.balance:
     default: op
 
@@ -186,6 +189,9 @@ permissions:
     children:
       zcore.invsee: true
       zcore.invsee.edit: true
+
+  zcore.ips:
+    default: op
 
   zcore.item:
     default: op

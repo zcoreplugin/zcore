@@ -14,6 +14,7 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
 
     private val commands = mutableListOf(
         afkCommand,
+        altsCommand,
         balanceCommand,
         baltopCommand,
         banCommand,
@@ -35,6 +36,7 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
         ignoreCommand,
         ignoredCommand,
         invseeCommand,
+        ipsCommand,
         itemCommand,
         kickCommand,
         kickallCommand,
