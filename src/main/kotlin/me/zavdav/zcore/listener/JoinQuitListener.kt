@@ -32,24 +32,11 @@ internal class JoinQuitListener : Listener {
     @EventHandler(priority = Event.Priority.Lowest)
     fun onPlayerLogin(event: PlayerLoginEvent) {
         val address = event.address as Inet4Address
-        val ipBan = IpBanList.getActiveBan(address)
+        val ban = IpBanList.getActiveBan(address) ?:
+            ZCore.getOfflinePlayer(event.player.uniqueId)?.let { BanList.getActiveBan(it) }
+        if (ban == null) return
 
-        if (ipBan != null) {
-            val duration = ipBan.expiration?.let { it - System.currentTimeMillis() }
-            if (duration != null) {
-                event.disallow(Result.KICK_BANNED_IP,
-                    local("command.banip.temporary.notify", ZCore.formatDuration(duration), ipBan.reason))
-            } else {
-                event.disallow(Result.KICK_BANNED_IP,
-                    local("command.banip.permanent.notify", ipBan.reason))
-            }
-            return
-        }
-
-        val player = ZCore.getOfflinePlayer(event.player.uniqueId) ?: return
-        val ban = BanList.getActiveBan(player) ?: return
         val duration = ban.expiration?.let { it - System.currentTimeMillis() }
-
         if (duration != null) {
             event.disallow(Result.KICK_BANNED,
                 local("command.ban.temporary.notify", ZCore.formatDuration(duration), ban.reason))

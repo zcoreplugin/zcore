@@ -4,6 +4,7 @@ import com.mojang.brigadier.context.CommandContext
 import me.zavdav.zcore.command.event.PlayerUnbanEvent
 import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.punishment.BanList
+import me.zavdav.zcore.punishment.IpBanList
 import me.zavdav.zcore.util.local
 import org.bukkit.command.CommandSender
 
@@ -25,6 +26,7 @@ private fun CommandContext<CommandSender>.doUnBan(target: OfflinePlayer) {
     if (BanList.getActiveBan(target) != null) {
         if (!PlayerUnbanEvent(source, target).call()) return
         BanList.pardonBan(target)
+        target.ipAddresses.forEach { IpBanList.pardonBan(it) }
         source.sendMessage(local("command.unban", target.name))
     } else {
         throw TranslatableException("command.unban.notBanned", target.name)
