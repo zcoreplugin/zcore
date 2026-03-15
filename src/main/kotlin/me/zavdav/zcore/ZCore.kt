@@ -25,6 +25,7 @@ import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.statistic.Statistic
 import me.zavdav.zcore.util.Materials
 import me.zavdav.zcore.util.getField
+import me.zavdav.zcore.util.wildcardMatchesIgnoreCase
 import me.zavdav.zcore.version.ZCoreVersion
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -161,9 +162,7 @@ class ZCore : JavaPlugin() {
                     matches.clear()
                     matches.add(player)
                     break
-                }
-
-                if (player.name.startsWith(partialName, true)) {
+                } else if (player.name.wildcardMatchesIgnoreCase(partialName)) {
                     matches.add(player)
                 }
             }
