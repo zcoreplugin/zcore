@@ -162,7 +162,8 @@ class ZCore : JavaPlugin() {
                     matches.clear()
                     matches.add(player)
                     break
-                } else if (player.name.wildcardMatchesIgnoreCase(partialName)) {
+                } else if (player.name.wildcardMatchesIgnoreCase(partialName)
+                    || player.name.startsWith(partialName, true)) {
                     matches.add(player)
                 }
             }
