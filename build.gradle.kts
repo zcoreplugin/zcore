@@ -1,11 +1,12 @@
 plugins {
     id("java")
+    id("maven-publish")
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.shadow)
 }
 
 group = "me.zavdav"
-version = "0.23.6"
+version = "0.23.7"
 
 repositories {
     mavenCentral()
@@ -41,6 +42,19 @@ tasks.processResources {
     ))
 }
 
+tasks.jar {
+    enabled = false
+}
+
 tasks.shadowJar {
     archiveClassifier = ""
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["shadow"])
+            artifact(tasks.kotlinSourcesJar)
+        }
+    }
 }
