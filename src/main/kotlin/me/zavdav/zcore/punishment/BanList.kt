@@ -2,6 +2,7 @@ package me.zavdav.zcore.punishment
 
 import me.zavdav.zcore.data.Bans
 import me.zavdav.zcore.player.OfflinePlayer
+import org.jetbrains.exposed.v1.core.eq
 
 /** Represents a record of all issued bans. */
 object BanList {

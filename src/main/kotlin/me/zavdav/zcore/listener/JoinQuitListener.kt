@@ -22,9 +22,10 @@ import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerLoginEvent.Result
 import org.bukkit.event.player.PlayerQuitEvent
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
 import java.net.Inet4Address
 
 internal class JoinQuitListener : Listener {

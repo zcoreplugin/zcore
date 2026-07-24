@@ -1,9 +1,9 @@
 package me.zavdav.zcore.data
 
 import org.bukkit.Material
-import org.jetbrains.exposed.dao.id.CompositeIdTable
-import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.ReferenceOption.CASCADE
+import org.jetbrains.exposed.v1.core.ReferenceOption.CASCADE
+import org.jetbrains.exposed.v1.core.dao.id.CompositeIdTable
+import org.jetbrains.exposed.v1.core.dao.id.java.UUIDTable
 import java.math.BigDecimal
 
 internal object OfflinePlayers : UUIDTable("offline_players") {

@@ -33,11 +33,14 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.plugin.RegisteredListener
 import org.bukkit.plugin.java.JavaPlugin
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.lowerCase
-import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.v1.core.InternalApi
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.lowerCase
+import org.jetbrains.exposed.v1.core.transactions.ThreadLocalTransactionsStack
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.JdbcTransaction
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.sql.Connection
@@ -51,7 +54,7 @@ import java.util.UUID
 /** The main class of the ZCore plugin. */
 class ZCore : JavaPlugin() {
 
-    private lateinit var transaction: Transaction
+    private lateinit var transaction: JdbcTransaction
 
     override fun onEnable() {
         INSTANCE = this
@@ -64,6 +67,8 @@ class ZCore : JavaPlugin() {
         Database.connect("jdbc:h2:${dataFolder.absolutePath}/db/zcore", "org.h2.Driver")
         transaction = TransactionManager.currentOrNew(Connection.TRANSACTION_REPEATABLE_READ)
         transaction.connection.autoCommit = true
+        @OptIn(InternalApi::class)
+        ThreadLocalTransactionsStack.pushTransaction(transaction)
 
         SchemaUtils.create(
             OfflinePlayers,
@@ -111,6 +116,8 @@ class ZCore : JavaPlugin() {
         server.logger.info("[ZCore] Terminating database connection...")
         transaction.commit()
         transaction.close()
+        @OptIn(InternalApi::class)
+        ThreadLocalTransactionsStack.popTransaction()
     }
 
     /** Represents the ZCore API. */

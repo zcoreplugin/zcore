@@ -2,6 +2,7 @@ package me.zavdav.zcore.punishment
 
 import me.zavdav.zcore.data.IpBans
 import me.zavdav.zcore.player.OfflinePlayer
+import org.jetbrains.exposed.v1.core.eq
 import java.net.Inet4Address
 
 /** Represents a record of all issued IP bans. */

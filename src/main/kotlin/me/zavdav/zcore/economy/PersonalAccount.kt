@@ -2,9 +2,9 @@ package me.zavdav.zcore.economy
 
 import me.zavdav.zcore.data.PersonalAccounts
 import me.zavdav.zcore.player.OfflinePlayer
-import org.jetbrains.exposed.dao.UUIDEntity
-import org.jetbrains.exposed.dao.UUIDEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.v1.core.dao.id.EntityID
+import org.jetbrains.exposed.v1.dao.java.UUIDEntity
+import org.jetbrains.exposed.v1.dao.java.UUIDEntityClass
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.UUID
