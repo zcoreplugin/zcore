@@ -6,6 +6,7 @@ import me.zavdav.zcore.player.data
 import me.zavdav.zcore.player.replyingTo
 import me.zavdav.zcore.player.zcoreDisplayName
 import me.zavdav.zcore.util.checkIgnoring
+import me.zavdav.zcore.util.checkMuted
 import me.zavdav.zcore.util.colored
 import me.zavdav.zcore.util.local
 import me.zavdav.zcore.util.notifySocialSpy
@@ -35,6 +36,7 @@ private fun CommandContext<CommandSender>.doR(message: String) {
     if (source.hasPermission("zcore.msg.color"))
         finalMessage = message.colored()
 
+    if (source.checkMuted()) return
     if (!MessageSendEvent(source, target, finalMessage).call()) return
     source.replyingTo = target
     source.sendMessage(local("command.msg.to", target.zcoreDisplayName, finalMessage))

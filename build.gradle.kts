@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "me.zavdav"
-version = "0.23.8"
+version = "0.23.9"
 
 repositories {
     mavenCentral()

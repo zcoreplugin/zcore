@@ -25,6 +25,7 @@ import me.zavdav.zcore.player.OfflinePlayer
 import me.zavdav.zcore.statistic.Statistic
 import me.zavdav.zcore.util.Materials
 import me.zavdav.zcore.util.getField
+import me.zavdav.zcore.util.syncRepeatingTask
 import me.zavdav.zcore.util.wildcardMatchesIgnoreCase
 import me.zavdav.zcore.version.ZCoreVersion
 import org.bukkit.Bukkit
@@ -55,6 +56,7 @@ import java.util.UUID
 class ZCore : JavaPlugin() {
 
     private lateinit var transaction: JdbcTransaction
+    private var taskId: Int = -1
 
     override fun onEnable() {
         INSTANCE = this
@@ -69,6 +71,7 @@ class ZCore : JavaPlugin() {
         transaction.connection.autoCommit = true
         @OptIn(InternalApi::class)
         ThreadLocalTransactionsStack.pushTransaction(transaction)
+        taskId = syncRepeatingTask(0, 1) { transaction.commit() }
 
         SchemaUtils.create(
             OfflinePlayers,
@@ -114,6 +117,8 @@ class ZCore : JavaPlugin() {
         Statistic.unregisterDefaults()
 
         server.logger.info("[ZCore] Terminating database connection...")
+        server.scheduler.cancelTask(taskId)
+        taskId = -1
         transaction.commit()
         transaction.close()
         @OptIn(InternalApi::class)
