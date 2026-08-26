@@ -77,10 +77,10 @@ internal class InventoryView(val viewer: Player, target: Player) {
 
     fun setArmorSlot(viewSlot: Int, item: ItemStack?) {
         when (viewSlot) {
-            2 -> targetInventory.helmet = safeItem(item)
-            3 -> targetInventory.chestplate = safeItem(item)
-            4 -> targetInventory.leggings = safeItem(item)
-            5 -> targetInventory.boots = safeItem(item)
+            2 -> targetInventory.setHelmet(safeItem(item))
+            3 -> targetInventory.setChestplate(safeItem(item))
+            4 -> targetInventory.setLeggings(safeItem(item))
+            5 -> targetInventory.setBoots(safeItem(item))
         }
     }
 
@@ -202,7 +202,7 @@ internal class InventoryView(val viewer: Player, target: Player) {
 
         override fun update() {}
 
-        override fun a_(entityHuman: EntityHuman?): Boolean = true
+        override fun a_(entityHuman: EntityHuman): Boolean = true
 
         override fun getContents(): Array<net.minecraft.server.ItemStack?> = items
 

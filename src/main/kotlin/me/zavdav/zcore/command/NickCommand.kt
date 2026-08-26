@@ -45,7 +45,7 @@ private fun CommandContext<CommandSender>.doNick(target: OfflinePlayer, nickname
     if (source.hasPermission("zcore.nick.color"))
         finalNickname = finalNickname.colored()
 
-    if (ChatColor.stripColor(finalNickname).isEmpty())
+    if (ChatColor.stripColor(finalNickname)!!.isEmpty())
         throw TranslatableException("command.nick.empty")
 
     if (!PlayerNickEvent(source, target, finalNickname).call()) return

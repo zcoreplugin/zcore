@@ -32,7 +32,7 @@ internal val helpCommand = command(
 private fun CommandContext<CommandSender>.doHelp(page: Int) {
     val commands = CommandDispatcher.getCommands()
         .filter { if (it.permission == null) source.isOp
-                  else source.hasPermission(it.permission) }
+                  else source.hasPermission(it.permission!!) }
 
     val list = PagingList(commands, 10)
     if (list.isEmpty()) return
@@ -51,7 +51,7 @@ private fun CommandContext<CommandSender>.doHelpCommand(name: String) {
         throw TranslatableException("command.help.unknown", name)
 
     val hasPermission = if (command.permission == null) source.isOp
-                        else source.hasPermission(command.permission)
+                        else source.hasPermission(command.permission!!)
     if (!hasPermission)
         throw TranslatableException("command.help.unknown", name)
 

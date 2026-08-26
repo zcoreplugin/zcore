@@ -6,30 +6,25 @@ plugins {
 }
 
 group = "me.zavdav"
-version = "0.23.9"
+version = "0.24.0"
 
 repositories {
     mavenCentral()
     maven("https://repository.johnymuffin.com/repository/maven-public/")
-    maven("https://libraries.minecraft.net/")
-    maven("https://jitpack.io/")
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib)
-    compileOnly(libs.tsunami)
+    shadow(libs.poseidon)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
     implementation(libs.exposed.dao)
     implementation(libs.h2)
-    implementation(libs.brigadier)
     compileOnly(libs.jperms)
     compileOnly(libs.essentials.libs)
-    implementation(libs.slf4j.nop)
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(25)
 }
 
 tasks.build {
@@ -47,6 +42,12 @@ tasks.jar {
 }
 
 tasks.shadowJar {
+    dependencies {
+        include(dependency(libs.exposed.core))
+        include(dependency(libs.exposed.jdbc))
+        include(dependency(libs.exposed.dao))
+        include(dependency(libs.h2))
+    }
     archiveClassifier = ""
 }
 

@@ -16,6 +16,7 @@ import me.zavdav.zcore.util.updateVanishStates
 import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerKickEvent
@@ -30,7 +31,7 @@ import java.net.Inet4Address
 
 internal class JoinQuitListener : Listener {
 
-    @EventHandler(priority = Event.Priority.Lowest)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerLogin(event: PlayerLoginEvent) {
         val address = event.address as Inet4Address
         val ban = IpBanList.getActiveBan(address) ?:
@@ -47,7 +48,7 @@ internal class JoinQuitListener : Listener {
         }
     }
 
-    @EventHandler(priority = Event.Priority.Lowest)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerJoin(event: PlayerJoinEvent) {
         var player = ZCore.getOfflinePlayer(event.player.uniqueId)
         val now = System.currentTimeMillis()
@@ -102,7 +103,7 @@ internal class JoinQuitListener : Listener {
             "player" to event.player.name)
     }
 
-    @EventHandler(priority = Event.Priority.Lowest)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val player = event.player
         player.data._playtime = player.data.playtime
@@ -112,7 +113,7 @@ internal class JoinQuitListener : Listener {
             "player" to event.player.name)
     }
 
-    @EventHandler(priority = Event.Priority.Lowest)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerKick(event: PlayerKickEvent) {
         val player = event.player
         if (player.data.isBanned) {

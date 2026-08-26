@@ -7,6 +7,7 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -18,19 +19,19 @@ import org.bukkit.event.player.PlayerMoveEvent
 
 internal class StatisticsListener : Listener {
 
-    @EventHandler(priority = Event.Priority.Monitor, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockPlace(event: BlockPlaceEvent) {
         val player = event.player.data
         player.blocksPlaced++
     }
 
-    @EventHandler(priority = Event.Priority.Monitor, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockBreak(event: BlockBreakEvent) {
         val player = event.player.data
         player.blocksBroken++
     }
 
-    @EventHandler(priority = Event.Priority.Monitor, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPlayerMove(event: PlayerMoveEvent) {
         val distance = event.from.distance(event.to)
         if (distance < 0.05) return
@@ -38,7 +39,7 @@ internal class StatisticsListener : Listener {
         player.blocksTraveled += distance.toBigDecimal()
     }
 
-    @EventHandler(priority = Event.Priority.Monitor, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onEntityDamage(event: EntityDamageEvent) {
         val damagee = event.entity as? LivingEntity ?: return
         val prevHealth = damagee.health
@@ -66,7 +67,7 @@ internal class StatisticsListener : Listener {
         }
     }
 
-    @EventHandler(priority = Event.Priority.Monitor)
+    @EventHandler(priority = EventPriority.MONITOR)
     fun onEntityDeath(event: EntityDeathEvent) {
         val entity = event.entity
         var isPlayer = false

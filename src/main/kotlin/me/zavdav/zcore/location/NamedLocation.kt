@@ -28,6 +28,6 @@ sealed interface NamedLocation {
     val yaw: Float
 
     fun toBukkitLocation(): Location =
-        Location(Bukkit.getWorld(world), x, y, z, yaw, pitch)
+        Location(Bukkit.getWorld(world) ?: Bukkit.getWorlds()[0], x, y, z, yaw, pitch)
 
 }

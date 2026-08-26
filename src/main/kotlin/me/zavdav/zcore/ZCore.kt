@@ -108,11 +108,6 @@ class ZCore : JavaPlugin() {
         server.logger.info("[ZCore] Unregistering commands...")
         CommandDispatcher.unregisterAll()
 
-        server.logger.info("[ZCore] Unregistering event listeners...")
-        val listeners = getField<MutableMap<Event.Type, SortedSet<RegisteredListener>>>(
-            server.pluginManager, "listeners")
-        listeners.entries.forEach { (_, set) -> set.removeIf { it.plugin is ZCore } }
-
         server.logger.info("[ZCore] Unregistering statistics...")
         Statistic.unregisterDefaults()
 

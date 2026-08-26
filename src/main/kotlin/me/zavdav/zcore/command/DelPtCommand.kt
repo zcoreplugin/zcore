@@ -34,8 +34,8 @@ private fun CommandContext<CommandSender>.doDelPt(target: OfflinePlayer) {
         throw TranslatableException("command.delpt.noItem")
     if (!PowerToolDeleteEvent(source, item).call()) return
 
-    val materialData = MaterialData(item.type, item.durability)
-    if (target.deletePowerTool(item.type, item.durability) != null) {
+    val materialData = MaterialData(item.type!!, item.durability)
+    if (target.deletePowerTool(item.type!!, item.durability) != null) {
         source.sendMessage(local("command.delpt", target.name, materialData.displayName))
     } else {
         throw TranslatableException("command.delpt.unknown", target.name, materialData.displayName)

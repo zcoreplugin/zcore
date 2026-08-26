@@ -2,8 +2,8 @@ package me.zavdav.zcore.util
 
 import me.zavdav.zcore.config.ZCoreConfig
 import org.bukkit.ChatColor
-import org.bukkit.craftbukkit.TextWrapper.CHAT_WINDOW_WIDTH
-import org.bukkit.craftbukkit.TextWrapper.widthInPixels
+import org.bukkit.util.TextWrapper.CHAT_WINDOW_WIDTH
+import org.bukkit.util.TextWrapper.widthInPixels
 import java.util.ResourceBundle
 
 fun String.colored() = replace("&([0-9a-f])".toRegex(), "§$1")

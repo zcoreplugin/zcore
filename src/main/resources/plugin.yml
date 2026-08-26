@@ -4,6 +4,7 @@ main: me.zavdav.zcore.ZCore
 description: The all-in-one server plugin for b1.7.3
 author: zavdav
 website: https://github.com/zcoreplugin/zcore
+depend: [KotlinLibs]
 
 permissions:
   zcore.afk:

@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 
-open class CancellableCommandEvent<S : CommandSender>(val source: S) : Event("CancellableCommandEvent"), Cancellable {
+open class CancellableCommandEvent<S : CommandSender>(val source: S) : Event(), Cancellable {
 
     private var isCancelled: Boolean = false
 

@@ -22,7 +22,8 @@ internal class CoreCommand(
     }
 
     override fun execute(sender: CommandSender, label: String, args: Array<String>): Boolean {
-        if (!sender.hasPermission(permission)) {
+        val permission = this.permission
+        if (permission != null && !sender.hasPermission(permission)) {
             sender.sendMessage(local("command.noPermission"))
             return true
         }

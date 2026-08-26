@@ -1,5 +1,6 @@
 package me.zavdav.zcore.listener
 
+import com.legacyminecraft.poseidon.event.network.ServerReceivePacketEvent
 import me.zavdav.zcore.config.ZCoreConfig
 import me.zavdav.zcore.player.data
 import me.zavdav.zcore.player.inventoryView
@@ -11,18 +12,19 @@ import me.zavdav.zcore.util.colored
 import me.zavdav.zcore.util.displayName
 import me.zavdav.zcore.util.formatted
 import me.zavdav.zcore.util.local
+import me.zavdav.zcore.util.syncTask
 import net.minecraft.server.Packet102WindowClick
 import org.bukkit.Material
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityTargetEvent
-import org.bukkit.event.packet.PacketReceivedEvent
 import org.bukkit.event.player.PlayerAnimationEvent
 import org.bukkit.event.player.PlayerChatEvent
 import org.bukkit.event.player.PlayerDropItemEvent
@@ -31,7 +33,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent
 
 internal class ActionListener : Listener {
 
-    @EventHandler(priority = Event.Priority.Low, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerChat(event: PlayerChatEvent) {
         val player = event.player
         if (player.hasPermission("zcore.chat.color"))
@@ -47,7 +49,7 @@ internal class ActionListener : Listener {
         event.recipients.removeIf { it.data.checkIgnoring(player) }
     }
 
-    @EventHandler(priority = Event.Priority.Low)
+    @EventHandler(priority = EventPriority.LOW)
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val player = event.player
         val creature = player.spawnerType ?: return
@@ -59,17 +61,17 @@ internal class ActionListener : Listener {
             return
         }
 
-        blockState.creatureType = creature
+        blockState.setCreatureType(creature)
         player.sendMessage(local("command.spawner", creature.displayName))
     }
 
-    @EventHandler(priority = Event.Priority.Low)
+    @EventHandler(priority = EventPriority.LOW)
     fun onPlayerAnimation(event: PlayerAnimationEvent) {
         val player = event.player
         val item = player.itemInHand
         if (item.type == Material.AIR) return
 
-        val powerTool = player.data.getPowerTool(item.type, item.durability) ?: return
+        val powerTool = player.data.getPowerTool(item.type!!, item.durability) ?: return
         if (powerTool.command.contains("<player>", true))
             return
 
@@ -79,7 +81,7 @@ internal class ActionListener : Listener {
         player.performCommand(powerTool.command)
     }
 
-    @EventHandler(priority = Event.Priority.Low)
+    @EventHandler(priority = EventPriority.LOW)
     fun onEntityDamage(event: EntityDamageEvent) {
         val target = event.entity as? Player ?: return
         if (target.data.isInvincible && target.hasPermission("zcore.god")) {
@@ -93,7 +95,7 @@ internal class ActionListener : Listener {
         val item = damager.itemInHand
         if (item.type == Material.AIR) return
 
-        val powerTool = damager.data.getPowerTool(item.type, item.durability) ?: return
+        val powerTool = damager.data.getPowerTool(item.type!!, item.durability) ?: return
         if (!powerTool.command.contains("<player>", true))
             return
 
@@ -104,36 +106,37 @@ internal class ActionListener : Listener {
         event.isCancelled = true
     }
 
-    @EventHandler(priority = Event.Priority.Lowest, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     fun onEntityTarget(event: EntityTargetEvent) {
         val player = (event.target as? Player)?.data ?: return
         if (player.isVanished) event.isCancelled = true
     }
 
-    @EventHandler(priority = Event.Priority.Lowest, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
         val player = event.player.data
         if (player.isVanished) event.isCancelled = true
     }
 
-    @EventHandler(priority = Event.Priority.Lowest, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     fun onPlayerPickupItem(event: PlayerPickupItemEvent) {
         val player = event.player.data
         if (player.isVanished) event.isCancelled = true
     }
 
-    @EventHandler(priority = Event.Priority.Low)
-    fun onPacketReceived(event: PacketReceivedEvent) {
+    @EventHandler(priority = EventPriority.LOW)
+    fun onPacketReceived(event: ServerReceivePacketEvent) {
         val player = event.player
-        if (player.isDead) return
+        if (player == null || player.isDead) return
         val packet = event.packet as? Packet102WindowClick ?: return
 
         val view = player.inventoryView ?: return
         event.isCancelled = true
-        view.handleClick(packet)
+
+        syncTask { view.handleClick(packet) }
     }
 
-    @EventHandler(priority = Event.Priority.Low, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onSignChange(event: SignChangeEvent) {
         val player = event.player
         if (player.hasPermission("zcore.sign.color")) {

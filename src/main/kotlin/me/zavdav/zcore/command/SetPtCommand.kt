@@ -28,7 +28,7 @@ private fun CommandContext<CommandSender>.doSetPt(command: String) {
         throw TranslatableException("command.setpt.noItem")
     if (!PowerToolSetEvent(source, item, command).call()) return
 
-    source.data.setPowerTool(item.type, item.durability, command)
-    val materialData = MaterialData(item.type, item.durability)
+    source.data.setPowerTool(item.type!!, item.durability, command)
+    val materialData = MaterialData(item.type!!, item.durability)
     source.sendMessage(local("command.setpt", materialData.displayName, source.name))
 }

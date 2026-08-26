@@ -9,6 +9,7 @@ import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
 import org.bukkit.command.CommandSender
+import org.bukkit.command.SimpleCommandMap
 
 internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<CommandSender>() {
 
@@ -89,7 +90,7 @@ internal object CommandDispatcher : com.mojang.brigadier.CommandDispatcher<Comma
     )
 
     private val bukkitCommandMap = getField<CommandMap>(Bukkit.getPluginManager(), "commandMap")
-    private val bukkitKnownCommands = getField<MutableMap<String, Command>>(bukkitCommandMap, "knownCommands")
+    private val bukkitKnownCommands = getField<CommandMap, MutableMap<String, Command>>(bukkitCommandMap, SimpleCommandMap::class.java, "knownCommands")
 
     init {
         commands.removeAll { it.name in ZCoreConfig.getStringList("command.disabled") }
