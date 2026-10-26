@@ -6,11 +6,11 @@ plugins {
 }
 
 group = "me.zavdav"
-version = "0.24.1"
+version = "0.24.2"
 
 repositories {
     mavenCentral()
-    maven("https://repository.johnymuffin.com/repository/maven-public/")
+    maven("https://repository.legacyminecraft.com/repository/maven-public/")
 }
 
 dependencies {

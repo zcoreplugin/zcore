@@ -106,10 +106,10 @@ internal class InventoryView(val viewer: Player, target: Player) {
             return
 
         val slot = packet.b
-        val allow = if (slot in VIEW_ALL) {
-            viewer.hasPermission("zcore.invsee.edit") && slot !in VIEW_EMPTY
-        } else {
-            !packet.f
+        val allow = when (slot) {
+            VIEW_CURSOR -> viewer.hasPermission("zcore.invsee.edit") && nmsViewer != nmsTarget
+            in VIEW_ALL -> viewer.hasPermission("zcore.invsee.edit") && slot !in VIEW_EMPTY
+            else -> !packet.f
         }
 
         var itemStack: net.minecraft.server.ItemStack? = null
